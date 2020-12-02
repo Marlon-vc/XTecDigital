@@ -10,6 +10,7 @@ import { HomeComponent } from './home/home.component';
 import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { InitializeSemesterComponent } from './initialize-semester/initialize-semester.component';
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
@@ -18,17 +19,19 @@ import { InitializeSemesterComponent } from './initialize-semester/initialize-se
     HomeComponent,
     CounterComponent,
     FetchDataComponent,
-    InitializeSemesterComponent
+    InitializeSemesterComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
     FormsModule,
     RouterModule.forRoot([
-      { path: '', component: HomeComponent, pathMatch: 'full' },
+      { path: '', component: LoginComponent, pathMatch: 'full' },
+      { path: 'home', component: HomeComponent },
       { path: 'counter', component: CounterComponent },
       { path: 'fetch-data', component: FetchDataComponent },
-      { path: 'initialize-semester', component: InitializeSemesterComponent}
+      { path: 'initialize-semester', component: InitializeSemesterComponent},
     ])
   ],
   providers: [],
