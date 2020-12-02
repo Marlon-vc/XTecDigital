@@ -29,7 +29,7 @@
                                         </div>
                                     </div> 
                                 </div> 
-                                <input type="button" name="next" class="next action-button" value="Siguiente paso" (click)="firstStep()"/>
+                                <input type="button" name="next" class="next action-button" value="Siguiente paso"/>
                             </fieldset>
                             <fieldset>
                                 <div class="form-card">
@@ -51,7 +51,7 @@
                                     </div>
 
                                     <div class="text-center margin-top">
-                                        <button type="button" class="btn-save btn btn-success" (click)="saveCourse()">Guardar curso</button>
+                                        <button type="button" class="btn-save btn btn-success" (click)="saveCourse()">Guardar grupo</button>
                                     </div>  
 
                                     <div class="margin-top">
@@ -65,15 +65,15 @@
                                                     <th class="text-center align-middle" scope="col">Eliminar</th>
                                                 </tr>
                                             </thead>
-                                            <tbody *ngFor="let cursoInscrito of cursosInscritos; let i = index;">
+                                            <tbody *ngFor="let grupo of grupos; let i = index;">
                                                 <tr>
-                                                    <td class="text-center align-middle">{{ cursoInscrito.semestre }}</td>
-                                                    <td class="text-center align-middle">{{ cursoInscrito.curso }}</td>
-                                                    <td class="text-center align-middle">{{ cursoInscrito.grupo }}</td>
+                                                    <td class="text-center align-middle">{{ grupo }}</td>
+                                                    <td class="text-center align-middle">{{ grupo.idCurso }}</td>
+                                                    <td class="text-center align-middle">{{ grupo.numero }}</td>
                                                     <td class="text-center align-middle">
                                                         <ul class="list-group list-group-flush">
-                                                            <li class="list-group-item" *ngFor="let prof of cursoInscrito.profesores">
-                                                                {{ prof.nombre }}
+                                                            <li class="list-group-item" *ngFor="let prof of grupo.profesores">
+                                                                {{ prof }}
                                                             </li>
                                                         </ul>
                                                     </td>
@@ -96,19 +96,19 @@
                                         <div class="form-group input-group col-6">
                                             <select class="list-dt form-control" id="curso" name="curso">
                                                 <option selected value="Seleccione un grupo">Seleccione un grupo</option>
-                                                <option *ngFor="let grupo of grupos" value="{{grupo.id}}">{{ grupo.nombre }}</option>
+                                                <option *ngFor="let grupo of grupos" value="{{grupo.numero}}">{{ grupo.numero }}</option>
                                             </select>
                                         </div>
                                         <div class="form-group input-group col-6">
                                             <select class="list-dt form-control" id="curso" name="curso" multiple>
                                                 <option value="Seleccione los estudiantes">Seleccione los estudiantes</option>
-                                                <option *ngFor="let estudiante of estudiantes" value="{{estudiante.id}}">{{ estudiante.nombre }}</option>
+                                                <option *ngFor="let estudiante of estudiantes" value="{{estudiante.carnet}}">{{ estudiante.nombre }}</option>
                                             </select>
                                         </div>
                                     </div>
                                 </div> 
                                 <input type="button" name="previous" class="previous action-button-previous" value="Anterior" /> 
-                                <input type="button" name="confirm" class="next action-button" value="Confirmar" />
+                                <input type="button" name="confifm" class="submit action-button" value="Confirmar" />
                             </fieldset>
                             <fieldset>
                                 <div class="form-card">

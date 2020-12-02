@@ -16,7 +16,7 @@ export class InitializeSemesterComponent implements OnInit {
   periodos: Periodo[] = [];
   cursos: Curso[] = [];
   profesores: Profesor[] = [];
-  grupos: Grupo[] = [];
+  grupos = [];
   estudiantes: Estudiante[] = [];
 
   constructor() { }
@@ -24,6 +24,10 @@ export class InitializeSemesterComponent implements OnInit {
   ngOnInit(): void {
     this.init();
     this.setCourseOption();
+    this.loadPeriods();
+    this.loadCursos();
+    this.loadProfesores();
+    this.loadEstudiantes();
   }
 
   init() {
@@ -55,7 +59,8 @@ export class InitializeSemesterComponent implements OnInit {
       });
     });
     
-    $(".previous").click(function(){
+    // $(".previous").click(function(){
+    $(".previous").on('click', function(){
       current_fs = $(this).parent();
       previous_fs = $(this).parent().prev();
       
@@ -81,26 +86,65 @@ export class InitializeSemesterComponent implements OnInit {
       });
     });
     
-    $('.radio-group .radio').click(function(){
+    // $('.radio-group .radio').click(function(){
+    $('.radio-group .radio').on('click', function(){
       $(this).parent().find('.radio').removeClass('selected');
       $(this).addClass('selected');
     });
-    
-    $(".submit").click(function(){
-      return false;
+    var c = this;
+    // $(".submit").click(function(){
+    $('.submit').on('click', function(){
+      console.log('Registro completado.');
+      var complete = c.saveSemester();
+      if (complete) {
+        current_fs = $(this).parent();
+      next_fs = $(this).parent().next();
+      
+      //Add Class Active
+      $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+      
+      //show the next fieldset
+      next_fs.show();
+      //hide the current fieldset with style
+      current_fs.animate({opacity: 0}, {
+        step: function(now) {
+          // for making fielset appear animation
+          opacity = 1 - now;
+          current_fs.css({
+            'display': 'none',
+            'position': 'relative'
+          });
+          next_fs.css({'opacity': opacity});
+        },
+        duration: 600
+      });
+      } else {
+        console.log('Complete todos los campos'); // TODO mostrar modal
+        return;
+      }
     });
   }
 
-  saveSemester() {
+  saveSemester(): boolean {
     var year = $('#year');
     var period = $('#period');
+
+    var groupLength = this.grupos.length;
 
     console.log('year ' + year.val());
     console.log('period ' + period.val());
 
-    if (year.val() == '' || period.val() == 'Seleccione un periodo') {
-      return;
+    if (year.val() == '' || period.val() == 'Seleccione un periodo' || groupLength == 0) {
+      return false;
     }
+
+    this.grupos.forEach(grupo => {
+      if (grupo.estudiantes.length == 0) {
+        return false;
+      }
+    });
+
+    return true;
   }
 
   loadPeriods() {
@@ -112,10 +156,6 @@ export class InitializeSemesterComponent implements OnInit {
   }
 
   loadProfesores() {
-
-  }
-
-  loadGrupos() {
 
   }
 
@@ -135,7 +175,16 @@ export class InitializeSemesterComponent implements OnInit {
     var grupo = $('#group');
     var profesores = $('#profesor');
 
-    
+    var existente = this.grupos.find(g => g.grupo == grupo.val());
+    console.log(existente);
+
+    var grupoNuevo = {
+      idCurso: curso.val(),
+      numero: grupo.val(),
+      profesores: profesores.val()
+    }
+
+    this.grupos.push(grupoNuevo);
   }
 
 }
