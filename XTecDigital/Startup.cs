@@ -33,6 +33,11 @@ namespace XTecDigital
                 configuration.RootPath = "ClientApp/dist";
             });
 
+            services.AddDbContext<AppDbContext>(options => 
+            {
+                options.UseSqlServer("Server=tcp:xtecdigitalcr.database.windows.net,1433;Initial Catalog=xtecdigital;Persist Security Info=False;User ID=xtec_admin;Password=Tjg*%Ui9BM5K;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+            });
+
             services.AddAutoMapper(options =>
             {
                 options.AddProfile<XTecDigitalProfile>();
