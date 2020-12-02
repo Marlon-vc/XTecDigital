@@ -32,12 +32,12 @@ export class LoginComponent implements OnInit {
     };
 
     this.api.post(`https://localhost:${this.api.PORT}/api/Login`, auth)
-    .subscribe((data) => {
+      .subscribe((data: any) => {
         console.log('success');
-        
+        SessionHandler.logIn(data.userId, data.type);
+        this.router.navigate(['home']);
       }, (error) => {
         console.log('error logging in');
-        
       });
   }
 }
