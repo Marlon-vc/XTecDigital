@@ -65,7 +65,7 @@ namespace XTecDigital.Controllers
 
             await _context.Database.ExecuteSqlInterpolatedAsync($@"
                 EXECUTE dbo.sp_create_course 
-                {curso.Codigo}, {curso.Nombre}, {curso.CursoSemestre}, {curso.Habilitado};
+                {curso.Codigo}, {curso.Nombre}, {curso.Carrera}, {curso.Habilitado};
             ");
 
             await _context.SaveChangesAsync();
@@ -101,7 +101,8 @@ namespace XTecDigital.Controllers
 
         private bool CursoExists(string codigo)
         {
-            return _context.Curso.FromSqlInterpolated($"EXECUTE dbo.sp_get_course {codigo};").Count() > 0;
+            var results = _context.Curso.FromSqlInterpolated($"EXECUTE dbo.sp_get_course {codigo};").AsEnumerable(); 
+            return results.Any();
         }
     }
 }
