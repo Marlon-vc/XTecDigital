@@ -1,0 +1,8 @@
+### Obtener todos los cursos
+GET https://127.0.0.1:5001/api/Cursos HTTP/2.0
+
+### Obtener cursos activos
+GET https://127.0.0.1:5001/api/Cursos/active HTTP/2.0
+
+### Obtener un curso por código
+GET https://127.0.0.1:5001/api/Cursos/CE1101 HTTP/2.0
