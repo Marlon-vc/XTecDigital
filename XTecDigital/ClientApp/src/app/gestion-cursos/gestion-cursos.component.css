@@ -1,0 +1,13 @@
+#context-menu {
+    display: none;
+    z-index: 1;
+    position: fixed;
+    left: 100px;
+    top: 100px;
+    cursor: pointer;
+    outline: 0;
+}
+
+#cancel-button {
+    display: none;
+}
