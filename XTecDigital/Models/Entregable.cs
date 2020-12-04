@@ -13,7 +13,7 @@ namespace XTecDigital.Models
 
         public int Id { get; set; }
         public string Observaciones { get; set; }
-        public int Estudiante { get; set; }
+        public string Estudiante { get; set; }
         public int IdEvaluacion { get; set; }
 
         public virtual Evaluacion IdEvaluacionNavigation { get; set; }

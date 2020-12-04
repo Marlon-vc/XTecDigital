@@ -12,6 +12,7 @@ import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { InitializeSemesterComponent } from './initialize-semester/initialize-semester.component'
 import { LoginComponent } from './login/login.component';
 import { GestionCursosComponent } from './gestion-cursos/gestion-cursos.component';
+import { GestionDocumentosComponent } from './gestion-documentos/gestion-documentos.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { GestionCursosComponent } from './gestion-cursos/gestion-cursos.componen
     FetchDataComponent,
     InitializeSemesterComponent,
     LoginComponent,
-    GestionCursosComponent
+    GestionCursosComponent,
+    GestionDocumentosComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -35,6 +37,7 @@ import { GestionCursosComponent } from './gestion-cursos/gestion-cursos.componen
       { path: 'fetch-data', component: FetchDataComponent },
       { path: 'initialize-semester', component: InitializeSemesterComponent},
       { path: 'gestion-cursos', component: GestionCursosComponent },
+      { path: 'gestion-documentos', component: GestionDocumentosComponent },
     ])
   ],
   providers: [],
