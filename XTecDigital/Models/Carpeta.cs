@@ -11,6 +11,7 @@ namespace XTecDigital.Models
         }
 
         public int Id { get; set; }
+        public string Nombre { get; set; }
         public bool SoloLectura { get; set; }
         public string Ruta { get; set; }
         public int IdGrupo { get; set; }
