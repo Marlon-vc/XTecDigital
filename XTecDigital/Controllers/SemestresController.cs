@@ -14,7 +14,7 @@ namespace XTecDigital.Controllers
     {
         private readonly AppDbContext _context;
 
-        private SemestresController(AppDbContext context)
+        public SemestresController(AppDbContext context)
         {
             _context = context;
         }
@@ -27,7 +27,7 @@ namespace XTecDigital.Controllers
 
         //GET: api/Semestres/5
         [HttpGet("{id}")]
-        public IActionResult GetPeriodo(int id) {
+        public IActionResult GetSemestre(int id) {
             return Ok();
         }
 
