@@ -1,3 +1,21 @@
 {
-    "files.exclude": {}
+    "files.exclude": {},
+    "sqltools.connections": [
+        {
+            "mssqlOptions": {
+                "appName": "SQLTools",
+                "useUTC": true,
+                "encrypt": true,
+                "abortTransactionOnError": true
+            },
+            "previewLimit": 50,
+            "server": "xtecdigitalcr.database.windows.net",
+            "port": 1433,
+            "driver": "MSSQL",
+            "name": "XTecDigital",
+            "database": "xtecdigital",
+            "username": "xtec_admin",
+            "password": "Tjg*%Ui9BM5K"
+        }
+    ]
 } 
