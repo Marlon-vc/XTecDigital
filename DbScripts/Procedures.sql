@@ -2,7 +2,7 @@
 -- Procedimientos almacenados de cursos
 USE [xtecdigital];
 GO
-CREATE PROCEDURE IF NOT EXISTS dbo.sp_get_courses 
+CREATE PROCEDURE dbo.sp_get_courses 
 AS
 SELECT Codigo, Nombre, Carrera, Habilitado
 FROM dbo.CURSO;
@@ -10,7 +10,7 @@ FROM dbo.CURSO;
 -- EXECUTE dbo.sp_get_courses;
 
 GO
-CREATE PROCEDURE IF NOT EXISTS dbo.sp_get_active_courses
+CREATE PROCEDURE dbo.sp_get_active_courses
 AS
 SELECT Codigo, Nombre, Carrera, Habilitado
 FROM dbo.CURSO
@@ -19,7 +19,7 @@ WHERE Habilitado = 1;
 -- EXECUTE dbo.sp_get_active_courses;
 
 GO
-CREATE PROCEDURE IF NOT EXISTS dbo.sp_get_course
+CREATE PROCEDURE dbo.sp_get_course
 	@CourseId VARCHAR(50)
 AS
 SELECT Codigo, Nombre, Carrera, Habilitado
@@ -29,7 +29,7 @@ WHERE Codigo = @CourseId;
 --EXECUTE dbo.sp_get_course 'CE1101';
 
 GO
-CREATE PROCEDURE IF NOT EXISTS dbo.sp_set_course_state
+CREATE PROCEDURE dbo.sp_set_course_state
 	@CourseId VARCHAR(50),
 	@Enabled BIT
 AS
@@ -40,7 +40,7 @@ WHERE Codigo = @CourseId;
 -- EXECUTE dbo.sp_set_course_state 'CE1101', 1;
 
 GO
-CREATE PROCEDURE IF NOT EXISTS dbo.sp_create_course
+CREATE PROCEDURE dbo.sp_create_course
 	@Codigo VARCHAR(50),
 	@Nombre VARCHAR(50),
 	@Carrera VARCHAR(50),
@@ -52,7 +52,7 @@ INSERT INTO dbo.CURSO (Codigo, Nombre, Carrera, Habilitado) VALUES
 -- EXECUTE dbo.sp_create_course 'delete', 'Lenguajes, Compiladores e Interpretes', 'Computadores', 1;
 
 GO
-CREATE PROCEDURE IF NOT EXISTS dbo.sp_delete_course
+CREATE PROCEDURE dbo.sp_delete_course
 	@CourseId VARCHAR(50)
 AS
 DELETE FROM dbo.CURSO
@@ -61,7 +61,7 @@ WHERE Codigo = @CourseId;
 -- EXECUTE dbo.sp_delete_course 'delete';
 
 GO
-CREATE PROCEDURE IF NOT EXISTS dbo.sp_update_course
+CREATE PROCEDURE dbo.sp_update_course
 	@Codigo VARCHAR(50),
 	@Nombre VARCHAR(50),
 	@Carrera VARCHAR(50),

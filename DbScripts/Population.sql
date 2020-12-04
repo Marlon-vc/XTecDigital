@@ -1,0 +1,9 @@
+INSERT INTO dbo.CURSO (Codigo, Nombre, Carrera, Habilitado) VALUES
+    ('CE1101', 'Introducción a la programación', 'Computadores', 1),
+    ('CE1102', 'Taller de programación', 'Computadores', 1),
+    ('MA1102', 'Cálculo diferencial e integral', 'Matemática', 0),
+    ('QU1102', 'Laboratorio de química básica I', 'Química', 1),
+    ('QU1106', 'Química básica I', 'Química', 0),
+    ('CE1103', 'Algoritmos y estructuras de datos I', 'Computadores', 1),
+    ('FI1101', 'Física general I', 'Física', 1),
+    ('FI1202', 'Laboratorio de física general I', 'Física', 1);
