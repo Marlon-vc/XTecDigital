@@ -11,6 +11,7 @@ import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { LoginComponent } from './login/login.component';
 import { GestionCursosComponent } from './gestion-cursos/gestion-cursos.component';
+import { GestionDocumentosComponent } from './gestion-documentos/gestion-documentos.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { GestionCursosComponent } from './gestion-cursos/gestion-cursos.componen
     CounterComponent,
     FetchDataComponent,
     LoginComponent,
-    GestionCursosComponent
+    GestionCursosComponent,
+    GestionDocumentosComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -32,6 +34,7 @@ import { GestionCursosComponent } from './gestion-cursos/gestion-cursos.componen
       { path: 'counter', component: CounterComponent },
       { path: 'fetch-data', component: FetchDataComponent },
       { path: 'gestion-cursos', component: GestionCursosComponent },
+      { path: 'gestion-documentos', component: GestionDocumentosComponent },
     ])
   ],
   providers: [],
