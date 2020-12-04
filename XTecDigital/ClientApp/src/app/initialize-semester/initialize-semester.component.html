@@ -150,8 +150,47 @@
                                     <br><br>
                                     <h2 class="fs-title text-center">Cursos del semestre</h2> 
                                     <div class="row justify-content-center">
-                                        <div class="col-3"> <img src="https://img.icons8.com/color/96/000000/ok--v2.png" class="fit-image"> </div>
-                                    </div> <br><br>
+                                        <!-- <div class="col-3"> <img src="https://img.icons8.com/color/96/000000/ok--v2.png" class="fit-image"> </div> -->
+                                        
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center align-middle" scope="col">Semestre</th>
+                                                    <th class="text-center align-middle" scope="col">Año</th>
+                                                    <th class="text-center align-middle" scope="col">Codigo curso</th>
+                                                    <th class="text-center align-middle" scope="col">Nombre curso</th>
+                                                    <th class="text-center align-middle" scope="col">Grupo</th>
+                                                    <th class="text-center align-middle" scope="col">Estudiantes</th>
+                                                    <th class="text-center align-middle" scope="col">Profesores</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody *ngFor="let grupo of grupos; let i = index;">
+                                                <tr>
+                                                    <td class="text-center align-middle">{{ grupo }}</td>
+                                                    <td class="text-center align-middle">{{ grupo }}</td>
+                                                    <td class="text-center align-middle">{{ grupo.idCurso }}</td>
+                                                    <td class="text-center align-middle">{{ grupo.idCurso }}</td>
+                                                    <td class="text-center align-middle">{{ grupo.numero }}</td>
+                                                    <td class="text-center align-middle">
+                                                        <ul class="list-group list-group-flush">
+                                                            <li class="list-group-item" *ngFor="let student of grupo.estudiantes">
+                                                                {{ student }}
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                    <td class="text-center align-middle">
+                                                        <ul class="list-group list-group-flush">
+                                                            <li class="list-group-item" *ngFor="let teacher of grupo.profesores">
+                                                                {{ teacher }}
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        
+                                    </div> 
+                                    <br><br>
                                     <div class="row justify-content-center">
                                         <div class="col-7 text-center">
                                             <h5>Semestre inicializado correctamente</h5>
