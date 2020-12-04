@@ -139,7 +139,7 @@ export class InitializeSemesterComponent implements OnInit {
     }
 
     this.grupos.forEach(grupo => {
-      if (grupo.grupoEstudiantes.length == 0) {
+      if (grupo.estudiantes.length == 0) {
         return false;
       }
     });
@@ -153,10 +153,21 @@ export class InitializeSemesterComponent implements OnInit {
     var period = $('#period');
 
     var semestreInfo = {
-      Anio : year.val(),
-      IdPeriodo : period.val(),
+      Anio : Number.parseInt(year.val() as string),
+      IdPeriodo : Number.parseInt(period.val() as string),
       Grupos : this.grupos
     }
+
+    console.log(semestreInfo);
+
+    console.log('saving semester');
+    this.api.post(`https://localhost:5001/api/Semestres`, semestreInfo)
+      .subscribe((data: any) => {
+        console.log('Semestre creado correctamente');
+      }, (error) => {
+        console.log("Error creating semester...");
+        console.log(error);
+      });
 
   }
 
@@ -224,8 +235,8 @@ export class InitializeSemesterComponent implements OnInit {
     
     var grupoN = new Grupo();
     grupoN.idCurso = curso.val().toString();
-    grupoN.numero = Number(grupo.val());
-    grupoN.grupoProfesores = profesores.val() as string[];
+    grupoN.numero = Number.parseInt(grupo.val() as string);
+    grupoN.profesores = profesores.val() as string[];
 
     this.grupos.push(grupoN);
   }
@@ -236,7 +247,7 @@ export class InitializeSemesterComponent implements OnInit {
 
     var actualGroup = this.grupos.find(g => g.numero == Number(idGroup.val()));
     
-    actualGroup.grupoEstudiantes = students.val() as string[];
+    actualGroup.estudiantes = students.val() as string[];
 
   }
 }
