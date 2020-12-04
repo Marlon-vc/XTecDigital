@@ -1,0 +1,6 @@
+INSERT INTO dbo.PERIODO (Id, Nombre)
+VALUES (1, '1'), (2, '2'), (3, 'V')
+
+SELECT * FROM dbo.PERIODO
+
+SELECT * FROM dbo.SEMESTRE;
