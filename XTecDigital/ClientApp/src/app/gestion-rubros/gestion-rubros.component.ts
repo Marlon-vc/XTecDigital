@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Rubro } from '../models/rubro';
 import { ApiService } from '../services/api.service';
 
 @Component({
@@ -11,33 +12,29 @@ export class GestionRubrosComponent implements OnInit {
 
   selected: any;
 
-  archivos: any[] = [
+  rubros: Rubro[] = [
     {
-      nombre: "Examen1.docx",
-      tamanio: "1 MB",
-      modificado: "2020-12-01" 
-    }
-  ];
-  carpetas: any[] = [
+      nombre: 'Quices',
+      porcentaje: 30,
+      idGrupo: 1
+    }, 
     {
-      nombre: 'Presentaciones',
-      modificado: '2020-11-24'
+      nombre: 'Examenes',
+      porcentaje: 30,
+      idGrupo: 1
+    }, 
+    {
+      nombre: 'Proyectos',
+      porcentaje: 40,
+      idGrupo: 1
     }
   ];
 
   comandos: any[] = [
     {
-      nombre: "Descargar",
-      comando: () => {
-        console.log('descargando ' + this.selected.nombre);
-        
-      }
-    },
-    {
       nombre: "Editar",
       comando: () => {
         console.log('editando ' + this.selected.nombre);
-
       }
     },
     {
