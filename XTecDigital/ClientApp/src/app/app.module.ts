@@ -12,6 +12,7 @@ import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { LoginComponent } from './login/login.component';
 import { GestionCursosComponent } from './gestion-cursos/gestion-cursos.component';
 import { GestionDocumentosComponent } from './gestion-documentos/gestion-documentos.component';
+import { GestionRubrosComponent } from './gestion-rubros/gestion-rubros.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { GestionDocumentosComponent } from './gestion-documentos/gestion-documen
     FetchDataComponent,
     LoginComponent,
     GestionCursosComponent,
-    GestionDocumentosComponent
+    GestionDocumentosComponent,
+    GestionRubrosComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -35,6 +37,8 @@ import { GestionDocumentosComponent } from './gestion-documentos/gestion-documen
       { path: 'fetch-data', component: FetchDataComponent },
       { path: 'gestion-cursos', component: GestionCursosComponent },
       { path: 'gestion-documentos', component: GestionDocumentosComponent },
+      { path: 'gestion-rubros', component: GestionRubrosComponent},
+      
     ])
   ],
   providers: [],

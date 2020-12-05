@@ -1,0 +1,26 @@
+<div class="container">
+    <h3>Gestión de rubros</h3>
+
+    <table class="table table-hover table-sm">
+        <thead class="thead-dark">
+            <tr>
+                <th style="width: 80px;"></th>
+                <th>Nombre</th>
+                <th style="width: 25%;">Porcentaje</th>
+            </tr>
+        </thead>
+        <tbody id="files-body">
+            <tr *ngFor="let rubro of rubros" (contextmenu)="showContextMenu(rubro, $event)">
+                <td><img src="assets/img/check-list.png" alt="folder"></td>
+                <td>{{ rubro }}</td>
+                <td>{{ rubro }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="list-group" id="context-menu" tabindex="-1">
+    <button *ngFor="let comando of comandos" class="list-group-item list-group-item-action" (click)="comando.comando()">{{ comando.nombre }}</button>
+    <!-- <button type="button" class="list-group-item list-group-item-action" (click)="onModificar($event)">Modificar</button>
+    <button type="button" class="list-group-item list-group-item-action" (click)="onEliminar($event)">Eliminar</button> -->
+</div>
