@@ -18,7 +18,7 @@ namespace XTecDigital.Models
         public int Peso { get; set; }
         public DateTime FechaEntrega { get; set; }
         public TimeSpan HoraEntrega { get; set; }
-        public string IdRubro { get; set; }
+        public int IdRubro { get; set; }
 
         public virtual Rubro IdRubroNavigation { get; set; }
         public virtual ICollection<Entregable> Entregable { get; set; }

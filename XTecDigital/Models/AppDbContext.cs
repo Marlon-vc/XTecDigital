@@ -17,6 +17,7 @@ namespace XTecDigital.Models
 
         public virtual DbSet<Archivo> Archivo { get; set; }
         public virtual DbSet<Carpeta> Carpeta { get; set; }
+        public virtual DbSet<CarpetaRaiz> CarpetaRaiz { get; set; }
         public virtual DbSet<Curso> Curso { get; set; }
         public virtual DbSet<CursoSemestre> CursoSemestre { get; set; }
         public virtual DbSet<Entregable> Entregable { get; set; }
@@ -37,6 +38,7 @@ namespace XTecDigital.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
                 optionsBuilder.UseSqlServer("Server=tcp:xtecdigitalcr.database.windows.net,1433;Initial Catalog=xtecdigital;Persist Security Info=False;User ID=xtec_admin;Password=Tjg*%Ui9BM5K;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
             }
         }
@@ -64,7 +66,7 @@ namespace XTecDigital.Models
                     .WithMany(p => p.Archivo)
                     .HasForeignKey(d => d.IdCarpeta)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ARCHIVO__Id_carp__0B91BA14");
+                    .HasConstraintName("FK__ARCHIVO__Id_carp__0F624AF8");
             });
 
             modelBuilder.Entity<Carpeta>(entity =>
@@ -89,13 +91,26 @@ namespace XTecDigital.Models
                     .WithMany(p => p.Carpeta)
                     .HasForeignKey(d => d.IdGrupo)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__CARPETA__Id_grup__0A9D95DB");
+                    .HasConstraintName("FK__CARPETA__Id_grup__0D7A0286");
+            });
+
+            modelBuilder.Entity<CarpetaRaiz>(entity =>
+            {
+                entity.ToTable("CARPETA_RAIZ");
+
+                entity.Property(e => e.IdCarpeta).HasColumnName("Id_carpeta");
+
+                entity.HasOne(d => d.IdCarpetaNavigation)
+                    .WithMany(p => p.CarpetaRaiz)
+                    .HasForeignKey(d => d.IdCarpeta)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__CARPETA_R__Id_ca__0E6E26BF");
             });
 
             modelBuilder.Entity<Curso>(entity =>
             {
                 entity.HasKey(e => e.Codigo)
-                    .HasName("PK__CURSO__06370DADEF776A77");
+                    .HasName("PK__CURSO__06370DAD9E8CE09A");
 
                 entity.ToTable("CURSO");
 
@@ -130,13 +145,13 @@ namespace XTecDigital.Models
                     .WithMany(p => p.CursoSemestre)
                     .HasForeignKey(d => d.IdCurso)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__CURSO_SEM__Id_cu__7C4F7684");
+                    .HasConstraintName("FK__CURSO_SEM__Id_cu__7F2BE32F");
 
                 entity.HasOne(d => d.IdSemestreNavigation)
                     .WithMany(p => p.CursoSemestre)
                     .HasForeignKey(d => d.IdSemestre)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__CURSO_SEM__Id_se__7D439ABD");
+                    .HasConstraintName("FK__CURSO_SEM__Id_se__00200768");
             });
 
             modelBuilder.Entity<Entregable>(entity =>
@@ -159,7 +174,7 @@ namespace XTecDigital.Models
                     .WithMany(p => p.Entregable)
                     .HasForeignKey(d => d.IdEvaluacion)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ENTREGABL__Id_ev__0C85DE4D");
+                    .HasConstraintName("FK__ENTREGABL__Id_ev__10566F31");
             });
 
             modelBuilder.Entity<EntregableArchivo>(entity =>
@@ -174,13 +189,13 @@ namespace XTecDigital.Models
                     .WithMany(p => p.EntregableArchivo)
                     .HasForeignKey(d => d.IdArchivo)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ENTREGABL__Id_ar__07C12930");
+                    .HasConstraintName("FK__ENTREGABL__Id_ar__0A9D95DB");
 
                 entity.HasOne(d => d.IdEntregableNavigation)
                     .WithMany(p => p.EntregableArchivo)
                     .HasForeignKey(d => d.IdEntregable)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ENTREGABL__Id_en__06CD04F7");
+                    .HasConstraintName("FK__ENTREGABL__Id_en__09A971A2");
             });
 
             modelBuilder.Entity<EntregableArchivoDetalle>(entity =>
@@ -195,13 +210,13 @@ namespace XTecDigital.Models
                     .WithMany(p => p.EntregableArchivoDetalle)
                     .HasForeignKey(d => d.IdArchivoDetalle)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ENTREGABL__Id_ar__09A971A2");
+                    .HasConstraintName("FK__ENTREGABL__Id_ar__0C85DE4D");
 
                 entity.HasOne(d => d.IdEntregableNavigation)
                     .WithMany(p => p.EntregableArchivoDetalle)
                     .HasForeignKey(d => d.IdEntregable)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ENTREGABL__Id_en__08B54D69");
+                    .HasConstraintName("FK__ENTREGABL__Id_en__0B91BA14");
             });
 
             modelBuilder.Entity<Evaluacion>(entity =>
@@ -216,11 +231,7 @@ namespace XTecDigital.Models
 
                 entity.Property(e => e.HoraEntrega).HasColumnName("Hora_entrega");
 
-                entity.Property(e => e.IdRubro)
-                    .IsRequired()
-                    .HasColumnName("Id_rubro")
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.IdRubro).HasColumnName("Id_rubro");
 
                 entity.Property(e => e.NotasPublicadas).HasColumnName("Notas_publicadas");
 
@@ -228,7 +239,7 @@ namespace XTecDigital.Models
                     .WithMany(p => p.Evaluacion)
                     .HasForeignKey(d => d.IdRubro)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__EVALUACIO__Id_ru__02FC7413");
+                    .HasConstraintName("FK__EVALUACIO__Id_ru__05D8E0BE");
             });
 
             modelBuilder.Entity<EvaluacionEspecificacion>(entity =>
@@ -243,19 +254,19 @@ namespace XTecDigital.Models
                     .WithMany(p => p.EvaluacionEspecificacion)
                     .HasForeignKey(d => d.IdEspecificacion)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__EVALUACIO__Id_es__05D8E0BE");
+                    .HasConstraintName("FK__EVALUACIO__Id_es__08B54D69");
 
                 entity.HasOne(d => d.IdEvaluacionNavigation)
                     .WithMany(p => p.EvaluacionEspecificacion)
                     .HasForeignKey(d => d.IdEvaluacion)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__EVALUACIO__Id_ev__04E4BC85");
+                    .HasConstraintName("FK__EVALUACIO__Id_ev__07C12930");
             });
 
             modelBuilder.Entity<EvaluacionIntegrantes>(entity =>
             {
                 entity.HasKey(e => new { e.IdEvaluacion, e.Estudiante })
-                    .HasName("PK__EVALUACI__46E2844064D5CEE7");
+                    .HasName("PK__EVALUACI__46E284405D190C7D");
 
                 entity.ToTable("EVALUACION_INTEGRANTES");
 
@@ -269,7 +280,7 @@ namespace XTecDigital.Models
                     .WithMany(p => p.EvaluacionIntegrantes)
                     .HasForeignKey(d => d.IdEvaluacion)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__EVALUACIO__Id_ev__03F0984C");
+                    .HasConstraintName("FK__EVALUACIO__Id_ev__06CD04F7");
             });
 
             modelBuilder.Entity<Grupo>(entity =>
@@ -286,13 +297,13 @@ namespace XTecDigital.Models
                     .WithMany(p => p.Grupo)
                     .HasForeignKey(d => d.IdCurso)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__GRUPO__Id_curso__7F2BE32F");
+                    .HasConstraintName("FK__GRUPO__Id_curso__02084FDA");
             });
 
             modelBuilder.Entity<GrupoEstudiante>(entity =>
             {
                 entity.HasKey(e => new { e.NumeroGrupo, e.Estudiante })
-                    .HasName("PK__GRUPO_ES__9E87469AD6FF6097");
+                    .HasName("PK__GRUPO_ES__9E87469A3C277F4C");
 
                 entity.ToTable("GRUPO_ESTUDIANTE");
 
@@ -306,13 +317,13 @@ namespace XTecDigital.Models
                     .WithMany(p => p.GrupoEstudiante)
                     .HasForeignKey(d => d.NumeroGrupo)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__GRUPO_EST__Numer__01142BA1");
+                    .HasConstraintName("FK__GRUPO_EST__Numer__03F0984C");
             });
 
             modelBuilder.Entity<GrupoProfesor>(entity =>
             {
                 entity.HasKey(e => new { e.NumeroGrupo, e.Profesor })
-                    .HasName("PK__GRUPO_PR__72CB80A6C0349814");
+                    .HasName("PK__GRUPO_PR__72CB80A6841FE148");
 
                 entity.ToTable("GRUPO_PROFESOR");
 
@@ -326,7 +337,7 @@ namespace XTecDigital.Models
                     .WithMany(p => p.GrupoProfesor)
                     .HasForeignKey(d => d.NumeroGrupo)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__GRUPO_PRO__Numer__00200768");
+                    .HasConstraintName("FK__GRUPO_PRO__Numer__02FC7413");
             });
 
             modelBuilder.Entity<Noticia>(entity =>
@@ -358,7 +369,7 @@ namespace XTecDigital.Models
                     .WithMany(p => p.Noticia)
                     .HasForeignKey(d => d.IdGrupo)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__NOTICIA__Id_grup__7E37BEF6");
+                    .HasConstraintName("FK__NOTICIA__Id_grup__01142BA1");
             });
 
             modelBuilder.Entity<Periodo>(entity =>
@@ -373,16 +384,17 @@ namespace XTecDigital.Models
 
             modelBuilder.Entity<Rubro>(entity =>
             {
-                entity.HasKey(e => e.Nombre)
-                    .HasName("PK__RUBRO__75E3EFCEBBB45E8B");
-
                 entity.ToTable("RUBRO");
+
+                entity.HasIndex(e => new { e.Nombre, e.IdGrupo })
+                    .HasName("UQ__RUBRO__EDCB6D05B28DD2E6")
+                    .IsUnique();
+
+                entity.Property(e => e.IdGrupo).HasColumnName("Id_grupo");
 
                 entity.Property(e => e.Nombre)
                     .HasMaxLength(50)
                     .IsUnicode(false);
-
-                entity.Property(e => e.IdGrupo).HasColumnName("Id_grupo");
 
                 entity.Property(e => e.Porcentaje).HasColumnType("decimal(5, 2)");
 
@@ -390,7 +402,7 @@ namespace XTecDigital.Models
                     .WithMany(p => p.Rubro)
                     .HasForeignKey(d => d.IdGrupo)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__RUBRO__Id_grupo__02084FDA");
+                    .HasConstraintName("FK__RUBRO__Id_grupo__04E4BC85");
             });
 
             modelBuilder.Entity<Semestre>(entity =>
@@ -403,7 +415,7 @@ namespace XTecDigital.Models
                     .WithMany(p => p.Semestre)
                     .HasForeignKey(d => d.IdPeriodo)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__SEMESTRE__Id_per__7B5B524B");
+                    .HasConstraintName("FK__SEMESTRE__Id_per__7E37BEF6");
             });
 
             OnModelCreatingPartial(modelBuilder);
