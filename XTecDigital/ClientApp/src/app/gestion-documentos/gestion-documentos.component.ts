@@ -9,6 +9,7 @@ import { ApiService } from '../services/api.service';
 export class GestionDocumentosComponent implements OnInit {
 
   selected: any;
+  groupId: number;
 
   archivos: any[] = [
     {
@@ -24,35 +25,67 @@ export class GestionDocumentosComponent implements OnInit {
     }
   ];
 
-  comandos: any[] = [
-    {
-      nombre: "Descargar",
-      comando: () => {
-        console.log('descargando ' + this.selected.nombre);
-        
-      }
-    },
-    {
-      nombre: "Editar",
-      comando: () => {
-        console.log('editando ' + this.selected.nombre);
-
-      }
-    },
-    {
-      nombre: 'Eliminar',
-      comando: () => {
-        console.log('eliminando ' + this.selected.nombre);
-      }
-    }
-  ];
-
   constructor(private api: ApiService) { }
 
   ngOnInit(): void {
+    //DEBUG: obtener codigo actual del grupo
+    this.groupId = 1;
+
     $(window).on('click', (event) => {
       $('#context-menu').css('display', 'none');
     });
+
+    this.loadArchivos();
+  }
+
+  loadArchivos() {
+    //TODO: obtener id del grupo actual para obtener sus archivos
+  }
+
+  readFile(file: File) {
+    let promise = new Promise((resolve) => {
+      var reader = new FileReader();
+      reader.onload = (data) => {
+        resolve(data.target.result);
+      };
+      reader.readAsDataURL(file);
+    });
+    return promise;
+  }
+
+  async onSubirArchivo() {
+    console.log('subir archivo');
+    // @ts-ignore
+    var file: File = $('#upload-file').prop('files')[0];
+    console.log(file);
+
+    if (file == undefined) {
+      console.log('no file selected');
+      return;
+    }
+
+    // @ts-ignore
+    $('#upload-modal').modal('hide');
+    
+    var fileData = {
+      data: await this.readFile(file),
+      name: file.name,
+      size: file.size,
+      lastModified: file.lastModified
+    };
+
+    //TODO: enviar datos al api
+  }
+
+  onCancelUpload() {
+    console.log(' upload cancelled');
+    $('#upload-file').val('');
+    
+  }
+
+  onCrearCarpeta() {
+    console.log('crear carpeta');
+    
   }
 
   folderDoubleClicked(folder, event) {
@@ -65,12 +98,19 @@ export class GestionDocumentosComponent implements OnInit {
     
   }
 
-  onModificar(event) {
+  onDescargar(event) {
+    console.log('descargando');
+    
+  }
 
+  onModificar(event) {
+    console.log('modificando');
+    
   }
 
   onEliminar(event) {
-
+    console.log('eliminando');
+    
   }
 
 
