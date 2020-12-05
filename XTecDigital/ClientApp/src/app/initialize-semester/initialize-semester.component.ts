@@ -34,11 +34,35 @@ export class InitializeSemesterComponent implements OnInit {
   init() {
     var current_fs, next_fs, previous_fs; //fieldsets
     var opacity;
-    
-    // $(".next").click(function(){
+    var c = this;
     $(".next").on('click', function() {
-      current_fs = $(this).parent();
-      next_fs = $(this).parent().next();
+      c.next(current_fs, next_fs, opacity, this);
+    });
+    
+    $(".previous").on('click', function(){
+      c.previous(current_fs, previous_fs, opacity, this);
+    });
+    
+    $('.radio-group .radio').on('click', function(){
+      $(this).parent().find('.radio').removeClass('selected');
+      $(this).addClass('selected');
+    });
+    var c = this;
+    $('.submit').on('click', function(){
+      console.log('Registro completado.');
+      var complete = c.checkSemester();
+      if (complete) {
+        c.saveSemester(current_fs, next_fs, opacity, this);
+      } else {
+        console.log('Complete todos los campos'); // TODO mostrar modal
+        return;
+      }
+    });
+  }
+
+  next(current_fs, next_fs, opacity, actual) {
+    current_fs = $(actual).parent();
+      next_fs = $(actual).parent().next();
       
       //Add Class Active
       $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
@@ -58,12 +82,11 @@ export class InitializeSemesterComponent implements OnInit {
         },
         duration: 600
       });
-    });
-    
-    // $(".previous").click(function(){
-    $(".previous").on('click', function(){
-      current_fs = $(this).parent();
-      previous_fs = $(this).parent().prev();
+  }
+
+  previous(current_fs, previous_fs, opacity, actual) {
+    current_fs = $(actual).parent();
+      previous_fs = $(actual).parent().prev();
       
       //Remove class active
       $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
@@ -85,44 +108,6 @@ export class InitializeSemesterComponent implements OnInit {
         },
         duration: 600
       });
-    });
-    
-    // $('.radio-group .radio').click(function(){
-    $('.radio-group .radio').on('click', function(){
-      $(this).parent().find('.radio').removeClass('selected');
-      $(this).addClass('selected');
-    });
-    var c = this;
-    // $(".submit").click(function(){
-    $('.submit').on('click', function(){
-      console.log('Registro completado.');
-      var complete = c.checkSemester();
-      if (complete) {
-        c.saveSemester();
-        current_fs = $(this).parent();
-        next_fs = $(this).parent().next();
-        //Add Class Active
-        $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
-        //show the next fieldset
-        next_fs.show();
-        //hide the current fieldset with style
-        current_fs.animate({opacity: 0}, {
-          step: function(now) {
-            // for making fielset appear animation
-            opacity = 1 - now;
-            current_fs.css({
-              'display': 'none',
-              'position': 'relative'
-            });
-            next_fs.css({'opacity': opacity});
-          },
-          duration: 600
-        });
-      } else {
-        console.log('Complete todos los campos'); // TODO mostrar modal
-        return;
-      }
-    });
   }
 
   checkSemester(): boolean {
@@ -147,7 +132,7 @@ export class InitializeSemesterComponent implements OnInit {
     return true;
   }
 
-  saveSemester() {
+  saveSemester(current_fs, next_fs, opacity, actual) {
 
     var year = $('#year');
     var period = $('#period');
@@ -164,6 +149,7 @@ export class InitializeSemesterComponent implements OnInit {
     this.api.post(`https://localhost:5001/api/Semestres`, semestreInfo)
       .subscribe((data: any) => {
         console.log('Semestre creado correctamente');
+        this.next(current_fs, next_fs, opacity, this);
       }, (error) => {
         console.log("Error creating semester...");
         console.log(error);
@@ -227,27 +213,43 @@ export class InitializeSemesterComponent implements OnInit {
     $('#courseInfo').css('display', 'none');
     var curso = $('#curso');
     var grupo = $('#group');
-    var profesores = $('#profesor');
+    var profesores = $('#profesor').val() as string[];
 
-    var existente = this.grupos.find(g => g.numero == grupo.val());
-    console.log(existente);
-
+    if (profesores.length < 1) {
+      return;
+    }
     
     var grupoN = new Grupo();
     grupoN.idCurso = curso.val().toString();
     grupoN.numero = Number.parseInt(grupo.val() as string);
-    grupoN.profesores = profesores.val() as string[];
+    grupoN.profesores = profesores;
 
     this.grupos.push(grupoN);
   }
 
   saveGroupStudents() {
-    var students = $('#estudiantes');
-    var idGroup = $('#grupo');
+    var students = $('#estudiantes').val() as string[];
+    var groupInfo = $('#grupo').val().toString();  
+    var info = groupInfo.split(', ', 2);
 
-    var actualGroup = this.grupos.find(g => g.numero == Number(idGroup.val()));
+    var numeroGrupo = Number.parseInt(info[0]);
+    var idCursoG = info[1];
+   
+
+    var actualGroup = this.grupos.find(g => g.numero == numeroGrupo && g.idCurso == idCursoG);
     
-    actualGroup.estudiantes = students.val() as string[];
+    actualGroup.estudiantes = students;
 
+  }
+
+  deleteGroup(grupo: Grupo) {
+    var index = this.grupos.indexOf(grupo);
+    if (index > -1) {
+      this.grupos.splice(index, 1);
+   }
+  }
+
+  deleteStudents(grupo: Grupo) {
+    grupo.estudiantes = [];
   }
 }

@@ -78,7 +78,9 @@
                                                         </ul>
                                                     </td>
                                                     <td class="text-center align-middle">
-                                                        <button type="button" class="btn btn-danger"><i class="far fa-trash-alt"></i></button>
+                                                        <button type="button" class="btn btn-danger" (click)="deleteGroup(grupo)">
+                                                            <i class="far fa-trash-alt"></i>
+                                                        </button>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -96,7 +98,7 @@
                                         <div class="form-group input-group col-6">
                                             <select class="list-dt form-control" id="grupo" name="grupo">
                                                 <option selected value="Seleccione un grupo">Seleccione un grupo</option>
-                                                <option *ngFor="let grupo of grupos" value="{{grupo.numero}}">{{ grupo.numero }}</option>
+                                                <option *ngFor="let grupo of grupos" value="{{grupo.numero}}, {{grupo.idCurso}}">{{ grupo.numero }}, {{grupo.idCurso}}</option>
                                             </select>
                                         </div>
                                         <div class="form-group input-group col-6">
@@ -133,7 +135,9 @@
                                                         </ul>
                                                     </td>
                                                     <td class="text-center align-middle">
-                                                        <button type="button" class="btn btn-danger"><i class="far fa-trash-alt"></i></button>
+                                                        <button type="button" class="btn btn-danger" (click)="deleteStudents(grupo)">
+                                                            <i class="far fa-trash-alt"></i>
+                                                        </button>
                                                     </td>
                                                 </tr>
                                             </tbody>
