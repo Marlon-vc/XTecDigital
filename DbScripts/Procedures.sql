@@ -1,5 +1,4 @@
 -- Procedimientos almacenados
-USE [xtecdigital];
 GO
 CREATE PROCEDURE dbo.sp_get_courses 
 AS
@@ -72,4 +71,63 @@ WHERE Codigo = @Codigo;
 
 -- EXECUTE dbo.sp_update_course 'CE1101', 'Introducción a la programación', 'Computadores', 1;
 
--- Procedimientos almacenados de archivos
+-- Procedimientos almacenados de archivos y carpetas
+
+GO
+CREATE PROCEDURE [dbo].[sp_get_folders]
+	@GroupId INT
+AS
+SELECT Id, Nombre, Solo_lectura, Ruta, Id_grupo
+FROM [dbo].[CARPETA]
+WHERE Id_grupo = @GroupId;
+
+-- [dbo].[sp_get_folders] 1;
+
+GO
+CREATE PROCEDURE [dbo].[sp_update_folder]
+	@Id INT,
+	@Nombre VARCHAR(100),
+	@SoloLectura bit,
+	@Ruta VARCHAR(50),
+	@IdGrupo INT
+AS
+UPDATE [dbo].[CARPETA]
+SET Nombre = @Nombre
+WHERE Id = @Id AND Id_grupo = @IdGrupo;
+
+GO
+CREATE PROCEDURE [dbo].[sp_get_files]
+	@FolderId INT
+AS
+SELECT Id, Fecha_creacion, Nombre, Tamanio, Id_carpeta
+FROM [dbo].[ARCHIVO]
+WHERE Id_carpeta = @FolderId;
+
+-- [dbo].[sp_get_files] 1;
+
+GO
+CREATE PROCEDURE [dbo].[sp_create_file]
+	@Id INT,
+	@FechaCreacion DATE,
+	@Nombre VARCHAR(50),
+	@Tamanio DECIMAL(8,2),
+	@IdCarpeta INT
+AS
+INSERT INTO [dbo].[ARCHIVO] (Id, Fecha_creacion, Nombre, Tamanio, Id_carpeta) VALUES
+	(@Id, @FechaCreacion, @Nombre, @Tamanio, @IdCarpeta);
+
+-- [dbo].[sp_create_file];
+
+GO
+CREATE PROCEDURE [dbo].[sp_update_file]
+	@Id INT,
+	@FechaCreacion DATE,
+	@Nombre VARCHAR(50),
+	@Tamanio DECIMAL(8,2),
+	@IdCarpeta INT
+AS
+UPDATE [dbo].[ARCHIVO]
+SET Nombre = @Nombre
+WHERE Id = @Id AND Id_carpeta = @IdCarpeta;
+
+-- [dbo].[sp_update_file];
