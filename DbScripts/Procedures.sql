@@ -142,6 +142,8 @@ AS
 INSERT INTO dbo.CARPETA (Id, Nombre, Solo_lectura, Ruta, Id_grupo)
 VALUES (@idCarpeta, @nombreCarpeta, @soloLectura, @ruta, @idGrupo);
 
+
+-- Procedimientos almacenados de rubros
 GO
 CREATE PROCEDURE dbo.sp_create_rubro
 	@nombreRubro VARCHAR(50),
@@ -151,7 +153,38 @@ AS
 INSERT INTO dbo.RUBRO (Nombre, Porcentaje, Id_grupo)
 VALUES (@nombreRubro, @porcentaje, @idGrupo);
 
+GO
+CREATE PROCEDURE dbo.sp_get_rubro
+	@id INT
+AS
+SELECT Id, Nombre, Porcentaje, Id_grupo 
+FROM dbo.RUBRO
+WHERE Id = @id;
 
+GO
+CREATE PROCEDURE dbo.sp_get_rubros_grupo
+	@idGrupo INT
+AS
+SELECT Nombre, Porcentaje, Id_grupo 
+FROM dbo.RUBRO
+WHERE Id_grupo = @idGrupo
+
+GO
+CREATE PROCEDURE dbo.sp_update_rubro
+	@nombreRubro VARCHAR(50),
+	@id INT,
+	@porcentaje DECIMAL(5,2)
+AS
+UPDATE dbo.RUBRO
+SET Nombre = @nombreRubro, Porcentaje = @porcentaje
+WHERE Id = @Id;
+
+GO
+CREATE PROCEDURE dbo.sp_delete_rubro
+	@id INT
+AS
+DELETE FROM dbo.RUBRO
+WHERE Id = @id;
 
 
 -- Procedimientos almacenados de archivos
