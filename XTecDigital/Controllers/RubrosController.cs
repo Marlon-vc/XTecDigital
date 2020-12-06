@@ -29,7 +29,7 @@ namespace XTecDigital.Controllers
             return Ok(result);
         }
 
-        //GET: api/Rubros/CE
+        //GET: api/Rubros/1
         [HttpGet("{id}")]
         public IActionResult GetRubro(int id)
         {
@@ -62,7 +62,7 @@ namespace XTecDigital.Controllers
             return CreatedAtRoute("Default", new { rubro.Id }, rubro);
         }
 
-        // PUT: api/Rubros/Examenes/CE
+        // PUT: api/Rubros/1
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRubroAsync(int id, Rubro rubro) 
         {
@@ -76,7 +76,7 @@ namespace XTecDigital.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Rubros/Examenes/CE
+        // DELETE: api/Rubros/1
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRubroAsync(int id) 
         {
