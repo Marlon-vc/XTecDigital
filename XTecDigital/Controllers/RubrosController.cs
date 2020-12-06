@@ -18,37 +18,84 @@ namespace XTecDigital.Controllers
             _context = context;
         }
 
-        //GET: api/Rubros/CE
-        [HttpGet("{idCurso}")]
-        public IActionResult GetRubrosGrupo(string idCurso)
+        //GET: api/Rubros/1
+        [HttpGet("{idGrupo}")]
+        public IActionResult GetRubrosGrupo(string idGrupo)
         {
-            return Ok();
+            var result = _context.Rubro.FromSqlInterpolated($@"
+                EXECUTE dbo.sp_get_rubros_grupo {idGrupo}
+            ");
+
+            return Ok(result);
+        }
+
+        //GET: api/Rubros/CE
+        [HttpGet("{id}")]
+        public IActionResult GetRubro(int id)
+        {
+            var rubro = _context.Rubro.FromSqlInterpolated($@"
+                EXECUTE dbo.sp_get_rubro {id}
+            ").AsEnumerable().FirstOrDefault();
+
+            if (rubro == null) 
+                return NotFound();
+
+            return Ok(rubro);
         }
 
         // POST: api/Rubros
         [HttpPost]
-        public async Task<IActionResult> AddRubroAsync(Rubro data) 
+        public async Task<IActionResult> AddRubroAsync(Rubro rubro) 
         {
-            return Ok();
+            if (rubro == null)
+                return BadRequest();
+
+            if (RubroExists(rubro.Id))
+                return Conflict();
+
+            await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                EXECUTE dbo.sp_create_rubro {rubro.Nombre}, {rubro.Porcentaje}, {rubro.IdGrupo}
+            ");
+            
+            await _context.SaveChangesAsync();
+
+            return CreatedAtRoute("Default", new { rubro.Id }, rubro);
         }
 
         // PUT: api/Rubros/Examenes/CE
-        [HttpPut("{nombre}/{idCurso}")]
-        public async Task<IActionResult> UpdateRubroAsync(string nombre, string idCurso) 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateRubroAsync(int id, Rubro rubro) 
         {
-            return Ok();
+            if (id != rubro.Id)
+                return BadRequest();
+            
+            await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                EXECUTE dbo.sp_update_rubro {rubro.Nombre}, {rubro.Id}, {rubro.Porcentaje}
+            ");
+
+            return NoContent();
         }
 
         // DELETE: api/Rubros/Examenes/CE
-        [HttpDelete("{nombre}/{idCurso}")]
-        public async Task<IActionResult> DeleteRubroAsync(string nombre, string idCurso) 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteRubroAsync(int id) 
         {
+            var rows = await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                EXECUTE dbo.sp_delete_rubro {id};
+            ");
+
+            if (rows == 0)
+                return NotFound();
+
             return Ok();
         }
 
-        private bool RubroExists(string nombre, string idCurso) 
+        private bool RubroExists(int id) 
         {
-            return true;
+            var rubro = _context.Rubro.FromSqlInterpolated($@"
+                EXECUTE dbo.sp_get_rubro {id}
+            ").AsEnumerable();
+            return rubro.Any();
         }
 
         
