@@ -165,9 +165,9 @@ GO
 CREATE PROCEDURE dbo.sp_get_rubros_grupo
 	@idGrupo INT
 AS
-SELECT Nombre, Porcentaje, Id_grupo 
+SELECT Id, Nombre, Porcentaje, Id_grupo 
 FROM dbo.RUBRO
-WHERE Id_grupo = @idGrupo
+WHERE Id_grupo = @idGrupo;
 
 GO
 CREATE PROCEDURE dbo.sp_update_rubro
@@ -177,7 +177,7 @@ CREATE PROCEDURE dbo.sp_update_rubro
 AS
 UPDATE dbo.RUBRO
 SET Nombre = @nombreRubro, Porcentaje = @porcentaje
-WHERE Id = @Id;
+WHERE Id = @id;
 
 GO
 CREATE PROCEDURE dbo.sp_delete_rubro
