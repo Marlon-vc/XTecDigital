@@ -162,7 +162,7 @@ FROM dbo.RUBRO
 WHERE Id = @id;
 
 GO
-CREATE PROCEDURE dbo.sp_get_rubros_grupo
+CREATE PROCEDURE dbo.sp_get_rubros_grupo 
 	@idGrupo INT
 AS
 SELECT Id, Nombre, Porcentaje, Id_grupo 

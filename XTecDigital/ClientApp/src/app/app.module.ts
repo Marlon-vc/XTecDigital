@@ -14,6 +14,7 @@ import { LoginComponent } from './login/login.component';
 import { GestionCursosComponent } from './gestion-cursos/gestion-cursos.component';
 import { GestionDocumentosComponent } from './gestion-documentos/gestion-documentos.component';
 import { GestionRubrosComponent } from './gestion-rubros/gestion-rubros.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { GestionRubrosComponent } from './gestion-rubros/gestion-rubros.componen
     LoginComponent,
     GestionCursosComponent,
     GestionDocumentosComponent,
-    GestionRubrosComponent
+    GestionRubrosComponent,
+    SidebarComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -41,6 +43,7 @@ import { GestionRubrosComponent } from './gestion-rubros/gestion-rubros.componen
       { path: 'gestion-cursos', component: GestionCursosComponent },
       { path: 'gestion-documentos', component: GestionDocumentosComponent },
       { path: 'gestion-rubros', component: GestionRubrosComponent},
+      { path: 'sidebar', component: SidebarComponent},
       
     ])
   ],
