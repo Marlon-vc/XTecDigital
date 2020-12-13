@@ -67,6 +67,8 @@ namespace XTecDigital
 
             app.UseCors(options => options.WithOrigins("*").AllowAnyMethod().AllowAnyHeader());
 
+            //TODO: verificar con base de datos si las carpetas para grupos y cursos están creadas
+
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
