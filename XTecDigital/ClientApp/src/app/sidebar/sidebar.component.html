@@ -18,50 +18,113 @@
 
 <body>
   <div class="page-wrapper chiller-theme toggled">
-    <a id="show-sidebar" class="btn btn-sm btn-dark" href="#">
-      <i class="fas fa-bars"></i>
+    <a id="show-sidebar" class="btn btn-sm btn-dark">
+      <i class="fas fa-bars" style="color: white;"></i>
     </a>
     <nav id="sidebar" class="sidebar-wrapper">
       <div class="sidebar-content">
         <div class="sidebar-brand">
-          <a href="#">XTecDigital</a>
+          <a [routerLink]="['/home']">XTecDigital</a>
           <div id="close-sidebar">
-            <i class="fas fa-times"></i>
+            <i class="fas fa-times" style="color: white;"></i>
           </div>
         </div>
         <div class="sidebar-header">
           <div class="user-info">
             <span class="user-name">
-              Paola Villegas Chacon
+              {{actualUser.nombre}}
             </span>
             <span class="user-role">
-              Profesor
+              {{actualUser.tipo}}
             </span>
           </div>
         </div>
         
-        <div class="sidebar-menu">
-          <ul>
-            <li class="header-menu">
-              <span>Acciones</span>
-            </li>
-            <li>
-              <a href="#">
-                <i class="fas fa-university"></i>
-                <span>Inicializar semestre</span>
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                <i class="fas fa-book"></i>
-                <span>Gestión de cursos</span>
-              </a>
-            </li>
-          </ul>
+        <div *ngIf="userType == 'profesor'">
+          <div class="sidebar-menu">
+            <ul>
+              <li class="header-menu">
+                <span style="color: white;">Acciones</span>
+              </li>
+              <li>
+                <a href="#">
+                  <i class="fas fa-university"></i>
+                  <span>Gestión de documentos</span>
+                </a>
+              </li>
+              <li>
+                <a href="#">
+                  <i class="fas fa-book"></i>
+                  <span>Gestión de rubros</span>
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
+
+        <div *ngIf="userType == 'admin'">
+          <div class="sidebar-menu">
+            <ul>
+              <li class="header-menu">
+                <span style="color: white;">Acciones</span>
+              </li>
+              <li>
+                <a [routerLink]="['/initialize-semester']">
+                  <i class="fas fa-university"></i>
+                  <span>Inicializar semestre</span>
+                </a>
+              </li>
+              <li>
+                <a [routerLink]="['/gestion-cursos']">
+                  <i class="fas fa-book"></i>
+                  <span>Gestión de cursos</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div *ngIf="userType == 'estudiante'">
+          <div class="sidebar-menu">
+            <ul>
+              <li class="header-menu">
+                <span style="color: white;">Acciones</span>
+              </li>
+              
+              <li class="sidebar-dropdown" *ngFor="let semestre of semestres">
+                <a href="#">
+                  <i class="fas fa-university"></i>
+                  <span>Semestre {{semestre.periodo}} - {{semestre.anio}}</span>
+                  <!-- <span class="badge badge-pill badge-danger">3</span> -->
+                </a>
+                <div class="sidebar-submenu">
+                  <ul *ngFor="let grupo of semestre.grupos">
+                    <li>
+                      <a href="#">Curso: {{grupo.idCurso}} - Grupo: {{grupo.numero}}</a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        
         <!-- sidebar-menu  -->
       </div>
+
+      <div class="sidebar-footer">
+        <a [routerLink]="['']" (click)="onLogout()">
+          <i class="fa fa-power-off"></i>
+        </a>
+      </div>
+
     </nav>
+
+    <div class="container page-content">
+      <router-outlet></router-outlet>
+    </div>
+
   </div>
 <!-- page-wrapper -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>

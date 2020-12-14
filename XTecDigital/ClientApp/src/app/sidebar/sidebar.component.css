@@ -9,10 +9,10 @@
     border-radius: 4px;
     margin: 2px;
   }
-  
-  .page-wrapper .theme.chiller-theme {
+/*   
+  .page-wrapper .chiller-theme {
     background: #1e2229;
-  }
+  } */
   
   /*----------------toggeled sidebar----------------*/
   
@@ -47,6 +47,7 @@
     top: 0;
     left: -300px;
     z-index: 999;
+    background: #1e2229;
   }
   
   .sidebar-wrapper ul {
@@ -114,6 +115,7 @@
   
   .sidebar-wrapper .sidebar-header .user-info {
     float: left;
+    color: white;
   }
   
   .sidebar-wrapper .sidebar-header .user-info > span {
@@ -132,7 +134,6 @@
   .sidebar-wrapper .sidebar-header .user-info .user-status i {
     font-size: 8px;
     margin-right: 4px;
-    color: #5cb85c;
   }
   
   /*-----------------------sidebar-search------------------------*/
@@ -239,35 +240,50 @@
     transform: rotate(90deg);
     right: 17px;
   }
+
   
   /*--------------------------side-footer------------------------------*/
+
+.sidebar-footer {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  display: flex;
+}
+
+.sidebar-footer > a {
+  flex-grow: 1;
+  text-align: center;
+  height: 30px;
+  line-height: 30px;
+  position: relative;
+}
+
+.sidebar-footer > a .notification {
+  position: absolute;
+  top: 0;
+}
+
+.badge-sonar {
+  display: inline-block;
+  background: #980303;
+  border-radius: 50%;
+  height: 8px;
+  width: 8px;
+  position: absolute;
+  top: 0;
+}
+
+.badge-sonar:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 2px solid #980303;
+  opacity: 0;
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  animation: sonar 1.5s infinite;
+}
   
-  .sidebar-footer {
-    position: absolute;
-    width: 100%;
-    bottom: 0;
-    display: flex;
-  }
-  
-  .sidebar-footer > a {
-    flex-grow: 1;
-    text-align: center;
-    height: 30px;
-    line-height: 30px;
-    position: relative;
-  }
-  
-  .sidebar-footer > a .notification {
-    position: absolute;
-    top: 0;
-  }
-  
-  .badge-sonar {
-    display: inline-block;
-    background: #980303;
-    border-radius: 50%;
-    height: 8px;
-    width: 8px;
-    position: absolute;
-    top: 0;
-  }
