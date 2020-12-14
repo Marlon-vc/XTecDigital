@@ -13,6 +13,7 @@ import { InitializeSemesterComponent } from './initialize-semester/initialize-se
 import { LoginComponent } from './login/login.component';
 import { GestionCursosComponent } from './gestion-cursos/gestion-cursos.component';
 import { GestionDocumentosComponent } from './gestion-documentos/gestion-documentos.component';
+import { HomeGrupoComponent } from './home-grupo/home-grupo.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { GestionDocumentosComponent } from './gestion-documentos/gestion-documen
     InitializeSemesterComponent,
     LoginComponent,
     GestionCursosComponent,
-    GestionDocumentosComponent
+    GestionDocumentosComponent,
+    HomeGrupoComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -37,7 +39,8 @@ import { GestionDocumentosComponent } from './gestion-documentos/gestion-documen
       { path: 'fetch-data', component: FetchDataComponent },
       { path: 'initialize-semester', component: InitializeSemesterComponent},
       { path: 'gestion-cursos', component: GestionCursosComponent },
-      { path: 'gestion-documentos', component: GestionDocumentosComponent },
+      { path: 'documentos/:id', component: GestionDocumentosComponent },
+      { path: 'grupo/:id', component: HomeGrupoComponent },
     ])
   ],
   providers: [],
