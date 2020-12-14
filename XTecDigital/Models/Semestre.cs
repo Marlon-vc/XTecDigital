@@ -7,14 +7,13 @@ namespace XTecDigital.Models
     {
         public Semestre()
         {
-            CursoSemestre = new HashSet<CursoSemestre>();
+            Grupo = new HashSet<Grupo>();
         }
 
         public int Id { get; set; }
         public int Anio { get; set; }
-        public int IdPeriodo { get; set; }
+        public string Periodo { get; set; }
 
-        public virtual Periodo IdPeriodoNavigation { get; set; }
-        public virtual ICollection<CursoSemestre> CursoSemestre { get; set; }
+        public virtual ICollection<Grupo> Grupo { get; set; }
     }
 }

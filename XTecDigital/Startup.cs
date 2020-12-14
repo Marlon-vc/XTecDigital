@@ -86,6 +86,7 @@ namespace XTecDigital
                 RequestPath = new PathString("/storage")
             });
 
+            //TODO: verificar con base de datos si las carpetas para grupos y cursos están creadas
 
             app.UseRouting();
 
