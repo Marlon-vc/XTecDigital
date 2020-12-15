@@ -7,8 +7,7 @@ namespace XTecDigital.Models
     {
         public Evaluacion()
         {
-            Entregable = new HashSet<Entregable>();
-            EvaluacionIntegrantes = new HashSet<EvaluacionIntegrantes>();
+            EvaluacionGrupo = new HashSet<EvaluacionGrupo>();
         }
 
         public int Id { get; set; }
@@ -16,13 +15,12 @@ namespace XTecDigital.Models
         public int IdEspecificacion { get; set; }
         public string Nombre { get; set; }
         public bool NotasPublicadas { get; set; }
-        public byte[] FechaEntrega { get; set; }
         public decimal PesoNota { get; set; }
         public bool Grupal { get; set; }
+        public DateTime? FechaEntrega { get; set; }
 
-        public virtual Archivo IdEspecificacionNavigation { get; set; }
+        public virtual ArchivoEvaluacion IdEspecificacionNavigation { get; set; }
         public virtual Rubro IdRubroNavigation { get; set; }
-        public virtual ICollection<Entregable> Entregable { get; set; }
-        public virtual ICollection<EvaluacionIntegrantes> EvaluacionIntegrantes { get; set; }
+        public virtual ICollection<EvaluacionGrupo> EvaluacionGrupo { get; set; }
     }
 }

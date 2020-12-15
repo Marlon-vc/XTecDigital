@@ -16,7 +16,7 @@ namespace XTecDigital.Models
 
         public int Id { get; set; }
         public int Numero { get; set; }
-        public int IdCurso { get; set; }
+        public string IdCurso { get; set; }
         public int IdSemestre { get; set; }
 
         public virtual Curso IdCursoNavigation { get; set; }
