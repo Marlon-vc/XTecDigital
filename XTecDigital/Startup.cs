@@ -73,10 +73,15 @@ namespace XTecDigital
 
             // Configuración de la carpeta de documentos
             var storagePath = Path.Combine(Environment.CurrentDirectory, "Storage");
+            
+            //Configurar storage path
+            FileHandler.StoragePath = storagePath;
+
             if (!Directory.Exists(storagePath))
             {
                 var dir = Directory.CreateDirectory(storagePath);
             }
+
             if (!Directory.Exists(storagePath))
             {
                 throw new InvalidOperationException("El directorio de almacenamiento no se pudo crear");
@@ -85,8 +90,6 @@ namespace XTecDigital
                 FileProvider = new PhysicalFileProvider(storagePath),
                 RequestPath = new PathString("/storage")
             });
-
-            //TODO: verificar con base de datos si las carpetas para grupos y cursos están creadas
 
             app.UseRouting();
 
