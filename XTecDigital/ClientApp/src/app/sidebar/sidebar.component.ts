@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Grupo } from '../models/grupo';
 import { Semestre } from '../models/semestre';
 
@@ -14,7 +15,7 @@ export class SidebarComponent implements OnInit {
   semestres: Semestre[] = [];
   actualUser;
 
-  constructor() { }
+  constructor(private router:Router) { }
 
   ngOnInit(): void {
 
@@ -100,6 +101,7 @@ export class SidebarComponent implements OnInit {
   onLogout() {
     console.log('logging out..');
     window.localStorage.clear();
+    this.router.navigate(['']);
   }
 
 
