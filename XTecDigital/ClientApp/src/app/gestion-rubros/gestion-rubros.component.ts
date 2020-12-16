@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { error } from 'protractor';
 import { Rubro } from '../models/rubro';
 import { ApiService } from '../services/api.service';
 
@@ -9,69 +11,59 @@ import { ApiService } from '../services/api.service';
 })
 export class GestionRubrosComponent implements OnInit {
 
-
-  selected: any;
+  update = false;
+  selected: Rubro;
 
   rubros: Rubro[] = [
     {
+      id: 1,
       nombre: 'Quices',
       porcentaje: 30,
       idGrupo: 1
     }, 
     {
+      id: 2,
       nombre: 'Examenes',
       porcentaje: 30,
       idGrupo: 1
     }, 
     {
+      id: 3,
       nombre: 'Proyectos',
       porcentaje: 40,
       idGrupo: 1
     }
   ];
+  groupId = this.route.snapshot.params.id;
 
-  comandos: any[] = [
-    {
-      nombre: "Editar",
-      comando: () => {
-        console.log('editando ' + this.selected.nombre);
-      }
-    },
-    {
-      nombre: 'Eliminar',
-      comando: () => {
-        console.log('eliminando ' + this.selected.nombre);
-      }
-    }
-  ];
-
-
-  constructor(private api: ApiService) { }
+  constructor(private route: ActivatedRoute, private api: ApiService) { }
 
   ngOnInit(): void {
+    this.getRubros();
     $(window).on('click', (event) => {
       $('#context-menu').css('display', 'none');
     });
   }
-
-  folderDoubleClicked(folder, event) {
-    console.log('Double clicked');
-    console.log(folder);
+  getRubros() {
+    this.api.get(`https://localhost/api/Rubros/${this.groupId}`).subscribe(
+      (value: any) => {
+        this.rubros = value;
+      }, (error: any) => {
+        console.log(error);
+      } 
+    );
   }
 
-  fileDoubleClicked(file, event) {
-    console.log(file);
-    
+  onEliminar() {
+    this.api.delete(`https://localhost/api/Rubros/${this.selected.id}`).subscribe(
+      (value:any) => {
+        console.log('eliminado');
+      }, (error: any) => {
+        console.log(error);
+        
+      }
+    );
   }
-
-  onModificar(event) {
-
-  }
-
-  onEliminar(event) {
-
-  }
-
 
   showContextMenu(item, event) {
     console.log(item);
@@ -85,18 +77,78 @@ export class GestionRubrosComponent implements OnInit {
   }
 
   modifyRubro() {
+    var nombre = $('#nombreRubro');
+    var porcentaje = $('#porc-rubro');
+    var tag = $('#porc');
 
-    
+    console.log('nuevo nombre ' + nombre.val());
+    console.log('nuevo porcentaje ' + porcentaje.val());
+
 
     var total = 0;
     this.rubros.forEach(element => {
-      total += element.porcentaje;
+      if (this.selected.id != element.id)
+        total += element.porcentaje;
     });
 
-    if (total != 100) {
-      return false;
+    total += Number.parseInt(porcentaje.val() as string);
+
+    console.log(total);
+  
+    if (total > 100) {
+      tag.css('display', 'block');
+      tag.css('color', 'red');
+      tag.text('El porcentaje del rubro no es valido');
+      
+    }
+
+    if (porcentaje.val() == '' || nombre.val() == '') {
+      tag.text('Por favor complete todos los campos');
+      tag.css('display', 'block');
+      tag.css('color', 'red');
+    }
+
+    if (this.update) {
+      this.modifyRubroApi(nombre, porcentaje);
+    } else {
+      this.addRubroApi(nombre, porcentaje);
     }
   }
+
+  addRubroApi(nombre: JQuery<HTMLElement>, porcentaje: JQuery<HTMLElement>) {
+    var rubro = {
+      nombre: nombre.val() as string,
+      idGrupo: this.groupId,
+      porcentaje: Number.parseInt(porcentaje.val() as string)
+    };
+
+    this.api.post(`https://localhost/api/Rubros`, rubro).subscribe(
+      (value: any) => {
+        document.getElementById('closeButton').click();
+      }, (error: any) => {
+        console.log(error);
+      }
+    );
+  }
+
+  modifyRubroApi(nombre: JQuery<HTMLElement>, porcentaje: JQuery<HTMLElement>) {
+    this.selected.nombre = nombre.val() as string;
+    this.selected.porcentaje = Number.parseInt(porcentaje.val() as string);
+
+    console.log(this.selected);
+
+    this.api.put(`https://localhost/api/Rubros/${this.selected.id}`, this.selected).subscribe(
+      (value:any) => {
+        document.getElementById('closeButton').click();
+      }, (error:any) => {
+        console.log(error);
+      });
+  }
+
+  updating(){
+    this.update = true;
+  }
+  
 
 
 }
