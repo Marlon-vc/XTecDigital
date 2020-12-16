@@ -1,7 +1,9 @@
 export class Rubro {
+    id: number;
+    idGrupo: number;
     nombre: string;
     porcentaje: number;
-    idGrupo: number;
+    
     //agregar evaluaciones
 
     constructor() { }
