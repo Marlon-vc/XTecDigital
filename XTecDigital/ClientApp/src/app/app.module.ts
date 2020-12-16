@@ -38,7 +38,7 @@ import { HomeGrupoComponent } from './home-grupo/home-grupo.component';
       { path: 'initialize-semester', component: InitializeSemesterComponent},
       { path: 'gestion-cursos', component: GestionCursosComponent },
       { path: 'gestion-documentos', component: GestionDocumentosComponent },
-      { path: 'gestion-rubros', component: GestionRubrosComponent},
+      { path: 'gestion-rubros/:id', component: GestionRubrosComponent},
       { path: 'sidebar', component: SidebarComponent},
       { path: 'documentos/:id', component: GestionDocumentosComponent },
       { path: 'grupo/:id', component: HomeGrupoComponent },
