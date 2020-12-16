@@ -31,7 +31,7 @@ export class LoginComponent implements OnInit {
       pass: pass
     };
 
-    this.api.post(`https://localhost:${this.api.PORT}/api/Login`, auth)
+    this.api.post(`https://localhost/api/Login`, auth)
       .subscribe((data: any) => {
         console.log('success');
         SessionHandler.logIn(data.userId, data.type);

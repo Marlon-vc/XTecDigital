@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../services/api.service';
 
 @Component({
@@ -25,21 +26,26 @@ export class GestionDocumentosComponent implements OnInit {
     }
   ];
 
-  constructor(private api: ApiService) { }
+  constructor(private route: ActivatedRoute, private api: ApiService) { }
 
   ngOnInit(): void {
-    //DEBUG: obtener codigo actual del grupo
-    this.groupId = 1;
+    this.groupId = this.route.snapshot.params.id;
 
-    $(window).on('click', (event) => {
+    $(window).on('click', () => {
       $('#context-menu').css('display', 'none');
     });
 
-    this.loadArchivos();
+    this.loadDocumentos();
   }
 
-  loadArchivos() {
-    //TODO: obtener id del grupo actual para obtener sus archivos
+  loadDocumentos() {
+    this.api.get(`https://localhost/api/Documentos/${this.groupId}`)
+      .subscribe((data) => {
+        console.log(data);
+      }, (error) => {
+        console.log('Error retrieving files');
+        console.log(error);
+      });
   }
 
   readFile(file: File) {

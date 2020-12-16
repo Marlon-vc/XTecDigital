@@ -25,7 +25,7 @@ export class GestionCursosComponent implements OnInit {
 
   loadCursos() {
     console.log('loading courses');
-    this.api.get(`https://localhost:5001/api/Cursos`)
+    this.api.get(`https://localhost/api/Cursos`)
       .subscribe((data: any[]) => {
         this.cursos = data;
       }, (error) => {
@@ -71,7 +71,7 @@ export class GestionCursosComponent implements OnInit {
     console.log("eliminando...");
     // @ts-ignore
     $('#delete-modal').modal('hide');
-    this.api.delete(`https://localhost:5001/api/Cursos/${this.currentItem.codigo}`)
+    this.api.delete(`https://localhost/api/Cursos/${this.currentItem.codigo}`)
       .subscribe((success) => {
         this.showModal('Éxito', 'Curso eliminado correctamente.');
         this.loadCursos();
@@ -81,7 +81,7 @@ export class GestionCursosComponent implements OnInit {
       });
   }
 
-  onCancelEdit(event) {
+  onCancelEdit() {
     this.modificando = false;
     $('#action-title').text('Crear curso');
     $('#submit-button').text('Crear');
@@ -114,9 +114,9 @@ export class GestionCursosComponent implements OnInit {
     console.log(data);
     
     if (this.modificando) {
-      this.api.put(`https://localhost:5001/api/Cursos/${data.Codigo}`, data)
+      this.api.put(`https://localhost/api/Cursos/${data.Codigo}`, data)
         .subscribe((data) => {
-          this.onCancelEdit(null);
+          this.onCancelEdit();
           this.loadCursos();
           this.showModal('Éxito', 'Curso modificado correctamente');
         }, (error) => {
@@ -124,9 +124,9 @@ export class GestionCursosComponent implements OnInit {
           this.showModal('Error', 'Ocurrió un error al modificar el curso');
         });
     } else {
-      this.api.post(`https://localhost:5001/api/Cursos`, data)
+      this.api.post(`https://localhost/api/Cursos`, data)
         .subscribe((data) => {
-          this.onCancelEdit(null);
+          this.onCancelEdit();
           this.loadCursos();
           this.showModal('Éxito', 'Curso creado correctamente');
         }, (error) => {

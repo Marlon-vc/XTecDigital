@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import * as $ from 'jquery';
+// import * as $ from 'jquery';
 import { Curso } from '../models/curso';
 import { Estudiante } from '../models/estudiante';
 import { Grupo } from '../models/grupo';
@@ -146,7 +146,7 @@ export class InitializeSemesterComponent implements OnInit {
     console.log(semestreInfo);
 
     console.log('saving semester');
-    this.api.post(`https://localhost:5001/api/Semestres`, semestreInfo)
+    this.api.post(`https://localhost/api/Semestres`, semestreInfo)
       .subscribe((data: any) => {
         console.log('Semestre creado correctamente');
         this.next(current_fs, next_fs, opacity, this);
@@ -159,7 +159,7 @@ export class InitializeSemesterComponent implements OnInit {
 
   loadPeriods() {
     console.log('loading periods');
-    this.api.get(`https://localhost:5001/api/Periodos`)
+    this.api.get(`https://localhost/api/Periodos`)
       .subscribe((data: any[]) => {
         this.periodos = data;
       }, (error) => {
@@ -170,7 +170,7 @@ export class InitializeSemesterComponent implements OnInit {
 
   loadCursos() {
     console.log('loading courses');
-    this.api.get(`https://localhost:5001/api/Cursos`)
+    this.api.get(`https://localhost/api/Cursos`)
       .subscribe((data: any[]) => {
         this.cursos = data;
         console.log(this.cursos);
@@ -182,7 +182,7 @@ export class InitializeSemesterComponent implements OnInit {
 
   loadProfesores() {
     console.log('loading teachers');
-    this.api.get(`https://localhost:5001/api/Profesores`)
+    this.api.get(`https://localhost/api/Profesores`)
       .subscribe((data: any[]) => {
         this.profesores = data;
       }, (error) => {
@@ -193,7 +193,7 @@ export class InitializeSemesterComponent implements OnInit {
 
   loadEstudiantes() {
     console.log('loading students');
-    this.api.get(`https://localhost:5001/api/Estudiantes`)
+    this.api.get(`https://localhost/api/Estudiantes`)
       .subscribe((data: any[]) => {
         this.estudiantes = data;
         console.log(this.estudiantes);
