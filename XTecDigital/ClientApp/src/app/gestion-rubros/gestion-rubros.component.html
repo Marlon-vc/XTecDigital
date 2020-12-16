@@ -26,8 +26,9 @@
 
 <div class="list-group" id="context-menu" tabindex="-1">
     <!-- <button *ngFor="let comando of comandos" class="list-group-item list-group-item-action" (click)="comando.comando()">{{ comando.nombre }}</button> -->
-    <button type="button" class="list-group-item list-group-item-action" data-toggle="modal" data-target="#rubroModal">Modificar</button>
-    <button type="button" class="list-group-item list-group-item-action" (click)="onEliminar($event)">Eliminar</button>
+    <button type="button" class="list-group-item list-group-item-action" data-toggle="modal" data-target="#rubroModal">Agregar nuevo rubro</button>
+    <button type="button" class="list-group-item list-group-item-action" (click)="updating()" data-toggle="modal" data-target="#rubroModal">Modificar</button>
+    <button type="button" class="list-group-item list-group-item-action" (click)="onEliminar()">Eliminar</button>
 </div>
 
 <!--
@@ -45,18 +46,19 @@
             </div>
             <div class="modal-body">
                 <p>
-                    Debe colocar el nuevo nombre del rubro y su porcentaje.
+                    Debe colocar el nombre del rubro y su porcentaje.
                 </p>
 
                 <div class="form-group">
-                    <label for="categoria-usuario">Nuevo nombre del rubro</label>
+                    <label for="categoria-usuario">Nombre del rubro</label>
                     <input type="text" id="nombreRubro" class="form-control">
                 </div>
                 
                 <div class="form-group">
-                    <label for="comprobante-pago">Nuevo porcentaje del rubro</label>
+                    <label for="comprobante-pago">Porcentaje del rubro</label>
                     <input type="number" id="porc-rubro" class="form-control" min="1" max="100">
                 </div>
+                <p id="porc" style="display: none;"></p>
             </div>
             <div class="modal-footer">
                 <button type="button" id="closeButton" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
