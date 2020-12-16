@@ -84,5 +84,19 @@ export class GestionRubrosComponent implements OnInit {
     return false;
   }
 
+  modifyRubro() {
+
+    
+
+    var total = 0;
+    this.rubros.forEach(element => {
+      total += element.porcentaje;
+    });
+
+    if (total != 100) {
+      return false;
+    }
+  }
+
 
 }
