@@ -1,0 +1,73 @@
+<div class="container">
+    <h3>Gestión de rubros</h3>
+
+    <table class="table table-hover table-sm">
+        <thead class="thead-dark">
+            <tr>
+                <th style="width: 80px;"></th>
+                <th>Nombre</th>
+                <th class="text-center align-middle" style="width: 25%;">Porcentaje</th>
+            </tr>
+        </thead>
+        <tbody id="files-body">
+            <tr *ngFor="let rubro of rubros" (contextmenu)="showContextMenu(rubro, $event)">
+                <td><img src="assets/img/check-list.png" alt="folder"></td>
+                <td>{{ rubro.nombre }}</td>
+                <td class="text-center align-middle">{{ rubro.porcentaje }} %</td>
+            </tr>
+            <tr style="border-top: 5px solid black;">
+                <td><img src="assets/img/evaluacion.png" alt="folder"></td>
+                <td>Total</td>
+                <td class="text-center align-middle">100 %</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="list-group" id="context-menu" tabindex="-1">
+    <!-- <button *ngFor="let comando of comandos" class="list-group-item list-group-item-action" (click)="comando.comando()">{{ comando.nombre }}</button> -->
+    <button type="button" class="list-group-item list-group-item-action" data-toggle="modal" data-target="#rubroModal">Agregar nuevo rubro</button>
+    <button type="button" class="list-group-item list-group-item-action" (click)="updating()" data-toggle="modal" data-target="#rubroModal">Modificar</button>
+    <button type="button" class="list-group-item list-group-item-action" (click)="onEliminar()">Eliminar</button>
+</div>
+
+<!--
+    modal
+-->
+
+<div class="modal" tabindex="-1" id="rubroModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Modificar rubro</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Debe colocar el nombre del rubro y su porcentaje.
+                </p>
+
+                <div class="form-group">
+                    <label for="categoria-usuario">Nombre del rubro</label>
+                    <input type="text" id="nombreRubro" class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label for="comprobante-pago">Porcentaje del rubro</label>
+                    <input type="number" id="porc-rubro" class="form-control" min="1" max="100">
+                </div>
+                <p id="porc" style="display: none;"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeButton" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="modifyRubro()">
+                    Aceptar
+                    <span class="spinner-border spinner-border-sm" style="display: none;" id="loading-indicator" role="status" aria-hidden="true"></span>
+                    <span class="sr-only">Cargando...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,23 @@
+#files-body td:first-child {
+    text-align: center;
+}
+
+#files-body img {
+    width: auto;
+    height: 35px;
+}
+
+#files-body td {
+    align-self: center;
+    vertical-align: middle;
+}
+
+#context-menu {
+    display: none;
+    z-index: 1;
+    position: fixed;
+    left: 100px;
+    top: 100px;
+    cursor: pointer;
+    outline: 0;
+}

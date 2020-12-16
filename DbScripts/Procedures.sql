@@ -96,6 +96,8 @@ INSERT INTO dbo.RUBRO (Id_grupo, Nombre, Porcentaje) VALUES
 	(@IdGrupo, 'Examenes', 30.0),
 	(@IdGrupo, 'Proyectos', 40.0);
 
+
+-- Procedimientos almacenados de rubros
 GO
 CREATE PROCEDURE dbo.sp_create_rubro
 	@nombreRubro VARCHAR(50),
@@ -105,6 +107,21 @@ AS
 INSERT INTO dbo.RUBRO (Nombre, Porcentaje, Id_grupo)
 VALUES (@nombreRubro, @porcentaje, @idGrupo);
 
+GO
+CREATE PROCEDURE dbo.sp_get_rubro
+	@id INT
+AS
+SELECT Id, Nombre, Porcentaje, Id_grupo 
+FROM dbo.RUBRO
+WHERE Id = @id;
+
+GO
+CREATE PROCEDURE dbo.sp_get_rubros_grupo 
+	@idGrupo INT
+AS
+SELECT Id, Nombre, Porcentaje, Id_grupo 
+FROM dbo.RUBRO
+WHERE Id_grupo = @idGrupo;
 
 -- Procedimientos almacenados de archivos y carpetas
 

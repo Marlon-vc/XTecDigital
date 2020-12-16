@@ -4,7 +4,7 @@ export class SessionHandler {
     static isLoggedIn() {
         var userId = localStorage.getItem('user-id');
         var userType = localStorage.getItem('user-type');
-        return userId != null && userType && null;
+        return userId != null && userType != null;
     }
 
     static logIn(userId: string, type: string) {
