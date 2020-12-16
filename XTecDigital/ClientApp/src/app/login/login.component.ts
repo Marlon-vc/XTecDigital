@@ -14,10 +14,10 @@ export class LoginComponent implements OnInit {
   constructor(private router: Router, private api: ApiService) { }
 
   ngOnInit(): void {
-        if(SessionHandler.isLoggedIn()) {
-          //Ir a página de inicio
-          this.router.navigate(['home']);
-        }
+    if(SessionHandler.isLoggedIn()) {
+      //Ir a página de inicio
+      this.router.navigate(['home']);
+    }
   }
 
   logIn() {
@@ -35,9 +35,17 @@ export class LoginComponent implements OnInit {
       .subscribe((data: any) => {
         console.log('success');
         SessionHandler.logIn(data.userId, data.type);
-        this.router.navigate(['home']);
+        // this.router.navigate(['home']);
+        this.reload('home');
       }, (error) => {
         console.log('error logging in');
       });
+  }
+
+  async reload(url: string): Promise<boolean> {
+    console.log('reloading');
+    
+    await this.router.navigate(['sidebar'], { skipLocationChange: true });
+    return this.router.navigate([url]);
   }
 }
