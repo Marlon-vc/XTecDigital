@@ -1,146 +1,100 @@
--- Procedimientos almacenados
--- Procedimientos almacenados de cursos
-USE [xtecdigital];
+-- Procedimientos de cursos
 GO
 CREATE PROCEDURE dbo.sp_get_courses 
 AS
-SELECT Codigo, Nombre, Carrera, Habilitado
+SELECT Codigo, Nombre, Creditos, Carrera, Habilitado
 FROM dbo.CURSO;
-
--- EXECUTE dbo.sp_get_courses;
 
 GO
 CREATE PROCEDURE dbo.sp_get_active_courses
 AS
-SELECT Codigo, Nombre, Carrera, Habilitado
+SELECT Codigo, Nombre, Creditos, Carrera, Habilitado
 FROM dbo.CURSO
 WHERE Habilitado = 1;
 
--- EXECUTE dbo.sp_get_active_courses;
-
 GO
 CREATE PROCEDURE dbo.sp_get_course
-	@CourseId VARCHAR(50)
+	@CourseId VARCHAR(10)
 AS
-SELECT Codigo, Nombre, Carrera, Habilitado
+SELECT Codigo, Nombre, Creditos, Carrera, Habilitado
 FROM dbo.CURSO
 WHERE Codigo = @CourseId;
 
---EXECUTE dbo.sp_get_course 'CE1101';
-
-GO
-CREATE PROCEDURE dbo.sp_set_course_state
-	@CourseId VARCHAR(50),
-	@Enabled BIT
-AS
-UPDATE dbo.CURSO
-SET Habilitado = @Enabled
-WHERE Codigo = @CourseId;
-
--- EXECUTE dbo.sp_set_course_state 'CE1101', 1;
-
 GO
 CREATE PROCEDURE dbo.sp_create_course
-	@Codigo VARCHAR(50),
-	@Nombre VARCHAR(50),
-	@Carrera VARCHAR(50),
+	@Codigo VARCHAR(10),
+	@Nombre VARCHAR(100),
+	@Creditos INT,
+	@Carrera VARCHAR(100),
 	@Habilitado BIT
 AS
-INSERT INTO dbo.CURSO (Codigo, Nombre, Carrera, Habilitado) VALUES
-	(@Codigo, @Nombre, @Carrera, @Habilitado);
-
--- EXECUTE dbo.sp_create_course 'delete', 'Lenguajes, Compiladores e Interpretes', 'Computadores', 1;
+INSERT INTO dbo.CURSO (Codigo, Nombre, Creditos, Carrera, Habilitado) VALUES
+	(@Codigo, @Nombre, @Creditos, @Carrera, @Habilitado);
 
 GO
 CREATE PROCEDURE dbo.sp_delete_course
-	@CourseId VARCHAR(50)
+	@CourseId VARCHAR(10)
 AS
 DELETE FROM dbo.CURSO
 WHERE Codigo = @CourseId;
 
--- EXECUTE dbo.sp_delete_course 'delete';
-
 GO
 CREATE PROCEDURE dbo.sp_update_course
-	@Codigo VARCHAR(50),
-	@Nombre VARCHAR(50),
-	@Carrera VARCHAR(50),
-	@Habilitado VARCHAR(50)
+	@Codigo VARCHAR(10),
+	@Nombre VARCHAR(100),
+	@Carrera VARCHAR(100),
+	@Creditos INT,
+	@Habilitado BIT
 AS
 UPDATE dbo.CURSO
-SET Nombre = @Nombre, Carrera = @Carrera, Habilitado = @Habilitado
+SET Nombre = @Nombre, Creditos = @Creditos, Carrera = @Carrera, Habilitado = @Habilitado
 WHERE Codigo = @Codigo;
 
--- EXECUTE dbo.sp_update_course 'CE1101', 'Introducci�n a la programaci�n', 'Computadores', 1;
 
--- Procedimientos almacenados de periodo
-GO 
-CREATE PROCEDURE dbo.sp_get_periods
-AS
-SELECT Id, Nombre 
-FROM dbo.PERIODO;
-
-GO 
-CREATE PROCEDURE dbo.sp_get_period
-	@periodId INT
-AS
-SELECT Id, Nombre 
-FROM dbo.PERIODO
-WHERE Id = @periodId;
-
--- Procedimientos para inicializar semestre
+-- ### INICIALIZACIÓN SEMESTRE ###
 GO 
 CREATE PROCEDURE dbo.sp_create_semester
 	@semesterId INT,
 	@anioSemester INT,
-	@idPeriodo INT
+	@Periodo CHAR(1)
 AS
-INSERT INTO dbo.SEMESTRE (Id, Anio, Id_periodo)
-VALUES (@semesterId, @anioSemester, @idPeriodo);
+INSERT INTO dbo.SEMESTRE (Id, Anio, Periodo)
+VALUES (@semesterId, @anioSemester, @Periodo);
 
-GO 
-CREATE PROCEDURE dbo.sp_create_curso_semestre
-	@idCursoSemestre INT,
-	@idCurso VARCHAR(50),
-	@idSemestre INT
-AS
-INSERT INTO dbo.CURSO_SEMESTRE (Id, Id_curso, Id_semestre)
-VALUES (@idCursoSemestre, @idCurso, @idSemestre);
-
+-- Creación de grupos
 GO
 CREATE PROCEDURE dbo.sp_create_grupo
 	@numeroGrupo INT,
-	@idCurso VARCHAR(50)
+	@idCurso VARCHAR(10),
+	@idSemestre INT
 AS
-INSERT INTO dbo.GRUPO (Numero, Id_curso)
-VALUES (@numeroGrupo, @idCurso);
+INSERT INTO dbo.GRUPO (Numero, Id_curso, Id_semestre)
+VALUES (@numeroGrupo, @idCurso, @idSemestre);
 
 GO
 CREATE PROCEDURE dbo.sp_create_grupo_estudiante
-	@numeroGrupo INT,
+	@idGrupo INT,
 	@carnet VARCHAR(50)
 AS
-INSERT INTO dbo.GRUPO_ESTUDIANTES (Numero_Grupo, Estudiante)
-VALUES (@numeroGrupo, @carnet);
+INSERT INTO dbo.ESTUDIANTE_GRUPO (Id_grupo, Estudiante)
+VALUES (@idGrupo, @carnet);
 
 GO
 CREATE PROCEDURE dbo.sp_create_grupo_profesor
-	@numeroGrupo INT,
+	@idGrupo INT,
 	@cedula VARCHAR(50)
 AS
-INSERT INTO dbo.GRUPO_PROFESOR (Numero_Grupo, Profesor)
-VALUES (@numeroGrupo, @cedula);
+INSERT INTO dbo.PROFESOR_GRUPO (Id_grupo, Profesor)
+VALUES (@idGrupo, @cedula);
 
 GO
-CREATE PROCEDURE dbo.sp_create_carpeta
-	@idCarpeta INT,
-	@soloLectura BIT,
-	@ruta VARCHAR(50),
-	@idGrupo INT,
-	@nombreCarpeta VARCHAR(50)
+CREATE PROCEDURE dbo.sp_create_initial_rubro
+	@IdGrupo INT
 AS
-INSERT INTO dbo.CARPETA (Id, Nombre, Solo_lectura, Ruta, Id_grupo)
-VALUES (@idCarpeta, @nombreCarpeta, @soloLectura, @ruta, @idGrupo);
+INSERT INTO dbo.RUBRO (Id_grupo, Nombre, Porcentaje) VALUES 
+	(@IdGrupo, 'Quices', 30.0),
+	(@IdGrupo, 'Examenes', 30.0),
+	(@IdGrupo, 'Proyectos', 40.0);
 
 
 -- Procedimientos almacenados de rubros
@@ -169,22 +123,107 @@ SELECT Id, Nombre, Porcentaje, Id_grupo
 FROM dbo.RUBRO
 WHERE Id_grupo = @idGrupo;
 
-GO
-CREATE PROCEDURE dbo.sp_update_rubro
-	@nombreRubro VARCHAR(50),
-	@id INT,
-	@porcentaje DECIMAL(5,2)
-AS
-UPDATE dbo.RUBRO
-SET Nombre = @nombreRubro, Porcentaje = @porcentaje
-WHERE Id = @id;
+-- Procedimientos almacenados de archivos y carpetas
 
 GO
-CREATE PROCEDURE dbo.sp_delete_rubro
-	@id INT
+CREATE PROCEDURE dbo.sp_get_group_folders
+	@GroupId INT
 AS
-DELETE FROM dbo.RUBRO
-WHERE Id = @id;
+SELECT Id, Id_grupo, Nombre, Solo_lectura, Raiz
+FROM dbo.CARPETA
+WHERE Id_grupo = @GroupId AND Raiz = 0;
 
+GO
+CREATE PROCEDURE dbo.sp_create_initial_folders
+	@IdGrupo INT
+AS
+INSERT INTO dbo.CARPETA (Id_grupo, Nombre, Solo_lectura, Raiz) VALUES
+	(@IdGrupo, 'RAIZ', 1, 1),
+	(@IdGrupo, 'Presentaciones', 1, 0),
+	(@IdGrupo, 'Quices', 1, 0),
+	(@IdGrupo, 'Exámenes', 1, 0),
+	(@IdGrupo, 'Proyectos', 1, 0);
 
--- Procedimientos almacenados de archivos
+GO
+CREATE PROCEDURE dbo.sp_get_folder
+	@FolderId INT
+AS
+SELECT Id, Id_grupo, Nombre, Solo_lectura, Raiz
+FROM dbo.CARPETA
+WHERE Id = @FolderId;
+
+GO
+CREATE PROCEDURE dbo.sp_update_folder
+	@Id INT,
+	@IdGrupo INT,
+	@Nombre VARCHAR(100),
+	@SoloLectura bit,
+	@Raiz BIT
+AS
+UPDATE dbo.CARPETA
+SET Nombre = @Nombre
+WHERE Id = @Id AND Id_grupo = @IdGrupo;
+
+GO
+CREATE PROCEDURE dbo.sp_create_folder
+	@IdGrupo INT,
+	@Nombre VARCHAR(100),
+	@SoloLectura BIT,
+	@Raiz BIT
+AS
+INSERT INTO dbo.CARPETA (Id_grupo, Nombre, Solo_lectura, Raiz) VALUES
+	(@IdGrupo, @Nombre, @SoloLectura, @Raiz);
+
+GO
+CREATE PROCEDURE dbo.sp_delete_folder
+	@FolderId INT
+AS
+DELETE FROM dbo.CARPETA
+WHERE Id = @FolderId AND Raiz = 0 AND Solo_lectura = 0;
+
+GO
+CREATE PROCEDURE dbo.sp_get_files
+	@FolderId INT
+AS
+SELECT Id, Id_carpeta, Nombre, Fecha_creacion, Tamanio
+FROM dbo.ARCHIVO
+WHERE Id_carpeta = @FolderId;
+
+-- [dbo].[sp_get_files] 1;
+
+GO
+CREATE PROCEDURE dbo.sp_get_file
+	@FileId INT
+AS
+SELECT Id, Id_carpeta, Nombre, Fecha_creacion, Tamanio
+FROM dbo.ARCHIVO
+WHERE Id = @FileId;
+
+GO
+CREATE PROCEDURE dbo.sp_create_file
+	@IdCarpeta INT,
+	@Nombre VARCHAR(50),
+	@FechaCreacion DATETIME,
+	@Tamanio DECIMAL(8,2)
+AS
+INSERT INTO dbo.ARCHIVO (Id_carpeta, Nombre, Fecha_creacion, Tamanio) VALUES
+	(@IdCarpeta, @Nombre, @FechaCreacion, @Tamanio);
+
+GO
+CREATE PROCEDURE dbo.sp_update_file
+	@Id INT,
+	@FechaCreacion DATETIME,
+	@Nombre VARCHAR(50),
+	@Tamanio DECIMAL(8,2),
+	@IdCarpeta INT
+AS
+UPDATE dbo.ARCHIVO
+SET Nombre = @Nombre
+WHERE Id = @Id AND Id_carpeta = @IdCarpeta;
+
+GO
+CREATE PROCEDURE dbo.sp_delete_file
+	@FileId INT
+AS
+DELETE FROM dbo.ARCHIVO
+WHERE Id = @FileId;

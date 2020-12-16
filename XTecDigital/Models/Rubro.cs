@@ -11,9 +11,9 @@ namespace XTecDigital.Models
         }
 
         public int Id { get; set; }
+        public int IdGrupo { get; set; }
         public string Nombre { get; set; }
         public decimal Porcentaje { get; set; }
-        public int IdGrupo { get; set; }
 
         public virtual Grupo IdGrupoNavigation { get; set; }
         public virtual ICollection<Evaluacion> Evaluacion { get; set; }

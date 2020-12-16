@@ -1,8 +1,10 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using XTecDigital.Helpers;
 using XTecDigital.Models;
 using XTecDigital.Models.Requests;
 
@@ -75,7 +77,6 @@ namespace XTecDigital.Controllers
                     ").AsEnumerable().FirstOrDefault().Id;
 
                     //Agregar estudiantes
-
                     foreach (var estudiante in grupo.Estudiantes)
                     {
                         await _context.Database.ExecuteSqlInterpolatedAsync($@"
@@ -85,7 +86,6 @@ namespace XTecDigital.Controllers
                     }
 
                     //Agregar profesores
-
                     foreach(var profesor in grupo.Profesores) 
                     {
                         await _context.Database.ExecuteSqlInterpolatedAsync($@"
@@ -95,6 +95,21 @@ namespace XTecDigital.Controllers
                     }
 
                     //Agregar carpetas
+                    await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                        dbo.sp_create_initial_folders {idGrupo};
+                    ");
+                    //Carpeta de grupo
+                    var carpetaGrupo = FileHandler.GetGroupFolder(idGrupo);
+                    Directory.CreateDirectory(carpetaGrupo);
+                    //Carpeta de documentos
+                    var documentos = Path.Combine(carpetaGrupo, "Documentos");
+                    Directory.CreateDirectory(documentos);
+                    //Carpeta de entregables
+                    var entregables = Path.Combine(carpetaGrupo, "Entregables");
+                    Directory.CreateDirectory(entregables);
+                    //Carpeta de evaluaciones
+                    var evaluaciones = Path.Combine(carpetaGrupo, "Evaluaciones");
+                    Directory.CreateDirectory(evaluaciones);
 
                     //Agregar rubros
                     await _context.Database.ExecuteSqlInterpolatedAsync($@"

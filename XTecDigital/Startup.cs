@@ -9,6 +9,10 @@ using Microsoft.Extensions.Hosting;
 using XTecDigital.Models;
 using AutoMapper;
 using XTecDigital.Helpers;
+using System.IO;
+using System;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Http;
 
 namespace XTecDigital
 {
@@ -66,6 +70,26 @@ namespace XTecDigital
             }
 
             app.UseCors(options => options.WithOrigins("*").AllowAnyMethod().AllowAnyHeader());
+
+            // Configuración de la carpeta de documentos
+            var storagePath = Path.Combine(Environment.CurrentDirectory, "Storage");
+            
+            //Configurar storage path
+            FileHandler.StoragePath = storagePath;
+
+            if (!Directory.Exists(storagePath))
+            {
+                var dir = Directory.CreateDirectory(storagePath);
+            }
+
+            if (!Directory.Exists(storagePath))
+            {
+                throw new InvalidOperationException("El directorio de almacenamiento no se pudo crear");
+            }
+            app.UseStaticFiles(new StaticFileOptions {
+                FileProvider = new PhysicalFileProvider(storagePath),
+                RequestPath = new PathString("/storage")
+            });
 
             app.UseRouting();
 
