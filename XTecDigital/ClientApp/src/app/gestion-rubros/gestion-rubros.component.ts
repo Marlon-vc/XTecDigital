@@ -19,19 +19,22 @@ export class GestionRubrosComponent implements OnInit {
       id: 1,
       nombre: 'Quices',
       porcentaje: 30,
-      idGrupo: 1
+      idGrupo: 1,
+      evaluaciones : []
     }, 
     {
       id: 2,
       nombre: 'Examenes',
       porcentaje: 30,
-      idGrupo: 1
+      idGrupo: 1,
+      evaluaciones : []
     }, 
     {
       id: 3,
       nombre: 'Proyectos',
       porcentaje: 40,
-      idGrupo: 1
+      idGrupo: 1,
+      evaluaciones : []
     }
   ];
   groupId = this.route.snapshot.params.id;
