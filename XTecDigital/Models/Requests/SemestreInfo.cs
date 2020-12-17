@@ -6,7 +6,7 @@ namespace XTecDigital.Models.Requests
     {
         public int Id { get; set; }
         public int Anio { get; set; }
-        public int IdPeriodo { get; set; }
+        public string Periodo { get; set; }
         public List<GrupoInfo> Grupos { get; set; }
         
     }
