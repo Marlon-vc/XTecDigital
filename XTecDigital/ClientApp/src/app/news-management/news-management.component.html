@@ -1,0 +1,133 @@
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css">
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Blog Home - Start Bootstrap Template</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/blog-home.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <!-- Page Content -->
+    <div class="container">
+
+        <div class="row">
+
+            <!-- Blog Entries Column -->
+            <div class="col-md-12">
+
+                <div class="row">
+
+                    <h1 class="my-4">Noticias
+                        <small>Curso - Grupo</small>
+                    </h1>
+
+                    <div class="col-md-6 btn-group text-right justify-content-center align-items-center">
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#newsModal">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Blog Post -->
+                <div class="card mb-4" *ngFor="let noticia of noticias">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card-body">
+                                <h2 class="card-title">{{noticia.titulo}}</h2>
+                                <p class="card-text">{{noticia.mensaje}}</p>
+                            </div>
+                            <div class="card-footer text-muted">
+                                Publicado el {{noticia.fechaPublicacion}}, por
+                                <a>{{noticia.autor}}</a>
+                                <div class="btn-group float-lg-right justify-content-center align-items-center">
+                                    <button type="button" class="btn btn-success" (click)="modify(noticia)" data-toggle="modal" data-target="#newsModal">
+                                        <i class="far fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger" (click)="delete(noticia)">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <!-- <ul class="pagination justify-content-center mb-4">
+                    <li class="page-item">
+                        <a class="page-link" href="#">&larr; Older</a>
+                    </li>
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">Newer &rarr;</a>
+                    </li>
+                </ul> -->
+
+            </div>
+
+        </div>
+        <!-- /.row -->
+
+    </div>
+    <!-- /.container -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+<!-- Vertically centered modal -->
+<div class="modal" tabindex="-1" id="newsModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Gestión de noticias</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Complete los siguientes campos.
+                </p>
+
+                <div class="form-group">
+                    <label for="categoria-usuario">Titulo</label>
+                    <input type="text" id="titulo" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="comprobante-pago">Mensaje</label>
+                    <textarea class="form-control" id="mensaje"></textarea>
+                </div>
+
+                <p id="errorMsj" style="display: none;"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeButton" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="modifyNew()">
+                    Aceptar
+                    <span class="spinner-border spinner-border-sm" style="display: none;" id="loading-indicator" role="status" aria-hidden="true"></span>
+                    <span class="sr-only">Cargando...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
