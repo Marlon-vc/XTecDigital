@@ -14,6 +14,8 @@ import { GestionDocumentosComponent } from './gestion-documentos/gestion-documen
 import { GestionRubrosComponent } from './gestion-rubros/gestion-rubros.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { HomeGrupoComponent } from './home-grupo/home-grupo.component';
+import { NewsManagementComponent } from './news-management/news-management.component';
+import { SeeGroupNewsComponent } from './see-group-news/see-group-news.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +28,9 @@ import { HomeGrupoComponent } from './home-grupo/home-grupo.component';
     GestionDocumentosComponent,
     GestionRubrosComponent,
     SidebarComponent,
-    HomeGrupoComponent
+    HomeGrupoComponent,
+    NewsManagementComponent,
+    SeeGroupNewsComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -42,6 +46,10 @@ import { HomeGrupoComponent } from './home-grupo/home-grupo.component';
       { path: 'sidebar', component: SidebarComponent},
       { path: 'documentos/:id', component: GestionDocumentosComponent },
       { path: 'grupo/:id', component: HomeGrupoComponent },
+      { path: 'noticias/:id', component: NewsManagementComponent },
+      { path: 'ver-noticias/:id', component: SeeGroupNewsComponent},
+      
+      
     ])
   ],
   providers: [],
