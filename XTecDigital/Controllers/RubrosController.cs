@@ -18,8 +18,8 @@ namespace XTecDigital.Controllers
             _context = context;
         }
 
-        //GET: api/Rubros/1
-        [HttpGet("{idGrupo}")]
+        //GET: api/Rubros/Grupo/1
+        [HttpGet("Grupo/{idGrupo}")]
         public IActionResult GetRubrosGrupo(string idGrupo)
         {
             var result = _context.Rubro.FromSqlInterpolated($@"
