@@ -20,8 +20,5 @@ JOIN dbo.GRUPO ON dbo.SEMESTRE.Id = dbo.GRUPO.Id_semestre
 JOIN dbo.RUBRO ON dbo.GRUPO.Id = dbo.RUBRO.Id_grupo
 JOIN dbo.CARPETA ON dbo.GRUPO.Id = dbo.CARPETA.Id_grupo
 
-INSERT INTO [dbo].[#tblImport]
-SELECT Carnet, Nombre, Apellido1, Apellido2, IdCurso, NombreCurso, Ano, Semestre, Grupo, IdProfesor, NombreProfesor, ApellidoProfesor, ApellidoProfesor2
-FROM OPENROWSET('
-	Microsoft.ACE.OLEDB.12.0','Excel12.0;HDR=YES;Database=C:\Users\pvill\Desktop\Proyecto_II_-_XTECDigital_Carga_Semestre_Final.xlsx', 'SELECT * FROM [Data$]
-')
+select * from dbo.RUBRO
+WHERE Id_grupo = 1
