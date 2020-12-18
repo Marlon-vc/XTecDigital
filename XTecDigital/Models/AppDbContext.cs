@@ -28,6 +28,7 @@ namespace XTecDigital.Models
         public virtual DbSet<ProfesorGrupo> ProfesorGrupo { get; set; }
         public virtual DbSet<Rubro> Rubro { get; set; }
         public virtual DbSet<Semestre> Semestre { get; set; }
+        public virtual DbSet<SemestreInfo> SemestreInfo { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -354,6 +355,51 @@ namespace XTecDigital.Models
                     .HasMaxLength(1)
                     .IsUnicode(false)
                     .IsFixedLength();
+            });
+
+            modelBuilder.Entity<SemestreInfo>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("SEMESTRE_INFO");
+
+                entity.Property(e => e.Carrera)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Estudiante)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.IdCurso)
+                    .IsRequired()
+                    .HasColumnName("Id_curso")
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.IdGrupo).HasColumnName("Id_grupo");
+
+                entity.Property(e => e.IdSemestre).HasColumnName("Id_semestre");
+
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.NumeroGrupo).HasColumnName("Numero_grupo");
+
+                entity.Property(e => e.Periodo)
+                    .IsRequired()
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
+                entity.Property(e => e.Profesor)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
             });
 
             OnModelCreatingPartial(modelBuilder);
