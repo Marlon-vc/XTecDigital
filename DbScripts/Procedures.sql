@@ -264,3 +264,50 @@ CREATE PROCEDURE dbo.sp_delete_file
 AS
 DELETE FROM dbo.ARCHIVO
 WHERE Id = @FileId;
+
+-- Procedimientos almacenados de noticias
+
+GO
+CREATE PROCEDURE dbo.sp_get_noticias_grupo
+	@idGrupo INT
+AS
+SELECT Id, Id_grupo, Titulo, Mensaje, Autor, Fecha_publicacion
+FROM dbo.NOTICIA
+WHERE Id_grupo = @idGrupo;
+
+GO
+CREATE PROCEDURE dbo.sp_get_noticia
+	@id INT
+AS
+SELECT Id, Id_grupo, Titulo, Mensaje, Autor, Fecha_publicacion
+FROM dbo.NOTICIA
+WHERE Id = @id;
+
+GO
+CREATE PROCEDURE dbo.sp_create_noticia 
+	@idGrupo INT,
+	@titulo VARCHAR(100),
+	@mensaje TEXT,
+	@autor VARCHAR(50),
+	@fechaPublicacion DATETIME
+AS
+INSERT INTO dbo.NOTICIA (Id_grupo, Titulo, Mensaje, Autor, Fecha_publicacion)
+VALUES
+	(@idGrupo, @titulo, @mensaje, @autor, @fechaPublicacion);
+
+GO
+CREATE PROCEDURE dbo.dp_update_noticia
+	@id INT,
+	@titulo VARCHAR(100),
+	@mensaje TEXT
+AS
+UPDATE dbo.NOTICIA
+SET Titulo = @titulo, Mensaje = @mensaje
+WHERE Id = @id
+
+GO
+CREATE PROCEDURE dbo.sp_delete_noticia
+	@id INT
+AS
+DELETE FROM dbo.NOTICIA
+WHERE Id = @id;
