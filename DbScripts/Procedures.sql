@@ -54,12 +54,11 @@ WHERE Codigo = @Codigo;
 -- ### INICIALIZACIÓN SEMESTRE ###
 GO 
 CREATE PROCEDURE dbo.sp_create_semester
-	@semesterId INT,
 	@anioSemester INT,
 	@Periodo CHAR(1)
 AS
-INSERT INTO dbo.SEMESTRE (Id, Anio, Periodo)
-VALUES (@semesterId, @anioSemester, @Periodo);
+INSERT INTO dbo.SEMESTRE (Anio, Periodo)
+VALUES (@anioSemester, @Periodo);
 
 -- Creación de grupos
 GO
@@ -96,6 +95,25 @@ INSERT INTO dbo.RUBRO (Id_grupo, Nombre, Porcentaje) VALUES
 	(@IdGrupo, 'Examenes', 30.0),
 	(@IdGrupo, 'Proyectos', 40.0);
 
+GO 
+CREATE PROCEDURE dbo.sp_get_semestre
+	@periodo CHAR(1),
+	@anio INT
+AS
+SELECT Id, Anio, Periodo 
+FROM dbo.SEMESTRE
+WHERE Anio = @anio AND Periodo = @periodo;
+
+GO
+CREATE PROCEDURE dbo.sp_get_grupo
+	@numeroGrupo INT,
+	@idCurso VARCHAR(10),
+	@idSemestre INT
+AS
+SELECT Id, Numero, Id_curso, Id_semestre 
+FROM dbo.GRUPO
+WHERE Numero = @numeroGrupo AND Id_curso = @idCurso AND Id_semestre = @idSemestre;
+
 
 -- Procedimientos almacenados de rubros
 GO
@@ -122,6 +140,25 @@ AS
 SELECT Id, Nombre, Porcentaje, Id_grupo 
 FROM dbo.RUBRO
 WHERE Id_grupo = @idGrupo;
+
+GO 
+CREATE PROCEDURE dbo.sp_update_rubro
+	@nombreRubro VARCHAR(50),
+	@id INT,
+	@porcentaje DECIMAL(5,2)
+AS
+UPDATE dbo.RUBRO
+SET Nombre = @nombreRubro, Porcentaje = @porcentaje
+WHERE Id = @id
+
+GO 
+CREATE PROCEDURE dbo.sp_delete_rubro
+	@id INT
+AS
+DELETE FROM dbo.Rubro
+WHERE Id = @id
+	
+
 
 -- Procedimientos almacenados de archivos y carpetas
 
