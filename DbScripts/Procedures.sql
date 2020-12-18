@@ -134,6 +134,15 @@ FROM dbo.CARPETA
 WHERE Id_grupo = @GroupId AND Raiz = 0;
 
 GO
+CREATE PROCEDURE dbo.sp_get_group_files
+	@GroupId INT
+AS
+SELECT A.Id, A.Id_carpeta, A.Nombre, A.Tamanio, A.Fecha_creacion
+FROM dbo.ARCHIVO AS A
+JOIN dbo.CARPETA as C ON C.Id = A.Id_carpeta 
+WHERE C.Raiz = 1 AND Id_grupo = @GroupId;
+
+GO
 CREATE PROCEDURE dbo.sp_create_initial_folders
 	@IdGrupo INT
 AS
@@ -204,7 +213,7 @@ CREATE PROCEDURE dbo.sp_create_file
 	@IdCarpeta INT,
 	@Nombre VARCHAR(50),
 	@FechaCreacion DATETIME,
-	@Tamanio DECIMAL(8,2)
+	@Tamanio INT
 AS
 INSERT INTO dbo.ARCHIVO (Id_carpeta, Nombre, Fecha_creacion, Tamanio) VALUES
 	(@IdCarpeta, @Nombre, @FechaCreacion, @Tamanio);
@@ -214,7 +223,7 @@ CREATE PROCEDURE dbo.sp_update_file
 	@Id INT,
 	@FechaCreacion DATETIME,
 	@Nombre VARCHAR(50),
-	@Tamanio DECIMAL(8,2),
+	@Tamanio INT,
 	@IdCarpeta INT
 AS
 UPDATE dbo.ARCHIVO

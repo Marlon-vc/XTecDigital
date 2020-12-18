@@ -97,7 +97,7 @@ CREATE TABLE [ARCHIVO] (
   [Id_carpeta] int NOT NULL,
   [Nombre] varchar(100) NOT NULL,
   [Fecha_creacion] datetime NOT NULL,
-  [Tamanio] decimal(8,2) NOT NULL
+  [Tamanio] int NOT NULL
 )
 GO
 
