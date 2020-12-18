@@ -13,31 +13,9 @@ export class GestionRubrosComponent implements OnInit {
 
   update = false;
   selected: Rubro;
-
-  rubros: Rubro[] = [
-    {
-      id: 1,
-      nombre: 'Quices',
-      porcentaje: 30,
-      idGrupo: 1,
-      evaluaciones : []
-    }, 
-    {
-      id: 2,
-      nombre: 'Examenes',
-      porcentaje: 30,
-      idGrupo: 1,
-      evaluaciones : []
-    }, 
-    {
-      id: 3,
-      nombre: 'Proyectos',
-      porcentaje: 40,
-      idGrupo: 1,
-      evaluaciones : []
-    }
-  ];
+  rubros: Rubro[] = [];
   groupId = this.route.snapshot.params.id;
+  total:number = 0;
 
   constructor(private route: ActivatedRoute, private api: ApiService) { }
 
@@ -48,9 +26,14 @@ export class GestionRubrosComponent implements OnInit {
     });
   }
   getRubros() {
-    this.api.get(`https://localhost/api/Rubros/${this.groupId}`).subscribe(
+    this.api.get(`https://localhost/api/Rubros/Grupo/${this.groupId}`).subscribe(
       (value: any) => {
+        console.log(value);
+        this.total = 0;
         this.rubros = value;
+        this.rubros.forEach(element => {
+          this.total += element.porcentaje;
+        });
       }, (error: any) => {
         console.log(error);
       } 
@@ -61,6 +44,7 @@ export class GestionRubrosComponent implements OnInit {
     this.api.delete(`https://localhost/api/Rubros/${this.selected.id}`).subscribe(
       (value:any) => {
         console.log('eliminado');
+        this.getRubros();
       }, (error: any) => {
         console.log(error);
         
@@ -119,15 +103,20 @@ export class GestionRubrosComponent implements OnInit {
   }
 
   addRubroApi(nombre: JQuery<HTMLElement>, porcentaje: JQuery<HTMLElement>) {
+    console.log(this.groupId);
+    var id = Number.parseInt(this.groupId as string);
+    console.log('id ' + id);  
     var rubro = {
       nombre: nombre.val() as string,
-      idGrupo: this.groupId,
+      idGrupo: id,
       porcentaje: Number.parseInt(porcentaje.val() as string)
     };
 
     this.api.post(`https://localhost/api/Rubros`, rubro).subscribe(
       (value: any) => {
         document.getElementById('closeButton').click();
+        console.log('agregado');
+        this.getRubros();
       }, (error: any) => {
         console.log(error);
       }
