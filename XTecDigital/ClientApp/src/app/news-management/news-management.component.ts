@@ -2,6 +2,8 @@ import { not } from '@angular/compiler/src/output/output_ast';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { valHooks } from 'jquery';
+import { SessionHandler } from '../helpers/sessionHandler';
+import { Grupo } from '../models/grupo';
 import { Noticia } from '../models/noticia';
 import { ApiService } from '../services/api.service';
 
@@ -14,8 +16,10 @@ export class NewsManagementComponent implements OnInit {
 
   noticias: Noticia[] = [];
   groupId = this.route.snapshot.params.id;
+  userId = SessionHandler.getUserId();
   selectedNew: Noticia;
   updating: boolean = false;
+  actualGroup: Grupo;
 
   constructor(private route: ActivatedRoute, private api: ApiService) { }
 
@@ -25,23 +29,37 @@ export class NewsManagementComponent implements OnInit {
   }
 
   loadNews() {
-    var not1 = new Noticia();
-    not1.idGrupo = 1;
-    not1.titulo = 'Noticia prueba';
-    not1.autor = 'Paola Villegas Chacon';
-    not1.fechaPublicacion = new Date().toLocaleString();
-    not1.mensaje = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla? Quos cum ex quis soluta, a laboriosam. Dicta expedita corporis animi vero voluptate voluptatibus possimus, veniam magni quis!';
-    this.noticias.push(not1);
 
-    // this.api.get(`https://localhost/api/Noticias`).subscribe(
-    //   (value:any) => {
-    //     console.log(value);
-    //     this.noticias = value;
-    //   }, (error:any) => {
-    //     console.log(error);
-    //   }
-    // );
+    this.api.get(`https://localhost/api/Noticias/Grupo/${this.groupId}`).subscribe(
+      (value: any) => {
+        // console.log(value);
+        this.noticias = value;
+        this.loadAutorName();
+      }, (error: any) => {
+        console.log(error);
+      }
+    );
 
+  }
+  loadAutorName() {
+    this.noticias.forEach(noticia => {
+      this.getAutor(noticia);
+    });
+
+  }
+
+  getAutor(noticia: Noticia) {
+    console.log('loading teachers');
+    this.api.get(`https://localhost/api/Profesores/${noticia.autor}`)
+      .subscribe(
+        (data: any) => {
+          noticia.nombreAutor = data.nombre;
+          noticia.fecha = noticia.fechaPublicacion.toString().replace('T', ' - ');
+          noticia.fecha = noticia.fecha.substr(0, noticia.fecha.lastIndexOf(':'));
+        }, (error) => {
+          console.log("Error loading teachers...");
+          console.log(error);
+        });
   }
 
   modify(noticia: Noticia) {
@@ -62,23 +80,23 @@ export class NewsManagementComponent implements OnInit {
       tag.css('color', 'red');
     }
 
-    this.selectedNew.titulo = titulo.val() as string;
-    this.selectedNew.mensaje = mensaje.val() as string;
-
     if (this.updating) {
+      this.selectedNew.titulo = titulo.val() as string;
+      this.selectedNew.mensaje = mensaje.val() as string;
       this.modifyNewApi();
     } else {
       this.createNewApi(titulo.val() as string, mensaje.val() as string);
     }
-    
+
   }
 
   modifyNewApi() {
     this.api.put(`https://localhost/api/Noticias/${this.selectedNew.id}`, this.selectedNew).subscribe(
-      (value:any) => {
+      (value: any) => {
+        this.loadNews();
         document.getElementById('closeButton').click();
         this.updating = false;
-      }, (error:any) => {
+      }, (error: any) => {
         console.log(error);
       }
     );
@@ -86,27 +104,31 @@ export class NewsManagementComponent implements OnInit {
 
   createNewApi(titulo: string, mensaje: string) {
     var noticia = new Noticia();
-    noticia.idGrupo = this.groupId;
+    noticia.idGrupo = Number.parseInt(this.groupId as string);
     noticia.titulo = titulo;
     noticia.mensaje = mensaje;
-    noticia.autor = '';
-    noticia.fechaPublicacion = new Date().toLocaleString();
+    noticia.autor = this.userId;
+    // noticia.fechaPublicacion = new Date();
+
 
     this.api.post(`https://localhost/api/Noticias`, noticia).subscribe(
-      (value:any) => {
+      (value: any) => {
         console.log('noticia creada');
-      }, (error:any) => {
+        this.loadNews();
+        document.getElementById('closeButton').click();
+      }, (error: any) => {
         console.log(error);
       }
     );
   }
-  
+
 
   delete(noticia: Noticia) {
     this.api.delete(`https://localhost/api/Noticias/${noticia.id}`).subscribe(
-      (value:any) => {
+      (value: any) => {
         console.log('noticia eliminada');
-      }, (error:any) => {
+        this.loadNews();
+      }, (error: any) => {
         console.log(error);
       }
     );
