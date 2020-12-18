@@ -273,7 +273,8 @@ CREATE PROCEDURE dbo.sp_get_noticias_grupo
 AS
 SELECT Id, Id_grupo, Titulo, Mensaje, Autor, Fecha_publicacion
 FROM dbo.NOTICIA
-WHERE Id_grupo = @idGrupo;
+WHERE Id_grupo = @idGrupo
+ORDER BY Fecha_publicacion DESC;
 
 GO
 CREATE PROCEDURE dbo.sp_get_noticia
@@ -296,14 +297,14 @@ VALUES
 	(@idGrupo, @titulo, @mensaje, @autor, @fechaPublicacion);
 
 GO
-CREATE PROCEDURE dbo.dp_update_noticia
+CREATE PROCEDURE dbo.sp_update_noticia
 	@id INT,
 	@titulo VARCHAR(100),
 	@mensaje TEXT
 AS
 UPDATE dbo.NOTICIA
 SET Titulo = @titulo, Mensaje = @mensaje
-WHERE Id = @id
+WHERE Id = @id;
 
 GO
 CREATE PROCEDURE dbo.sp_delete_noticia
