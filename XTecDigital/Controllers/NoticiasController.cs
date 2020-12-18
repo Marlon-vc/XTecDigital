@@ -52,8 +52,10 @@ namespace XTecDigital.Controllers
             if (NoticiaExists(noticia.Id))
                 return Conflict();
             
+            noticia.FechaPublicacion = DateTime.Now;
+            
             await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                dbo.sp_create_noticia 
+                dbo.sp_create_noticia {noticia.IdGrupo}, {noticia.Titulo}, {noticia.Mensaje}, {noticia.Autor}, {noticia.FechaPublicacion}
             ");
 
             await _context.SaveChangesAsync();
@@ -69,7 +71,7 @@ namespace XTecDigital.Controllers
                 return BadRequest();
 
             await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                dbo.sp_update_noticia
+                dbo.sp_update_noticia {noticia.Id}, {noticia.Titulo}, {noticia.Mensaje}
             ");
 
             return NoContent();
