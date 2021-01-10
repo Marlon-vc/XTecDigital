@@ -69,6 +69,7 @@ GO
 CREATE TABLE [EVALUACION_GRUPO] (
   [Id] int PRIMARY KEY IDENTITY(1, 1),
   [Id_evaluacion] int NOT NULL,
+  [Nota] decimal(5,2),
   [Observaciones] text,
   [Id_entregable] int,
   [Id_detalle] int
