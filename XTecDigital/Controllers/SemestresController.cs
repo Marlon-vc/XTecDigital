@@ -41,7 +41,7 @@ namespace XTecDigital.Controllers
                 return BadRequest();
             }
 
-            if (SemestreExists(data.IdPeriodo, data.Anio))
+            if (SemestreExists(data.Periodo, data.Anio))
                 return Conflict();
 
             using var dbTransaction = await _context.Database.BeginTransactionAsync();
@@ -49,38 +49,38 @@ namespace XTecDigital.Controllers
             try {
                 //crear semestre
                 await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                    EXECUTE dbo.sp_create_semester {data.Anio}, {data.IdPeriodo}
+                    EXECUTE dbo.sp_create_semester {data.Anio}, {data.Periodo}
                 ");
                 await _context.SaveChangesAsync();
 
                 //obtener id del semestre actual
                 var idSemestre = _context.Semestre.FromSqlInterpolated($@"
-                    EXECUTE dbo.sp_get_semestre {data.IdPeriodo}, {data.Anio}
+                    EXECUTE dbo.sp_get_semestre {data.Periodo}, {data.Anio}
                 ").AsEnumerable().FirstOrDefault().Id;
 
                 foreach (var grupo in data.Grupos)
                 {
                     //Agregar el actual al semestre
-                    await _context.Database.ExecuteSqlInterpolatedAsync($@" 
-                        EXECUTE dbo.sp_create_curso_semestre {grupo.IdCurso}, {idSemestre}
-                    ");   
-                    await _context.SaveChangesAsync();
+                    // await _context.Database.ExecuteSqlInterpolatedAsync($@" 
+                    //     EXECUTE dbo.sp_create_curso_semestre {grupo.IdCurso}, {idSemestre}
+                    // ");   
+                    // await _context.SaveChangesAsync();
 
                     //Crear el grupo
                     await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                        EXECUTE dbo.sp_create_grupo {grupo.Numero}, {grupo.IdCurso}
+                        EXECUTE dbo.sp_create_grupo {grupo.Numero}, {grupo.IdCurso}, {idSemestre}
                     ");
                     await _context.SaveChangesAsync();
 
                     var idGrupo = _context.Grupo.FromSqlInterpolated($@"
-                        EXECUTE dbo.sp_get_grupo {grupo.Numero}, {grupo.IdCurso}
+                        EXECUTE dbo.sp_get_grupo {grupo.Numero}, {grupo.IdCurso}, {idSemestre}
                     ").AsEnumerable().FirstOrDefault().Id;
 
                     //Agregar estudiantes
                     foreach (var estudiante in grupo.Estudiantes)
                     {
                         await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                            EXECUTE dbo.sp_create_grupo_estudiante {grupo.Numero}, {estudiante}
+                            EXECUTE dbo.sp_create_grupo_estudiante {idGrupo}, {estudiante}
                         "); 
                         await _context.SaveChangesAsync();
                     }
@@ -89,7 +89,7 @@ namespace XTecDigital.Controllers
                     foreach(var profesor in grupo.Profesores) 
                     {
                         await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                            EXECUTE dbo.sp_create_grupo_profesor {grupo.Numero}, {profesor}
+                            EXECUTE dbo.sp_create_grupo_profesor {idGrupo}, {profesor}
                         "); 
                         await _context.SaveChangesAsync();
                     }
@@ -128,10 +128,10 @@ namespace XTecDigital.Controllers
             return Ok();
         }
 
-        private bool SemestreExists(int idPeriodo, int anio)
+        private bool SemestreExists(string periodo, int anio)
         {
             var result = _context.Semestre.FromSqlInterpolated(
-                $"EXECUTE dbo.sp_get_semestre {idPeriodo}, {anio}"
+                $"EXECUTE dbo.sp_get_semestre {periodo}, {anio}"
             ).AsEnumerable();
             return result.Any();
         }

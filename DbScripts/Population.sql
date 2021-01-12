@@ -1,8 +1,3 @@
-INSERT INTO dbo.SEMESTRE (Anio, Periodo) VALUES
-	(2020, '1'),
-	(2020, '2'),
-	(2020, 'V');
-
 SELECT * FROM dbo.SEMESTRE;
 
 INSERT INTO dbo.CURSO (Codigo, Nombre, Creditos, Carrera, Habilitado) VALUES
@@ -16,3 +11,26 @@ INSERT INTO dbo.CURSO (Codigo, Nombre, Creditos, Carrera, Habilitado) VALUES
     ('FI1202', 'Laboratorio de física general I', 2, 'Física', 1);
 
 SELECT * FROM dbo.CURSO;
+
+SELECT * FROM dbo.SEMESTRE
+SELECT * FROM dbo.GRUPO
+SELECT * FROM dbo.RUBRO
+SELECT * FROM dbo.CARPETA
+JOIN dbo.GRUPO ON dbo.SEMESTRE.Id = dbo.GRUPO.Id_semestre
+JOIN dbo.RUBRO ON dbo.GRUPO.Id = dbo.RUBRO.Id_grupo
+JOIN dbo.CARPETA ON dbo.GRUPO.Id = dbo.CARPETA.Id_grupo
+
+select * from dbo.RUBRO
+WHERE Id_grupo = 1
+
+select * from dbo.NOTICIA
+select * from dbo.GRUPO
+
+
+SELECT dbo.SEMESTRE.Id AS Id_semestre, Anio, Periodo, dbo.GRUPO.Id AS Id_grupo, Numero as Numero_grupo, Id_curso, 
+	Nombre, Creditos, Carrera, Profesor, Estudiante
+FROM dbo.SEMESTRE 
+JOIN dbo.GRUPO ON Id_semestre = dbo.SEMESTRE.Id
+JOIN dbo.CURSO ON Id_curso = dbo.CURSO.Codigo
+JOIN dbo.PROFESOR_GRUPO ON dbo.PROFESOR_GRUPO.Id_grupo = dbo.GRUPO.Id 
+JOIN dbo.ESTUDIANTE_GRUPO ON dbo.ESTUDIANTE_GRUPO.Id_grupo = dbo.GRUPO.Id;

@@ -5,7 +5,9 @@ export class Noticia {
     titulo: string;
     mensaje: string;
     autor: string;
-    fechaPublicacion: string;
+    fechaPublicacion: Date;
+    fecha: string;
+    nombreAutor: string;
 
     constructor() { }
 }

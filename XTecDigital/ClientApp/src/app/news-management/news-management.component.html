@@ -33,7 +33,7 @@
                 <div class="row">
 
                     <h1 class="my-4">Noticias
-                        <small>Curso - Grupo</small>
+                        <small>Curso - Grupo: {{groupId}}</small>
                     </h1>
 
                     <div class="col-md-6 btn-group text-right justify-content-center align-items-center">
@@ -52,8 +52,8 @@
                                 <p class="card-text">{{noticia.mensaje}}</p>
                             </div>
                             <div class="card-footer text-muted">
-                                Publicado el {{noticia.fechaPublicacion}}, por
-                                <a>{{noticia.autor}}</a>
+                                Publicado el {{noticia.fecha}}, por
+                                <a>{{noticia.nombreAutor}}</a>
                                 <div class="btn-group float-lg-right justify-content-center align-items-center">
                                     <button type="button" class="btn btn-success" (click)="modify(noticia)" data-toggle="modal" data-target="#newsModal">
                                         <i class="far fa-edit"></i>

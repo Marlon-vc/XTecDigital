@@ -14,18 +14,22 @@ import { ApiService } from '../services/api.service';
 })
 export class InitializeSemesterComponent implements OnInit {
 
-  periodos: Periodo[] = [];
+  periodos = [
+    '1',
+    '2',
+    'V'
+  ];
   cursos: Curso[] = [];
   profesores: Profesor[] = [];
   grupos: Grupo[] = [];
   estudiantes: Estudiante[] = [];
+  actualSemestre;
 
   constructor(private api: ApiService) { }
 
   ngOnInit(): void {
     this.init();
     this.setCourseOption();
-    this.loadPeriods();
     this.loadCursos();
     this.loadProfesores();
     this.loadEstudiantes();
@@ -139,7 +143,7 @@ export class InitializeSemesterComponent implements OnInit {
 
     var semestreInfo = {
       Anio : Number.parseInt(year.val() as string),
-      IdPeriodo : Number.parseInt(period.val() as string),
+      Periodo : period.val() as string,
       Grupos : this.grupos
     }
 
@@ -149,23 +153,13 @@ export class InitializeSemesterComponent implements OnInit {
     this.api.post(`https://localhost/api/Semestres`, semestreInfo)
       .subscribe((data: any) => {
         console.log('Semestre creado correctamente');
-        this.next(current_fs, next_fs, opacity, this);
+        this.actualSemestre = semestreInfo;
+        this.next(current_fs, next_fs, opacity, actual);
       }, (error) => {
         console.log("Error creating semester...");
         console.log(error);
       });
 
-  }
-
-  loadPeriods() {
-    console.log('loading periods');
-    this.api.get(`https://localhost/api/Periodos`)
-      .subscribe((data: any[]) => {
-        this.periodos = data;
-      }, (error) => {
-        console.log("Error loading periods...");
-        // console.log(error);
-      });
   }
 
   loadCursos() {

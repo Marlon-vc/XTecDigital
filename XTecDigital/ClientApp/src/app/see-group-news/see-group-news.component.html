@@ -29,8 +29,8 @@
       <div class="col-md-12">
 
         <h1 class="my-4">Noticias
-          <small>Curso - Grupo</small>
-        </h1>''
+          <small>Curso - Grupo: {{groupId}}</small>
+        </h1>
 
         <!-- Blog Post -->
         <div class="card mb-4" *ngFor="let noticia of noticias">
@@ -39,8 +39,8 @@
             <p class="card-text">{{noticia.mensaje}}</p>
           </div>
           <div class="card-footer text-muted">
-            Publicado el {{noticia.fechaPublicacion}}, por
-            <a>{{noticia.autor}}</a>
+            Publicado el {{noticia.fecha}}, por
+            <a>{{noticia.nombreAutor}}</a>
           </div>
         </div>
 

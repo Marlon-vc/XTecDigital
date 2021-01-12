@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ConsoleReporter } from 'jasmine';
 import { Noticia } from '../models/noticia';
 import { ApiService } from '../services/api.service';
 
@@ -21,23 +22,40 @@ export class SeeGroupNewsComponent implements OnInit {
   }
 
   loadNews() {
-    var not1 = new Noticia();
-    not1.idGrupo = 1;
-    not1.titulo = 'Noticia prueba';
-    not1.autor = 'Paola Villegas Chacon';
-    not1.fechaPublicacion = new Date().toLocaleString();
-    not1.mensaje = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla? Quos cum ex quis soluta, a laboriosam. Dicta expedita corporis animi vero voluptate voluptatibus possimus, veniam magni quis!';
-    this.noticias.push(not1);
 
-    // this.api.get(`https://localhost/api/Noticias`).subscribe(
-    //   (value:any) => {
-    //     console.log(value);
-    //     this.noticias = value;
-    //   }, (error:any) => {
-    //     console.log(error);
-    //   }
-    // );
+    this.api.get(`https://localhost/api/Noticias/Grupo/${this.groupId}`).subscribe(
+      (value: any) => {
+        console.log(value);
+        this.noticias = value;
+        this.loadAutorName();
+      }, (error: any) => {
+        console.log(error);
+      }
+    );
 
+  }
+  loadAutorName() {
+    this.noticias.forEach(noticia => {
+      this.getAutor(noticia);
+    });
+
+  }
+
+  getAutor(noticia: Noticia) {
+    console.log('loading teachers');
+    this.api.get(`https://localhost/api/Profesores/${noticia.autor}`)
+      .subscribe(
+        (data: any) => {
+          noticia.nombreAutor = data.nombre;
+          noticia.fecha = noticia.fechaPublicacion.toString().replace('T', ' - ');
+          noticia.fecha = noticia.fecha.substr(0, noticia.fecha.lastIndexOf(':'));
+
+          console.log(noticia);
+          
+        }, (error) => {
+          console.log("Error loading teachers...");
+          // console.log(error);
+        });
   }
 
 }
