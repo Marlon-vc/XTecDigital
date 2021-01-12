@@ -30,7 +30,7 @@ import { SeeGroupNewsComponent } from './see-group-news/see-group-news.component
     SidebarComponent,
     HomeGrupoComponent,
     NewsManagementComponent,
-    SeeGroupNewsComponent
+    SeeGroupNewsComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -48,8 +48,7 @@ import { SeeGroupNewsComponent } from './see-group-news/see-group-news.component
       { path: 'grupo/:id', component: HomeGrupoComponent },
       { path: 'noticias/:id', component: NewsManagementComponent },
       { path: 'ver-noticias/:id', component: SeeGroupNewsComponent},
-      
-      
+
     ])
   ],
   providers: [],
