@@ -2,10 +2,13 @@
     <h3>Gestión de documentos</h3>
 
     <div class="btn-group mt-lg-4 mb-lg-1" role="group" aria-label="Controles">
+        <button type="button" *ngIf="inFolder" class="btn btn-secondary" (click)="toHome()">
+            Atrás
+        </button>
         <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#upload-modal">
             Subir archivo
         </button>
-        <button type="button" class="btn btn-secondary" (click)="onCrearCarpeta()">
+        <button type="button" *ngIf="!inFolder" class="btn btn-secondary" data-toggle="modal" data-target="#folder-modal">
             Crear carpeta
         </button>
     </div>
@@ -31,8 +34,8 @@
                 (dblclick)="fileDoubleClicked(archivo, $event)">
                 <td><img src="assets/img/file.png" alt="file" /></td>
                 <td>{{ archivo.nombre }}</td>
-                <td>{{ archivo.tamanio }}</td>
-                <td>{{ archivo.modificado }}</td>
+                <td>{{ getPrettySize(archivo.tamanio) }}</td>
+                <td>{{ getPrettyDate(archivo.fechaCreacion) }}</td>
             </tr>
         </tbody>
     </table>
@@ -57,6 +60,31 @@
                 </button>
                 <button type="button" class="btn btn-primary" (click)="onSubirArchivo()">
                     Subir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" id="folder-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crear carpeta</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Ingresa el nombre de la carpeta</p>
+                <input type="text" name="folder-name" id="folder-name" class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="onCancelUpload()">
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" (click)="onCrearCarpeta()">
+                    Crear
                 </button>
             </div>
         </div>
