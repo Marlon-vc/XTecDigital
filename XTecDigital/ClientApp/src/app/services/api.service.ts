@@ -36,6 +36,10 @@ export class ApiService {
     return this.http.get(url, this.options);
   }
 
+  download(url: string) {
+    return this.http.get(url, { responseType: 'blob' });
+  }
+
   /**
    * Solicitud HTTP PUT
    * @param url url con el request para el api
