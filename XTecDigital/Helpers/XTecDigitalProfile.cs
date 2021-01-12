@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using XTecDigital.Models;
+using XTecDigital.Models.Dtos;
 
 namespace XTecDigital.Helpers
 {
@@ -11,6 +13,8 @@ namespace XTecDigital.Helpers
         public XTecDigitalProfile()
         {
             //Crear mapas para dtos
+            CreateMap<Carpeta, CarpetaDto>();
+            CreateMap<Archivo, ArchivoDto>();
         }
     }
 }
