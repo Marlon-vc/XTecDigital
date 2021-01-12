@@ -35,7 +35,7 @@ namespace XTecDigital.Controllers
 
         //POST: api/Semestres
         [HttpPost]
-        public async Task<IActionResult> AddSemestreAsync(SemestreInfo data) {
+        public async Task<IActionResult> AddSemestreAsync(Models.Requests.SemestreInfo data) {
             
             if (data == null || data.Grupos == null) {
                 return BadRequest();
