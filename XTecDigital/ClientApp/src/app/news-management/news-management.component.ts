@@ -1,7 +1,5 @@
-import { not } from '@angular/compiler/src/output/output_ast';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { valHooks } from 'jquery';
 import { Noticia } from '../models/noticia';
 import { ApiService } from '../services/api.service';
 
@@ -75,7 +73,7 @@ export class NewsManagementComponent implements OnInit {
 
   modifyNewApi() {
     this.api.put(`https://localhost/api/Noticias/${this.selectedNew.id}`, this.selectedNew).subscribe(
-      (value:any) => {
+      () => {
         document.getElementById('closeButton').click();
         this.updating = false;
       }, (error:any) => {
@@ -93,7 +91,7 @@ export class NewsManagementComponent implements OnInit {
     noticia.fechaPublicacion = new Date().toLocaleString();
 
     this.api.post(`https://localhost/api/Noticias`, noticia).subscribe(
-      (value:any) => {
+      () => {
         console.log('noticia creada');
       }, (error:any) => {
         console.log(error);
@@ -104,7 +102,7 @@ export class NewsManagementComponent implements OnInit {
 
   delete(noticia: Noticia) {
     this.api.delete(`https://localhost/api/Noticias/${noticia.id}`).subscribe(
-      (value:any) => {
+      () => {
         console.log('noticia eliminada');
       }, (error:any) => {
         console.log(error);
