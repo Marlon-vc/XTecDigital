@@ -162,6 +162,23 @@ FROM dbo.CARPETA
 WHERE Id = @FolderId;
 
 GO
+CREATE PROCEDURE dbo.sp_get_folder_by_name
+	@GroupId INT,
+	@FolderName VARCHAR(100)
+AS
+SELECT Id, Id_grupo, Nombre, Solo_lectura, Raiz
+FROM dbo.CARPETA
+WHERE Id_grupo = @GroupId AND Nombre = @FolderName;
+
+GO
+CREATE PROCEDURE dbo.sp_get_root_folder
+	@GroupId INT
+AS
+SELECT Id, Id_grupo, Nombre, Solo_lectura, Raiz
+FROM dbo.CARPETA
+WHERE Id_grupo = @GroupId AND Raiz = 1;
+
+GO
 CREATE PROCEDURE dbo.sp_update_folder
 	@Id INT,
 	@IdGrupo INT,
@@ -207,6 +224,15 @@ AS
 SELECT Id, Id_carpeta, Nombre, Fecha_creacion, Tamanio
 FROM dbo.ARCHIVO
 WHERE Id = @FileId;
+
+GO
+CREATE PROCEDURE dbo.sp_get_file_from_name
+	@FolderId INT,
+	@Name VARCHAR(50)
+AS
+SELECT Id, Id_carpeta, Nombre, Fecha_creacion, Tamanio
+FROM dbo.ARCHIVO
+WHERE Id_carpeta = @FolderId AND Nombre = @Name;
 
 GO
 CREATE PROCEDURE dbo.sp_create_file
