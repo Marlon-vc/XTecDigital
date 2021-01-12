@@ -1,6 +1,6 @@
 # Actualizar los modelos del api con los de la BD
 # dotnet tool install --global dotnet-ef
-dotnet ef dbcontext scaffold "Server=tcp:xtecdigitalcr.database.windows.net,1433;Initial Catalog=xtecdigital;Persist Security Info=False;User ID=xtec_admin;Password=Tjg*%Ui9BM5K;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;" Microsoft.EntityFrameworkCore.SqlServer --context-dir Models --context AppDbContext --output-dir Models --force
+dotnet ef dbcontext scaffold "Server=tcp:xtecdigitalcr.database.windows.net,1433;Initial Catalog=xtecdigital;Persist Security Info=False;User ID=xtec_admin;Password=ONCEdeENERO-99;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;" Microsoft.EntityFrameworkCore.SqlServer --context-dir Models --context AppDbContext --output-dir Models --force
 
 # Generar controlador de un modelo dado
 # dotnet tool install --global dotnet-aspnet-codegenerator
