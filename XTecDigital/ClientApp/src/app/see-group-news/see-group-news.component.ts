@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ConsoleReporter } from 'jasmine';
 import { Noticia } from '../models/noticia';
 import { ApiService } from '../services/api.service';
 

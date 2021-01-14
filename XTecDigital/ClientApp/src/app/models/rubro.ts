@@ -6,8 +6,6 @@ export class Rubro {
     nombre: string;
     porcentaje: number;
     evaluaciones: Evaluacion[];
-    
-    //agregar evaluaciones
 
     constructor() { }
 }

@@ -44,7 +44,7 @@
                                                         
                                                         <a class="btn btn-default btn-sm" href="#">
                                                             <i class="fas fa-download"></i>
-                                                            Descargar archivo
+                                                            {{eva.info.archivoEspecificacion}}
                                                         </a>
                                                     </div>
 
@@ -70,44 +70,43 @@
                                                   
                                                 </div>
                                                 <div class="col-md-6">
-
                                                     <div class="row">
                                                         <label style="margin-right: 2%;">Documento: </label>
-                                                        <input type="file" class="form-control-file" style="display: none;">
-                                                        <a class="btn btn-default btn-sm" href="#">
+                                                        <input type="file" class="form-control-file">
+                                                        <a class="btn btn-default btn-sm" href="#" style="display: none;">
                                                             
                                                             <i class="fas fa-download"></i>
-                                                            Nombre documento
+                                                            {{eva.info.archivoEntregable}}
                                                         </a>
                                                         
                                                     </div>
 
                                                     <div class="row">
                                                         <label style="margin-right: 2%;">Día de entrega:</label>
-                                                        <label>20/12/2020</label>
+                                                        <label>{{eva.info.fechaCreacionEntre}}</label>
                                                     </div>
 
                                                     <div class="row">
                                                         <label style="margin-right: 2%;">Fecha de entrega:</label>
-                                                        <label>11:59 pm</label>
+                                                        <label>{{eva.info.fechaCreacionEntre}}</label>
                                                     </div>
 
                                                     <div class="row">
                                                         <label style="margin-right: 2%;">Nota sobre 100:</label>
-                                                        <label>80</label>
+                                                        <label>{{eva.info.notaFinal}}</label>
                                                     </div>
 
                                                     <div class="row">
                                                         <label style="margin-right: 2%;">Archivo de retroalimentacion:</label>
                                                         <a class="btn btn-default btn-sm" href="#">
                                                             <i class="fas fa-download"></i>
-                                                            Nombre documento
+                                                            {{eva.info.retroalimentacion}}
                                                         </a>
                                                     </div>
 
                                                     <div class="row">
                                                         <label style="margin-right: 2%;">Comentarios:</label>
-                                                        <label></label>
+                                                        <label>{{eva.info.observaciones}}</label>
                                                     </div>
                                                 </div>
                                             </div>
@@ -117,8 +116,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        
                     </div>
 
                 </div>

@@ -347,3 +347,44 @@ CREATE PROCEDURE dbo.sp_delete_noticia
 AS
 DELETE FROM dbo.NOTICIA
 WHERE Id = @id;
+
+-- Procedimientos almacenados de Evaluaciones
+
+GO
+CREATE PROCEDURE dbo.sp_get_evaluaciones_rubro
+	@idRubro INT
+AS
+SELECT Id, Id_rubro, Id_especificacion, Nombre, Notas_publicadas, Peso_nota, Grupal, Fecha_entrega
+FROM EVALUACION
+WHERE Id_rubro = @idRubro;
+
+-- Info de la evaluacion, procedimiento a vista
+GO 
+CREATE PROCEDURE dbo.sp_get_info_evaluacion
+	@idEvaluacion INT
+AS
+SELECT Id_evaluacion, Archivo_especificacion, Id_Espec, Fecha_creacion_espec, Archivo_entregable, Fecha_creacion_entre, Id_Entre, Id_grupo, NotaFinal, Observaciones, Retroalimentacion, Id_retro
+FROM INFO_EVALUACION
+WHERE Id_evaluacion = @idEvaluacion
+
+select * from evaluacion
+insert into evaluacion (Id_rubro, Id_especificacion, Nombre, Notas_publicadas, Peso_nota, Grupal, Fecha_entrega)
+values
+(1, 1, 'Quiz 1', 0, 5, 0, '2020-01-30'),
+(1, 2, 'Quiz 2', 0, 5, 0, '2020-01-30'),
+(3, 3, 'Proyecto 1', 0, 5, 0, '2020-01-30');
+
+insert into archivo_evaluacion (Nombre, Ruta, Fecha_creacion)
+values
+('Espec2', 'ruta2', '2020-01-22'),
+('Espec3', 'ruta2', '2020-01-22'),
+('Entre1', 'ruta2', '2020-01-22'),
+('Entre2', 'ruta2', '2020-01-22'),
+('Retro1', 'ruta2', '2020-01-22'),
+('Retro2', 'ruta2', '2020-01-22');
+
+select * from archivo_evaluacion
+
+select * from RUBRO where Id_grupo = 1
+
+EXECUTE dbo.sp_get_info_evaluacion 1

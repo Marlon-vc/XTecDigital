@@ -1,41 +1,112 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Evaluacion } from '../models/evaluacion';
+import { InfoEvaluacion } from '../models/infoEvaluacion';
 import { Rubro } from '../models/rubro';
+import { ApiService } from '../services/api.service';
 
 @Component({
   selector: 'app-evaluation-page',
   templateUrl: './evaluation-page.component.html',
   styleUrls: ['./evaluation-page.component.css']
 })
+
 export class EvaluationPageComponent implements OnInit {
 
   rubros: Rubro[] = [];
   change = false;
+  groupId = this.route.snapshot.params.id;
 
-  constructor() { }
+  constructor(private route: ActivatedRoute, private api: ApiService) { }
 
   ngOnInit(): void {
-    var ev = new Evaluacion();
-    ev.id = 1;
-    ev.nombre = 'evaluacion prueba';
-    var ev1 = new Evaluacion();
-    ev1.id = 2;
-    ev1.nombre = 'evaluacion prueba1';
-    var ev2 = new Evaluacion();
-    ev2.id = 3;
-    ev2.nombre = 'evaluacion prueba2';
-    var ev3 = new Evaluacion();
-    ev3.id = 4;
-    ev3.nombre = 'evaluacion prueba3';
-    var rub = new Rubro();
-    rub.id = 1;
-    rub.nombre = 'Rubro';
-    rub.porcentaje = 30;
-    rub.evaluaciones = [ev, ev1, ev2, ev3];
+    this.loadRubros();
+  }
 
+  getRubros() {
+    this.api.get(`https://localhost/api/Rubros/Grupo/${this.groupId}`).subscribe(
+      (rubros: Rubro[]) => {
+        // console.log(rubros);
+        rubros.forEach(rubro => {
+          // console.log(rubro);
+          this.api.get(`https://localhost/api/Evaluaciones/Rubro/${rubro.id}`).subscribe(
+            (evaluaciones:Evaluacion[]) => {
+              // console.log(evaluaciones);
+              rubro.evaluaciones = evaluaciones;
+              rubro.evaluaciones.forEach(evaluacion => {
+                this.api.get(`https://localhost/api/Evaluaciones/Info/${evaluacion.id}`).subscribe(
+                  (info:InfoEvaluacion) => {
+                    console.log(info);
+                    evaluacion.info = info;
+                  }, (error:any) => {
+                    console.log(error);
+                  }
+                );
+              });
+              this.rubros = rubros;
+              console.log(this.rubros);
+            }, (error: any) => {
+              console.log(error);
+            }
+          );
+        });
+      }, (error: any) => {
+        console.log(error);
+      }
+    );
+  }
 
+  async loadRubros() {
+    this.rubros = await this.getRubros2();
+    console.log(this.rubros);
+    
+  }
 
-    this.rubros.push(rub);
+  getRubros2(): Promise<Rubro[]> {
+    return new Promise((resolve, reject) => {
+      this.api.get(`https://localhost/api/Rubros/Grupo/${this.groupId}`).subscribe(
+        async (rubros: Rubro[]) => {
+          for (let i = 0; i < rubros.length; i++) {
+            const current = rubros[i];
+            current.evaluaciones = await this.getEvaluacionesRubro(current);
+          }
+          resolve(rubros);
+        }, (error) => {
+          console.log(error);
+          reject(error);
+        }
+      );
+    });
+  }
+
+  async getEvaluacionesRubro(rubro: Rubro): Promise<Evaluacion[]> {
+    return new Promise((resolve, reject) => {
+      this.api.get(`https://localhost/api/Evaluaciones/Rubro/${rubro.id}`).subscribe(
+        async (evaluaciones: Evaluacion[]) => {
+          for (let i = 0; i < evaluaciones.length; i++) {
+            const evaluacion = evaluaciones[i];
+            evaluacion.info = await this.getInfoEvaluacion(evaluacion);
+          }
+          resolve(evaluaciones);
+        }, (error) => {
+          console.log(error);
+          reject(error);
+        }
+      );
+    });
+  }
+
+  async getInfoEvaluacion(evaluacion: Evaluacion): Promise<InfoEvaluacion> {
+    return new Promise((resolve, reject) => {
+      this.api.get(`https://localhost/api/Evaluaciones/Info/${evaluacion.id}`).subscribe(
+        (info: InfoEvaluacion) => {
+          resolve(info);
+        }, (error) => {
+          console.log(error);
+          reject(error);
+        }
+      );
+    });
   }
 
   changeIcon() {

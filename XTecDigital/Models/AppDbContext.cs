@@ -274,13 +274,11 @@ namespace XTecDigital.Models
                 entity.ToView("INFO_EVALUACION");
 
                 entity.Property(e => e.ArchivoEntregable)
-                    .IsRequired()
                     .HasColumnName("Archivo_entregable")
                     .HasMaxLength(150)
                     .IsUnicode(false);
 
                 entity.Property(e => e.ArchivoEspecificacion)
-                    .IsRequired()
                     .HasColumnName("Archivo_especificacion")
                     .HasMaxLength(150)
                     .IsUnicode(false);
@@ -293,10 +291,6 @@ namespace XTecDigital.Models
                     .HasColumnName("Fecha_creacion_espec")
                     .HasColumnType("datetime");
 
-                entity.Property(e => e.FechaEntrega)
-                    .HasColumnName("Fecha_entrega")
-                    .HasColumnType("datetime");
-
                 entity.Property(e => e.IdEntre).HasColumnName("Id_Entre");
 
                 entity.Property(e => e.IdEspec).HasColumnName("Id_Espec");
@@ -307,22 +301,11 @@ namespace XTecDigital.Models
 
                 entity.Property(e => e.IdRetro).HasColumnName("Id_retro");
 
-                entity.Property(e => e.NombreEvaluacion)
-                    .IsRequired()
-                    .HasColumnName("Nombre_evaluacion")
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.NotaFinal).HasColumnType("decimal(5, 2)");
 
                 entity.Property(e => e.Observaciones).HasColumnType("text");
 
-                entity.Property(e => e.PesoNota)
-                    .HasColumnName("Peso_nota")
-                    .HasColumnType("decimal(5, 2)");
-
                 entity.Property(e => e.Retroalimentacion)
-                    .IsRequired()
                     .HasMaxLength(150)
                     .IsUnicode(false);
             });

@@ -1,3 +1,5 @@
+import { InfoEvaluacion } from "./infoEvaluacion";
+
 export class Evaluacion {
 
     id: number;
@@ -8,6 +10,7 @@ export class Evaluacion {
     pesoNota: number;
     grupal: boolean;
     fechaEntrega: string;
+    info: InfoEvaluacion;
 
     constructor() { }
 }
