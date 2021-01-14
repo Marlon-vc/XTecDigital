@@ -50,7 +50,7 @@ import { EvaluationPageComponent } from './evaluation-page/evaluation-page.compo
       { path: 'grupo/:id', component: HomeGrupoComponent },
       { path: 'noticias/:id', component: NewsManagementComponent },
       { path: 'ver-noticias/:id', component: SeeGroupNewsComponent},
-      { path: 'evaluation', component: EvaluationPageComponent},
+      { path: 'evaluation/:id', component: EvaluationPageComponent},
       
       
     ])
