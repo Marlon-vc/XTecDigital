@@ -24,6 +24,7 @@ namespace XTecDigital.Models
         public virtual DbSet<EvaluacionGrupo> EvaluacionGrupo { get; set; }
         public virtual DbSet<EvaluacionIntegrantes> EvaluacionIntegrantes { get; set; }
         public virtual DbSet<Grupo> Grupo { get; set; }
+        public virtual DbSet<InfoEvaluacion> InfoEvaluacion { get; set; }
         public virtual DbSet<Noticia> Noticia { get; set; }
         public virtual DbSet<ProfesorGrupo> ProfesorGrupo { get; set; }
         public virtual DbSet<Rubro> Rubro { get; set; }
@@ -35,7 +36,7 @@ namespace XTecDigital.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=tcp:xtecdigitalcr.database.windows.net,1433;Initial Catalog=xtecdigital;Persist Security Info=False;User ID=xtec_admin;Password=Tjg*%Ui9BM5K;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+                optionsBuilder.UseSqlServer("Server=tcp:xtecdigitalcr.database.windows.net,1433;Initial Catalog=xtecdigital;Persist Security Info=False;User ID=xtec_admin;Password=ONCEdeENERO-99;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
             }
         }
 
@@ -59,8 +60,6 @@ namespace XTecDigital.Models
                     .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false);
-
-                entity.Property(e => e.Tamanio).HasColumnType("decimal(8, 2)");
 
                 entity.HasOne(d => d.IdCarpetaNavigation)
                     .WithMany(p => p.Archivo)
@@ -200,6 +199,8 @@ namespace XTecDigital.Models
 
                 entity.Property(e => e.IdEvaluacion).HasColumnName("Id_evaluacion");
 
+                entity.Property(e => e.Nota).HasColumnType("decimal(5, 2)");
+
                 entity.Property(e => e.Observaciones).HasColumnType("text");
 
                 entity.HasOne(d => d.IdDetalleNavigation)
@@ -264,6 +265,49 @@ namespace XTecDigital.Models
                     .HasForeignKey(d => d.IdSemestre)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__GRUPO__Id_semest__74AE54BC");
+            });
+
+            modelBuilder.Entity<InfoEvaluacion>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("INFO_EVALUACION");
+
+                entity.Property(e => e.ArchivoEntregable)
+                    .HasColumnName("Archivo_entregable")
+                    .HasMaxLength(150)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ArchivoEspecificacion)
+                    .HasColumnName("Archivo_especificacion")
+                    .HasMaxLength(150)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FechaCreacionEntre)
+                    .HasColumnName("Fecha_creacion_entre")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.FechaCreacionEspec)
+                    .HasColumnName("Fecha_creacion_espec")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.IdEntre).HasColumnName("Id_Entre");
+
+                entity.Property(e => e.IdEspec).HasColumnName("Id_Espec");
+
+                entity.Property(e => e.IdEvaluacion).HasColumnName("Id_evaluacion");
+
+                entity.Property(e => e.IdGrupo).HasColumnName("Id_grupo");
+
+                entity.Property(e => e.IdRetro).HasColumnName("Id_retro");
+
+                entity.Property(e => e.NotaFinal).HasColumnType("decimal(5, 2)");
+
+                entity.Property(e => e.Observaciones).HasColumnType("text");
+
+                entity.Property(e => e.Retroalimentacion)
+                    .HasMaxLength(150)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<Noticia>(entity =>
