@@ -15,6 +15,7 @@ namespace XTecDigital.Models
         public string Observaciones { get; set; }
         public int? IdEntregable { get; set; }
         public int? IdDetalle { get; set; }
+        public decimal? Nota { get; set; }
 
         public virtual ArchivoEvaluacion IdDetalleNavigation { get; set; }
         public virtual ArchivoEvaluacion IdEntregableNavigation { get; set; }
