@@ -1,0 +1,171 @@
+table SEMESTRE as S {
+  Anio int [not null]
+  Periodo char(1) [not null]
+  indexes {
+    (Anio, Periodo) [pk]
+  }
+}
+
+table CURSO as C {
+  Codigo varchar(10) [pk]
+  Nombre varchar(100) [not null]
+  Creditos int [not null]
+  Carrera varchar(100) [not null]
+  Habilitado bit [not null]
+}
+
+table GRUPO as G {
+  Numero int [not null]
+  Curso varchar(10) [not null]
+  Anio int [not null]
+  Periodo char(1) [not null]
+  indexes {
+    (Numero, Curso, Anio, Periodo) [pk]
+  }
+}
+
+table PROFESOR_GRUPO as PG {
+  Profesor varchar(50) [not null]
+  Numero int [not null]
+  Curso varchar(10) [not null]
+  Anio int [not null]
+  Periodo char(1) [not null]
+  indexes {
+    (Profesor, Numero, Curso, Anio, Periodo) [pk]
+  }
+}
+
+table ESTUDIANTE_GRUPO as EG {
+  Estudiante varchar(50) [not null]
+  Numero int [not null]
+  Curso varchar(10) [not null]
+  Anio int [not null]
+  Periodo char(1) [not null]
+  indexes {
+    (Estudiante, Numero, Curso, Anio, Periodo) [pk]
+  }
+}
+
+table NOTICIA as N {
+  Titulo varchar(200) [not null]
+  Mensaje text [not null]
+  Autor varchar(50) [not null]
+  Fecha_publicacion datetime [not null]
+  Numero int [not null]
+  Curso varchar(10) [not null]
+  Anio int [not null]
+  Periodo char(1) [not null]
+  indexes {
+    (Titulo, Fecha_publicacion, Numero, Curso, Anio, Periodo) [pk]
+  }
+}
+
+table RUBRO as R {
+  Nombre varchar(100) [not null]
+  Porcentaje decimal(5,2) [not null]
+  Numero int [not null]
+  Curso varchar(10) [not null]
+  Anio int [not null]
+  Periodo char(1) [not null]
+  indexes {
+    (Nombre, Numero, Curso, Anio, Periodo) [pk]
+  }
+}
+
+table EVALUACION as E {
+  Nombre varchar(100) [not null]
+  Notas_publicadas bit [not null]
+  Fecha_entrega datetime [not null]
+  Peso_nota decimal (5,2) [not null]
+  Grupal bit [not null]
+  //Especificacion int [not null]
+  Ruta_especificacion varchar(200) [not null]
+  Nombre_r varchar(100) [not null]
+  Numero int [not null]
+  Curso varchar(10) [not null]
+  Anio int [not null]
+  Periodo char(1) [not null]
+  indexes {
+    (Nombre, Nombre_r, Numero, Curso, Anio, Periodo) [pk]
+  }
+}
+
+table EVALUACION_GRUPO as EGR {
+  Id int [pk, increment]
+  Observaciones text
+  //Entregable int
+  Ruta_entregable varchar(200)
+  Fecha_entregable datetime
+  // Detalle int
+  Ruta_detalle varchar(200)
+  Nombre_e varchar(100) [not null]
+  Nombre_r varchar(100) [not null]
+  Numero int [not null]
+  Curso varchar(10) [not null]
+  Anio int [not null]
+  Periodo char(1) [not null]
+}
+
+table EVALUACION_INTEGRANTES as EI {
+  Estudiante varchar(50) [not null]
+  Id_grupo int [not null]
+}
+
+table CARPETA as CA {
+  Nombre varchar(100) [not null]
+  Solo_lectura bit [not null]
+  Raiz bit [not null]
+  Numero int [not null]
+  Curso varchar(10) [not null]
+  Anio int [not null]
+  Periodo char(1) [not null]
+  indexes {
+    (Nombre, Numero, Curso, Anio, Periodo) [pk]
+  }
+}
+
+table ARCHIVO as A {
+  Nombre varchar(100) [not null]
+  Fecha_creacion datetime [not null]
+  Tamanio int [not null]
+  Nombre_c varchar(100) [not null]
+  Numero int [not null]
+  Curso varchar(10) [not null]
+  Anio int [not null]
+  Periodo char(1) [not null]
+  indexes {
+    (Nombre, Nombre_c, Numero, Curso, Anio, Periodo) [pk]
+  }
+}
+
+// table ARCHIVO_EVALUACION as AE {
+//   Id int [pk, increment]
+//   Nombre varchar(100) [not null]
+//   Especificacion bit [not null]
+//   Fecha_creacion datetime [not null]
+// }
+
+// table DETALLE_EVALUACION as DE {
+//   Id int [pk, increment]
+//   Nombre varchar(100) [not null]
+// }
+
+// Llaves foráneas //
+
+//Referencias 1 - N
+ref: G.(Anio, Periodo) > S.(Anio, Periodo)
+ref: G.Curso > C.Codigo
+ref: PG.(Numero, Curso, Anio, Periodo) > G.(Numero, Curso, Anio, Periodo)
+ref: EG.(Numero, Curso, Anio, Periodo) > G.(Numero, Curso, Anio, Periodo)
+ref: N.(Numero, Curso, Anio, Periodo) > G.(Numero, Curso, Anio, Periodo)
+ref: R.(Numero, Curso, Anio, Periodo) > G.(Numero, Curso, Anio, Periodo)
+ref: E.(Nombre_r, Numero, Curso, Anio, Periodo) > R.(Nombre, Numero, Curso, Anio, Periodo)
+ref: EGR.(Nombre_e, Nombre_r, Numero, Curso, Anio, Periodo) > E.(Nombre, Nombre_r, Numero, Curso, Anio, Periodo)
+ref: EI.Id_grupo > EGR.Id
+ref: CA.(Numero, Curso, Anio, Periodo) > G.(Numero, Curso, Anio, Periodo)
+ref: A.(Nombre_c, Numero, Curso, Anio, Periodo) > CA.(Nombre, Numero, Curso, Anio, Periodo)
+
+//Referencias 1 - 1
+//ref: DE.Id - EGR.Detalle
+//ref: E.Especificacion - AE.Id
+//ref: EGR.Entregable - AE.Id
