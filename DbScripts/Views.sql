@@ -17,7 +17,7 @@ select * from evaluacion_grupo
 CREATE VIEW INFO_EVALUACION
 AS
 SELECT dbo.EVALUACION.Id as Id_evaluacion,
-	Espec.Nombre as Archivo_especificacion, Espec.Fecha_creacion as Fecha_creacion_espec, Espec.Id as Id_Espec,
+	Espec.Nombre as Archivo_especificacion, Espec.Id as Id_Espec,
 	Entre.Nombre as Archivo_entregable, Entre.Fecha_creacion as Fecha_creacion_entre, --Entre.Id as Id_Entre,
 	cast(Entre.Id as int) as [Id_Entre],
 	--EG.Id as Id_grupo, 
