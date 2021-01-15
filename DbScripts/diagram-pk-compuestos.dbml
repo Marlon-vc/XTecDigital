@@ -78,28 +78,31 @@ table EVALUACION as E {
   Fecha_entrega datetime [not null]
   Peso_nota decimal (5,2) [not null]
   Grupal bit [not null]
-  //Especificacion int [not null]
-  Ruta_especificacion varchar(200) [not null]
-  Nombre_r varchar(100) [not null]
+  Especificacion varchar(100) [not null]
+  Carpeta_especificacion varchar(100) [not null]
+  Tipo_carpeta_especificacion int [not null]
+  Rubro varchar(100) [not null]
   Numero int [not null]
   Curso varchar(10) [not null]
   Anio int [not null]
   Periodo char(1) [not null]
   indexes {
-    (Nombre, Nombre_r, Numero, Curso, Anio, Periodo) [pk]
+    (Nombre, Rubro, Numero, Curso, Anio, Periodo) [pk]
   }
 }
 
 table EVALUACION_GRUPO as EGR {
   Id int [pk, increment]
+  Nota decimal(5,2)
   Observaciones text
-  //Entregable int
-  Ruta_entregable varchar(200)
-  Fecha_entregable datetime
-  // Detalle int
-  Ruta_detalle varchar(200)
-  Nombre_e varchar(100) [not null]
-  Nombre_r varchar(100) [not null]
+  Entregable varchar(100)
+  Carpeta_entregable varchar(100)
+  Tipo_carpeta_entregable int
+  Detalle varchar(100)
+  Carpeta_detalle varchar(100)
+  Tipo_carpeta_detalle int
+  Evaluacion varchar(100) [not null]
+  Rubro varchar(100) [not null]
   Numero int [not null]
   Curso varchar(10) [not null]
   Anio int [not null]
@@ -114,58 +117,49 @@ table EVALUACION_INTEGRANTES as EI {
 table CARPETA as CA {
   Nombre varchar(100) [not null]
   Solo_lectura bit [not null]
-  Raiz bit [not null]
+  Tipo int [not null]
   Numero int [not null]
   Curso varchar(10) [not null]
   Anio int [not null]
   Periodo char(1) [not null]
   indexes {
-    (Nombre, Numero, Curso, Anio, Periodo) [pk]
+    (Nombre, Tipo, Numero, Curso, Anio, Periodo) [pk]
   }
+}
+
+table TIPO_CARPETA as TC {
+  Id int [pk, increment]
+  Tipo varchar(20) [unique]
 }
 
 table ARCHIVO as A {
   Nombre varchar(100) [not null]
   Fecha_creacion datetime [not null]
   Tamanio int [not null]
-  Nombre_c varchar(100) [not null]
+  Carpeta varchar(100) [not null]
+  Tipo_carpeta int [not null]
   Numero int [not null]
   Curso varchar(10) [not null]
   Anio int [not null]
   Periodo char(1) [not null]
   indexes {
-    (Nombre, Nombre_c, Numero, Curso, Anio, Periodo) [pk]
+    (Nombre, Carpeta, Tipo_carpeta, Numero, Curso, Anio, Periodo) [pk]
   }
 }
 
-// table ARCHIVO_EVALUACION as AE {
-//   Id int [pk, increment]
-//   Nombre varchar(100) [not null]
-//   Especificacion bit [not null]
-//   Fecha_creacion datetime [not null]
-// }
-
-// table DETALLE_EVALUACION as DE {
-//   Id int [pk, increment]
-//   Nombre varchar(100) [not null]
-// }
-
 // Llaves foráneas //
-
-//Referencias 1 - N
-ref: G.(Anio, Periodo) > S.(Anio, Periodo)
-ref: G.Curso > C.Codigo
-ref: PG.(Numero, Curso, Anio, Periodo) > G.(Numero, Curso, Anio, Periodo)
-ref: EG.(Numero, Curso, Anio, Periodo) > G.(Numero, Curso, Anio, Periodo)
-ref: N.(Numero, Curso, Anio, Periodo) > G.(Numero, Curso, Anio, Periodo)
-ref: R.(Numero, Curso, Anio, Periodo) > G.(Numero, Curso, Anio, Periodo)
-ref: E.(Nombre_r, Numero, Curso, Anio, Periodo) > R.(Nombre, Numero, Curso, Anio, Periodo)
-ref: EGR.(Nombre_e, Nombre_r, Numero, Curso, Anio, Periodo) > E.(Nombre, Nombre_r, Numero, Curso, Anio, Periodo)
-ref: EI.Id_grupo > EGR.Id
-ref: CA.(Numero, Curso, Anio, Periodo) > G.(Numero, Curso, Anio, Periodo)
-ref: A.(Nombre_c, Numero, Curso, Anio, Periodo) > CA.(Nombre, Numero, Curso, Anio, Periodo)
-
-//Referencias 1 - 1
-//ref: DE.Id - EGR.Detalle
-//ref: E.Especificacion - AE.Id
-//ref: EGR.Entregable - AE.Id
+ref: G.(Anio, Periodo) > S.(Anio, Periodo) [update: cascade]
+ref: G.Curso > C.Codigo [update: cascade]
+ref: PG.(Numero, Curso, Anio, Periodo) > G.(Numero, Curso, Anio, Periodo) [delete: cascade, update: cascade]
+ref: EG.(Numero, Curso, Anio, Periodo) > G.(Numero, Curso, Anio, Periodo) [delete: cascade, update: cascade]
+ref: N.(Numero, Curso, Anio, Periodo) > G.(Numero, Curso, Anio, Periodo) [delete: cascade, update: cascade]
+ref: R.(Numero, Curso, Anio, Periodo) > G.(Numero, Curso, Anio, Periodo) [delete: cascade, update: cascade]
+ref: E.(Rubro, Numero, Curso, Anio, Periodo) > R.(Nombre, Numero, Curso, Anio, Periodo) [delete: cascade, update: cascade]
+ref: EGR.(Evaluacion, Rubro, Numero, Curso, Anio, Periodo) > E.(Nombre, Rubro, Numero, Curso, Anio, Periodo) [delete: cascade, update: cascade]
+ref: EI.Id_grupo > EGR.Id [delete: cascade, update: cascade]
+ref: CA.(Numero, Curso, Anio, Periodo) > G.(Numero, Curso, Anio, Periodo) [delete: cascade, update: cascade]
+ref: A.(Carpeta, Tipo_carpeta, Numero, Curso, Anio, Periodo) > CA.(Nombre, Tipo, Numero, Curso, Anio, Periodo) [delete: cascade, update: cascade]
+ref: CA.Tipo > TC.Id
+ref: A.(Nombre, Carpeta, Tipo_carpeta, Numero, Curso, Anio, Periodo) - E.(Especificacion, Carpeta_especificacion, Tipo_carpeta_especificacion, Numero, Curso, Anio, Periodo) 
+ref: A.(Nombre, Carpeta, Tipo_carpeta, Numero, Curso, Anio, Periodo) - EGR.(Entregable, Carpeta_entregable, Tipo_carpeta_entregable, Numero, Curso, Anio, Periodo)
+ref: A.(Nombre, Carpeta, Tipo_carpeta, Numero, Curso, Anio, Periodo) - EGR.(Detalle, Carpeta_detalle, Tipo_carpeta_detalle, Numero, Curso, Anio, Periodo)

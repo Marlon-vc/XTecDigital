@@ -73,13 +73,15 @@ CREATE TABLE [EVALUACION] (
   [Fecha_entrega] datetime NOT NULL,
   [Peso_nota] decimal(5,2) NOT NULL,
   [Grupal] bit NOT NULL,
-  [Ruta_especificacion] varchar(200) NOT NULL,
-  [Nombre_r] varchar(100) NOT NULL,
+  [Especificacion] varchar(100) NOT NULL,
+  [Carpeta_especificacion] varchar(100) NOT NULL,
+  [Tipo_carpeta_especificacion] int NOT NULL,
+  [Rubro] varchar(100) NOT NULL,
   [Numero] int NOT NULL,
   [Curso] varchar(10) NOT NULL,
   [Anio] int NOT NULL,
   [Periodo] char(1) NOT NULL,
-  PRIMARY KEY ([Nombre], [Nombre_r], [Numero], [Curso], [Anio], [Periodo])
+  PRIMARY KEY ([Nombre], [Rubro], [Numero], [Curso], [Anio], [Periodo])
 )
 GO
 
@@ -87,11 +89,14 @@ CREATE TABLE [EVALUACION_GRUPO] (
   [Id] int PRIMARY KEY IDENTITY(1, 1),
   [Nota] decimal(5,2),
   [Observaciones] text,
-  [Ruta_entregable] varchar(200),
-  [Fecha_entregable] datetime,
-  [Ruta_detalle] varchar(200),
-  [Nombre_e] varchar(100) NOT NULL,
-  [Nombre_r] varchar(100) NOT NULL,
+  [Entregable] varchar(100),
+  [Carpeta_entregable] varchar(100),
+  [Tipo_carpeta_entregable] int,
+  [Detalle] varchar(100),
+  [Carpeta_detalle] varchar(100),
+  [Tipo_carpeta_detalle] int,
+  [Evaluacion] varchar(100) NOT NULL,
+  [Rubro] varchar(100) NOT NULL,
   [Numero] int NOT NULL,
   [Curso] varchar(10) NOT NULL,
   [Anio] int NOT NULL,
@@ -108,12 +113,18 @@ GO
 CREATE TABLE [CARPETA] (
   [Nombre] varchar(100) NOT NULL,
   [Solo_lectura] bit NOT NULL,
-  [Raiz] bit NOT NULL,
+  [Tipo] int NOT NULL,
   [Numero] int NOT NULL,
   [Curso] varchar(10) NOT NULL,
   [Anio] int NOT NULL,
   [Periodo] char(1) NOT NULL,
-  PRIMARY KEY ([Nombre], [Numero], [Curso], [Anio], [Periodo])
+  PRIMARY KEY ([Nombre], [Tipo], [Numero], [Curso], [Anio], [Periodo])
+)
+GO
+
+CREATE TABLE [TIPO_CARPETA] (
+  [Id] int PRIMARY KEY IDENTITY(1, 1),
+  [Tipo] varchar(20) UNIQUE
 )
 GO
 
@@ -121,12 +132,13 @@ CREATE TABLE [ARCHIVO] (
   [Nombre] varchar(100) NOT NULL,
   [Fecha_creacion] datetime NOT NULL,
   [Tamanio] int NOT NULL,
-  [Nombre_c] varchar(100) NOT NULL,
+  [Carpeta] varchar(100) NOT NULL,
+  [Tipo_carpeta] int NOT NULL,
   [Numero] int NOT NULL,
   [Curso] varchar(10) NOT NULL,
   [Anio] int NOT NULL,
   [Periodo] char(1) NOT NULL,
-  PRIMARY KEY ([Nombre], [Nombre_c], [Numero], [Curso], [Anio], [Periodo])
+  PRIMARY KEY ([Nombre], [Carpeta], [Tipo_carpeta], [Numero], [Curso], [Anio], [Periodo])
 )
 GO
 
@@ -148,10 +160,10 @@ GO
 ALTER TABLE [RUBRO] ADD FOREIGN KEY ([Numero], [Curso], [Anio], [Periodo]) REFERENCES [GRUPO] ([Numero], [Curso], [Anio], [Periodo]) ON DELETE CASCADE ON UPDATE CASCADE
 GO
 
-ALTER TABLE [EVALUACION] ADD FOREIGN KEY ([Nombre_r], [Numero], [Curso], [Anio], [Periodo]) REFERENCES [RUBRO] ([Nombre], [Numero], [Curso], [Anio], [Periodo]) ON DELETE CASCADE ON UPDATE CASCADE
+ALTER TABLE [EVALUACION] ADD FOREIGN KEY ([Rubro], [Numero], [Curso], [Anio], [Periodo]) REFERENCES [RUBRO] ([Nombre], [Numero], [Curso], [Anio], [Periodo]) ON DELETE CASCADE ON UPDATE CASCADE
 GO
 
-ALTER TABLE [EVALUACION_GRUPO] ADD FOREIGN KEY ([Nombre_e], [Nombre_r], [Numero], [Curso], [Anio], [Periodo]) REFERENCES [EVALUACION] ([Nombre], [Nombre_r], [Numero], [Curso], [Anio], [Periodo]) ON DELETE CASCADE ON UPDATE CASCADE
+ALTER TABLE [EVALUACION_GRUPO] ADD FOREIGN KEY ([Evaluacion], [Rubro], [Numero], [Curso], [Anio], [Periodo]) REFERENCES [EVALUACION] ([Nombre], [Rubro], [Numero], [Curso], [Anio], [Periodo]) ON DELETE CASCADE ON UPDATE CASCADE
 GO
 
 ALTER TABLE [EVALUACION_INTEGRANTES] ADD FOREIGN KEY ([Id_grupo]) REFERENCES [EVALUACION_GRUPO] ([Id]) ON DELETE CASCADE ON UPDATE CASCADE
@@ -160,6 +172,18 @@ GO
 ALTER TABLE [CARPETA] ADD FOREIGN KEY ([Numero], [Curso], [Anio], [Periodo]) REFERENCES [GRUPO] ([Numero], [Curso], [Anio], [Periodo]) ON DELETE CASCADE ON UPDATE CASCADE
 GO
 
-ALTER TABLE [ARCHIVO] ADD FOREIGN KEY ([Nombre_c], [Numero], [Curso], [Anio], [Periodo]) REFERENCES [CARPETA] ([Nombre], [Numero], [Curso], [Anio], [Periodo]) ON DELETE CASCADE ON UPDATE CASCADE
+ALTER TABLE [ARCHIVO] ADD FOREIGN KEY ([Carpeta], [Tipo_carpeta], [Numero], [Curso], [Anio], [Periodo]) REFERENCES [CARPETA] ([Nombre], [Tipo], [Numero], [Curso], [Anio], [Periodo]) ON DELETE CASCADE ON UPDATE CASCADE
+GO
+
+ALTER TABLE [CARPETA] ADD FOREIGN KEY ([Tipo]) REFERENCES [TIPO_CARPETA] ([Id])
+GO
+
+ALTER TABLE [EVALUACION] ADD FOREIGN KEY ([Especificacion], [Carpeta_especificacion], [Tipo_carpeta_especificacion], [Numero], [Curso], [Anio], [Periodo]) REFERENCES [ARCHIVO] ([Nombre], [Carpeta], [Tipo_carpeta], [Numero], [Curso], [Anio], [Periodo])
+GO
+
+ALTER TABLE [EVALUACION_GRUPO] ADD FOREIGN KEY ([Entregable], [Carpeta_entregable], [Tipo_carpeta_entregable], [Numero], [Curso], [Anio], [Periodo]) REFERENCES [ARCHIVO] ([Nombre], [Carpeta], [Tipo_carpeta], [Numero], [Curso], [Anio], [Periodo])
+GO
+
+ALTER TABLE [EVALUACION_GRUPO] ADD FOREIGN KEY ([Detalle], [Carpeta_detalle], [Tipo_carpeta_detalle], [Numero], [Curso], [Anio], [Periodo]) REFERENCES [ARCHIVO] ([Nombre], [Carpeta], [Tipo_carpeta], [Numero], [Curso], [Anio], [Periodo])
 GO
 
