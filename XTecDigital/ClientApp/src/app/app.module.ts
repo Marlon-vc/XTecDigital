@@ -17,6 +17,7 @@ import { HomeGrupoComponent } from './home-grupo/home-grupo.component';
 import { NewsManagementComponent } from './news-management/news-management.component';
 import { SeeGroupNewsComponent } from './see-group-news/see-group-news.component';
 import { EvaluationPageComponent } from './evaluation-page/evaluation-page.component';
+import { EvaluateTaskComponent } from './evaluate-task/evaluate-task.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { EvaluationPageComponent } from './evaluation-page/evaluation-page.compo
     HomeGrupoComponent,
     NewsManagementComponent,
     SeeGroupNewsComponent,
-    EvaluationPageComponent
+    EvaluationPageComponent,
+    EvaluateTaskComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -51,6 +53,7 @@ import { EvaluationPageComponent } from './evaluation-page/evaluation-page.compo
       { path: 'noticias/:id', component: NewsManagementComponent },
       { path: 'ver-noticias/:id', component: SeeGroupNewsComponent},
       { path: 'evaluation/:id', component: EvaluationPageComponent},
+      { path: 'evaluate-task/:id', component: EvaluateTaskComponent},
       
       
     ])
