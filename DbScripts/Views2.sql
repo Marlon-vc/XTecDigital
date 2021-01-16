@@ -2,7 +2,7 @@ GO
 CREATE VIEW INFO_EVALUACION
 AS
 SELECT 
-	-- Info evaluación
+	-- Info evaluaciÃ³n
 	evaluacion.Nombre,
 	evaluacion.Notas_publicadas,
 	evaluacion.Fecha_entrega,
@@ -13,24 +13,23 @@ SELECT
 	evaluacion.Curso,
 	evaluacion.Anio,
 	evaluacion.Periodo,
-	-- Archivo especificación
+	-- Archivo especificaciÃ³n
 	especificacion.Nombre as Especificacion,
 	especificacion.Carpeta as Carpeta_especificacion,
 	especificacion.Tipo_carpeta as Tipo_carpeta_especificacion,
 	-- Archivo entregable
-	entregable.Nombre as Entregable,
-	entregable.Carpeta as Carpeta_entregable,
-	entregable.Tipo_carpeta as Tipo_carpeta_entregable,
-	entregable.Fecha_creacion as Fecha_entregable,
+	cast(entregable.Nombre as varchar(100)) as Entregable,
+	cast(entregable.Carpeta as varchar(100)) as Carpeta_entregable,
+	cast(entregable.Tipo_carpeta as varchar(20)) as Tipo_carpeta_entregable,
+	cast(entregable.Fecha_creacion as datetime) as Fecha_entregable,
 	-- Archivo Detalle
-	detalle.Nombre as Detalle,
-	detalle.Carpeta as Carpeta_detalle,
-	detalle.Tipo_carpeta as Tipo_carpeta_detalle,
-	-- Evaluación grupo
+	cast(detalle.Nombre as varchar(100)) as Detalle,
+	cast(detalle.Carpeta as varchar(100)) as Carpeta_detalle,
+	cast(detalle.Tipo_carpeta as varchar(20)) as Tipo_carpeta_detalle,
+	-- EvaluaciÃ³n grupo
 	grupo.Id as Id_evaluacion_grupo,
-	grupo.Nota,
-	grupo.Observaciones
-
+	cast(grupo.Nota as decimal(5,2)) as Nota,
+	cast(grupo.Observaciones as text) as Observaciones
 FROM dbo.EVALUACION as evaluacion
 LEFT JOIN dbo.EVALUACION_GRUPO as grupo ON
 	grupo.Evaluacion = evaluacion.Nombre AND
@@ -63,4 +62,3 @@ LEFT JOIN dbo.ARCHIVO as detalle ON
 	detalle.Curso = evaluacion.Curso AND
 	detalle.Anio = evaluacion.Anio AND
 	detalle.Periodo = evaluacion.Periodo;
-

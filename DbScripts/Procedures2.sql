@@ -46,14 +46,13 @@ WHERE Codigo = @Code;
 GO
 CREATE PROCEDURE dbo.sp_update_course
 	@Codigo VARCHAR(10),
-    @NuevoCodigo VARCHAR(10),
 	@Nombre VARCHAR(100),
 	@Carrera VARCHAR(100),
 	@Creditos INT,
 	@Habilitado BIT
 AS
 UPDATE dbo.CURSO
-SET Codigo = @NuevoCodigo, Nombre = @Nombre, Creditos = @Creditos, Carrera = @Carrera, Habilitado = @Habilitado
+SET Nombre = @Nombre, Creditos = @Creditos, Carrera = @Carrera, Habilitado = @Habilitado
 WHERE Codigo = @Codigo;
 
 -- ### INICIALIZACIÓN SEMESTRE ### --
@@ -66,6 +65,15 @@ CREATE PROCEDURE dbo.sp_create_semester
 AS
 INSERT INTO dbo.SEMESTRE (Anio, Periodo)
 VALUES (@Anio, @Periodo);
+
+GO
+CREATE PROCEDURE dbo.sp_get_semestre
+    @Anio INT,
+    @Periodo CHAR(1)
+AS
+SELECT Anio, Periodo
+FROM dbo.SEMESTRE
+WHERE Anio = @Anio AND Periodo = @Periodo;
 
 -- Crear grupo
 GO
@@ -193,20 +201,31 @@ CREATE PROCEDURE dbo.sp_get_group_folders
 AS
 SELECT Nombre, Solo_lectura, Tipo, Numero, Curso, Anio, Periodo
 FROM dbo.CARPETA
-WHERE Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo AND Tipo = 0; --Tipo 0 -> documentos normales
+WHERE Tipo = 'NORMAL' AND Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo; --Tipo 0 -> documentos normales
 
--- Obtener todos los archivos de un grupo
+-- Obtener todas las carpetas especiales de un grupo
 GO
-CREATE PROCEDURE dbo.sp_get_group_files
-	@Numero INT,
+CREATE PROCEDURE dbo.sp_get_all_group_folders
+    @Numero INT,
     @Curso VARCHAR(10),
     @Anio INT,
     @Periodo CHAR(1)
 AS
-SELECT A.Nombre, A.Fecha_creacion, A.Tamanio, A.Carpeta, A.Tipo_carpeta, A.Numero, A.Curso, A.Anio, A.Periodo
-FROM dbo.ARCHIVO AS A
-JOIN dbo.CARPETA as C ON C.Nombre = A.Carpeta AND C.Tipo = A.Tipo_carpeta AND C.Numero = A.Numero AND C.Curso = A.Curso AND C.Anio = A.Anio AND C.Periodo = A.Periodo
-WHERE C.Tipo = 1 AND C.Numero = @Numero AND C.Curso = @Curso AND C.Anio = @Anio AND C.Periodo = @Periodo;
+SELECT Nombre, Solo_lectura, Tipo, Numero, Curso, Anio, Periodo
+FROM dbo.CARPETA
+WHERE Tipo <> 'NORMAL' AND Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo;
+
+-- Obtener todos los archivos de un grupo
+GO
+CREATE PROCEDURE dbo.sp_get_group_files
+    @Numero INT,
+    @Curso VARCHAR(10),
+    @Anio INT,
+    @Periodo CHAR(1)
+AS
+SELECT Nombre, Fecha_creacion, Tamanio, Carpeta, Tipo_carpeta, Numero, Curso, Anio, Periodo
+FROM dbo.ARCHIVO
+WHERE Tipo_carpeta = 'RAIZ' AND Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo;
 
 -- Crear carpetas iniciales para un grupo
 GO
@@ -218,20 +237,20 @@ CREATE PROCEDURE dbo.sp_create_initial_folders
 AS
 INSERT INTO dbo.CARPETA (Nombre, Solo_lectura, Tipo, Numero, Curso, Anio, Periodo)
 VALUES
-	('Documentos', 1, 1, @Numero, @Curso, @Anio, @Periodo),
-    ('Especificaciones', 1, 2, @Numero, @Curso, @Anio, @Periodo),
-    ('Entregables', 1, 3, @Numero, @Curso, @Anio, @Periodo),
-    ('Detalles', 1, 4, @Numero, @Curso, @Anio, @Periodo),
-	('Presentaciones', 1, 0, @Numero, @Curso, @Anio, @Periodo),
-	('Quices', 1, 0, @Numero, @Curso, @Anio, @Periodo),
-	('Exámenes', 1, 0, @Numero, @Curso, @Anio, @Periodo),
-	('Proyectos', 1, 0, @Numero, @Curso, @Anio, @Periodo);
+	('Documentos', 1, 'RAIZ', @Numero, @Curso, @Anio, @Periodo),
+    ('Especificaciones', 1, 'ESPECIFICACIONES', @Numero, @Curso, @Anio, @Periodo),
+    ('Entregables', 1, 'ENTREGABLES', @Numero, @Curso, @Anio, @Periodo),
+    ('Detalles', 1, 'DETALLES', @Numero, @Curso, @Anio, @Periodo),
+	('Presentaciones', 1, 'NORMAL', @Numero, @Curso, @Anio, @Periodo),
+	('Quices', 1, 'NORMAL', @Numero, @Curso, @Anio, @Periodo),
+	('Exámenes', 1, 'NORMAL', @Numero, @Curso, @Anio, @Periodo),
+	('Proyectos', 1, 'NORMAL', @Numero, @Curso, @Anio, @Periodo);
 
 -- Obtener una carpeta por atributos
 GO
 CREATE PROCEDURE dbo.sp_get_folder
 	@Nombre VARCHAR(100),
-    @Tipo INT,
+    @Tipo VARCHAR(20),
     @Numero INT,
     @Curso VARCHAR(10),
     @Anio INT,
@@ -251,28 +270,29 @@ CREATE PROCEDURE dbo.sp_get_root_folder
 AS
 SELECT Nombre, Solo_lectura, Tipo, Numero, Curso, Anio, Periodo
 FROM dbo.CARPETA
-WHERE Tipo = 1 AND Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo;
+WHERE Tipo = 'RAIZ' AND Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo;
 
 -- Actualizar una carpeta
 GO
 CREATE PROCEDURE dbo.sp_update_folder
 	@Nombre VARCHAR(100),
     @NuevoNombre VARCHAR(100),
-	@Numero INT,
+	@Tipo VARCHAR(20),
+    @Numero INT,
     @Curso VARCHAR(10),
     @Anio INT,
     @Periodo CHAR(1)
 AS
 UPDATE dbo.CARPETA
 SET Nombre = @NuevoNombre
-WHERE Tipo = 0 AND Solo_lectura = 0 AND  Nombre = @Nombre AND Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo;
+WHERE Tipo = @Tipo AND Solo_lectura = 0 AND  Nombre = @Nombre AND Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo;
 
 -- Crear una carpeta
 GO
 CREATE PROCEDURE dbo.sp_create_folder
 	@Nombre VARCHAR(100),
 	@SoloLectura BIT,
-	@Tipo INT,
+	@Tipo VARCHAR(20),
     @Numero INT,
     @Curso VARCHAR(10),
     @Anio INT,
@@ -285,20 +305,20 @@ VALUES (@Nombre, @SoloLectura, @Tipo, @Numero, @Curso, @Anio, @Periodo);
 GO
 CREATE PROCEDURE dbo.sp_delete_folder
 	@Nombre VARCHAR(100),
-    @Tipo INT,
+    @Tipo VARCHAR(20),
 	@Numero INT,
     @Curso VARCHAR(10),
     @Anio INT,
     @Periodo CHAR(1)
 AS
 DELETE FROM dbo.CARPETA
-WHERE Tipo = 0 AND Solo_lectura = 0 AND Nombre = @Nombre AND Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo;
+WHERE Tipo = 'NORMAL' AND Solo_lectura = 0 AND Nombre = @Nombre AND Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo;
 
 -- Obtener los archivos de una carpeta
 GO
 CREATE PROCEDURE dbo.sp_get_files
 	@Nombre VARCHAR(100),
-    @Tipo INT,
+    @Tipo VARCHAR(20),
 	@Numero INT,
     @Curso VARCHAR(10),
     @Anio INT,
@@ -306,14 +326,14 @@ CREATE PROCEDURE dbo.sp_get_files
 AS
 SELECT Nombre, Fecha_creacion, Tamanio, Carpeta, Tipo_carpeta, Numero, Curso, Anio, Periodo
 FROM dbo.ARCHIVO
-WHERE Carpeta = @Nombre AND Tipo_carpeta = 0 AND Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo;
+WHERE Carpeta = @Nombre AND Tipo_carpeta = @Tipo AND Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo;
 
 -- Obtener un archivo por atributos
 GO
 CREATE PROCEDURE dbo.sp_get_file
 	@Nombre VARCHAR(100),
     @Carpeta VARCHAR(100),
-	@Tipo_carpeta INT,
+	@Tipo_carpeta VARCHAR(20),
     @Numero INT,
     @Curso VARCHAR(10),
     @Anio INT,
@@ -330,7 +350,7 @@ CREATE PROCEDURE dbo.sp_create_file
 	@FechaCreacion DATETIME,
 	@Tamanio INT,
     @Carpeta VARCHAR(100),
-    @Tipo_carpeta INT,
+    @Tipo_carpeta VARCHAR(20),
     @Numero INT,
     @Curso VARCHAR(10),
     @Anio INT,
@@ -347,7 +367,7 @@ CREATE PROCEDURE dbo.sp_update_file
     @FechaCreacion DATETIME,
 	@Tamanio INT,
 	@Carpeta VARCHAR(100),
-    @Tipo_carpeta INT,
+    @Tipo_carpeta VARCHAR(20),
     @Numero INT,
     @Curso VARCHAR(10),
     @Anio INT,
@@ -362,7 +382,7 @@ GO
 CREATE PROCEDURE dbo.sp_delete_file
 	@Nombre VARCHAR(50),
     @Carpeta VARCHAR(100),
-    @Tipo_carpeta INT,
+    @Tipo_carpeta VARCHAR(20),
     @Numero INT,
     @Curso VARCHAR(10),
     @Anio INT,
@@ -483,7 +503,7 @@ CREATE PROCEDURE dbo.sp_get_info_evaluacion
     @Numero INT,
     @Curso VARCHAR(10),
     @Anio INT,
-    @Periodo CHAR(1)
+    @Periodo CHAR(1),
     @Estudiante VARCHAR(50)
 AS
 SELECT 
@@ -498,7 +518,6 @@ LEFT JOIN dbo.EVALUACION_INTEGRANTES as EI ON
     EI.Estudiante = @Estudiante
 WHERE
     Nombre = @Evaluacion AND Rubro = @Rubro AND Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo;
-
 
 -- ACTUALIZADOS
 --dbo.sp_create_grupo_estudiante

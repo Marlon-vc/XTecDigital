@@ -75,7 +75,7 @@ CREATE TABLE [EVALUACION] (
   [Grupal] bit NOT NULL,
   [Especificacion] varchar(100) NOT NULL,
   [Carpeta_especificacion] varchar(100) NOT NULL,
-  [Tipo_carpeta_especificacion] int NOT NULL,
+  [Tipo_carpeta_especificacion] varchar(20) NOT NULL,
   [Rubro] varchar(100) NOT NULL,
   [Numero] int NOT NULL,
   [Curso] varchar(10) NOT NULL,
@@ -91,10 +91,10 @@ CREATE TABLE [EVALUACION_GRUPO] (
   [Observaciones] text,
   [Entregable] varchar(100),
   [Carpeta_entregable] varchar(100),
-  [Tipo_carpeta_entregable] int,
+  [Tipo_carpeta_entregable] varchar(20),
   [Detalle] varchar(100),
   [Carpeta_detalle] varchar(100),
-  [Tipo_carpeta_detalle] int,
+  [Tipo_carpeta_detalle] varchar(20),
   [Evaluacion] varchar(100) NOT NULL,
   [Rubro] varchar(100) NOT NULL,
   [Numero] int NOT NULL,
@@ -113,7 +113,7 @@ GO
 CREATE TABLE [CARPETA] (
   [Nombre] varchar(100) NOT NULL,
   [Solo_lectura] bit NOT NULL,
-  [Tipo] int NOT NULL,
+  [Tipo] varchar(20) NOT NULL,
   [Numero] int NOT NULL,
   [Curso] varchar(10) NOT NULL,
   [Anio] int NOT NULL,
@@ -122,18 +122,12 @@ CREATE TABLE [CARPETA] (
 )
 GO
 
-CREATE TABLE [TIPO_CARPETA] (
-  [Id] int PRIMARY KEY IDENTITY(1, 1),
-  [Tipo] varchar(20) UNIQUE
-)
-GO
-
 CREATE TABLE [ARCHIVO] (
   [Nombre] varchar(100) NOT NULL,
   [Fecha_creacion] datetime NOT NULL,
   [Tamanio] int NOT NULL,
   [Carpeta] varchar(100) NOT NULL,
-  [Tipo_carpeta] int NOT NULL,
+  [Tipo_carpeta] varchar(20) NOT NULL,
   [Numero] int NOT NULL,
   [Curso] varchar(10) NOT NULL,
   [Anio] int NOT NULL,
@@ -173,9 +167,6 @@ ALTER TABLE [CARPETA] ADD FOREIGN KEY ([Numero], [Curso], [Anio], [Periodo]) REF
 GO
 
 ALTER TABLE [ARCHIVO] ADD FOREIGN KEY ([Carpeta], [Tipo_carpeta], [Numero], [Curso], [Anio], [Periodo]) REFERENCES [CARPETA] ([Nombre], [Tipo], [Numero], [Curso], [Anio], [Periodo]) ON DELETE CASCADE ON UPDATE CASCADE
-GO
-
-ALTER TABLE [CARPETA] ADD FOREIGN KEY ([Tipo]) REFERENCES [TIPO_CARPETA] ([Id])
 GO
 
 ALTER TABLE [EVALUACION] ADD FOREIGN KEY ([Especificacion], [Carpeta_especificacion], [Tipo_carpeta_especificacion], [Numero], [Curso], [Anio], [Periodo]) REFERENCES [ARCHIVO] ([Nombre], [Carpeta], [Tipo_carpeta], [Numero], [Curso], [Anio], [Periodo])
