@@ -10,17 +10,22 @@ namespace XTecDigital.Models
             EvaluacionGrupo = new HashSet<EvaluacionGrupo>();
         }
 
-        public int Id { get; set; }
-        public int IdRubro { get; set; }
-        public int IdEspecificacion { get; set; }
         public string Nombre { get; set; }
         public bool NotasPublicadas { get; set; }
+        public DateTime FechaEntrega { get; set; }
         public decimal PesoNota { get; set; }
         public bool Grupal { get; set; }
-        public DateTime? FechaEntrega { get; set; }
+        public string Especificacion { get; set; }
+        public string CarpetaEspecificacion { get; set; }
+        public string TipoCarpetaEspecificacion { get; set; }
+        public string Rubro { get; set; }
+        public int Numero { get; set; }
+        public string Curso { get; set; }
+        public int Anio { get; set; }
+        public string Periodo { get; set; }
 
-        public virtual ArchivoEvaluacion IdEspecificacionNavigation { get; set; }
-        public virtual Rubro IdRubroNavigation { get; set; }
+        public virtual Archivo Archivo { get; set; }
+        public virtual Rubro RubroNavigation { get; set; }
         public virtual ICollection<EvaluacionGrupo> EvaluacionGrupo { get; set; }
     }
 }

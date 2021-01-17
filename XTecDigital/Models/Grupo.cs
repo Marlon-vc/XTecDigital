@@ -14,13 +14,13 @@ namespace XTecDigital.Models
             Rubro = new HashSet<Rubro>();
         }
 
-        public int Id { get; set; }
         public int Numero { get; set; }
-        public string IdCurso { get; set; }
-        public int IdSemestre { get; set; }
+        public string Curso { get; set; }
+        public int Anio { get; set; }
+        public string Periodo { get; set; }
 
-        public virtual Curso IdCursoNavigation { get; set; }
-        public virtual Semestre IdSemestreNavigation { get; set; }
+        public virtual Curso CursoNavigation { get; set; }
+        public virtual Semestre Semestre { get; set; }
         public virtual ICollection<Carpeta> Carpeta { get; set; }
         public virtual ICollection<EstudianteGrupo> EstudianteGrupo { get; set; }
         public virtual ICollection<Noticia> Noticia { get; set; }
