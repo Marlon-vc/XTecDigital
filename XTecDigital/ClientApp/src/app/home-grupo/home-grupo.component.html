@@ -1,7 +1,42 @@
-<div class="container">
+<!-- <div class="container"> -->
     <!-- <nav class="nav">
         <a href="{{ link.target }}" class="nav-link" *ngFor="let link of links">{{ link.title }}</a>
     </nav> -->
+
+    <nav *ngIf="userType == 'admin'" class="navbar navbar-icon-top navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
+        <a class="navbar-brand" href="#">XTecDigital</a>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="/initialize-semester">
+                        <i class="fas fa-flag-checkered"></i>
+                        Inicializar semestre
+                        <span class="sr-only"></span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/gestion-cursos">
+                        <i class="fas fa-book"></i>
+                        Gestion de cursos
+                    </a>
+                </li>
+
+                <!-- <li class="nav-item float-right">
+                    <a class="nav-link" href=# (click)="onLogout()">
+                        <i class="fas fa-book"></i>
+                        Cerrar sesion
+                    </a>
+                </li> -->
+            </ul>
+            <a class="nav-link" href=# (click)="onLogout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Cerrar sesion
+            </a>
+
+        </div>
+    </nav>
 
     <nav *ngIf="userType == 'estudiante'" class="navbar navbar-icon-top navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
         <a class="navbar-brand" href="#">XTecDigital</a>
@@ -35,12 +70,17 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link change" href="#">
+                    <a class="nav-link" href="#">
                         <i class="far fa-file-alt"></i>
-                        Reporte de Nnotas
+                        Reporte de Notas
                     </a>
                 </li>
+                
             </ul>
+            <a class="nav-link" href=# (click)="onLogout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Cerrar sesion
+            </a>
 
         </div>
     </nav>
@@ -71,7 +111,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link change" href="#">
+                    <a class="nav-link change" href="/asignar-evaluacion/{{groupId}}">
                         <i class="far fa-hand-pointer"></i>
                         Asignar evaluaciones
                     </a>
@@ -98,15 +138,25 @@
                 </li>
                 
                 <li class="nav-item">
-                    <a class="nav-link change" href="#">
+                    <a class="nav-link change" style="width: 180px !important;" href="#">
                         <i class="far fa-file-alt"></i>
                         Reporte de estudiantes matriculados
                     </a>
                 </li>
+                <!-- <li class="nav-item">
+                    <a class="nav-link" href=# (click)="onLogout()">
+                        <i class="fas fa-book"></i>
+                        Cerrar sesion
+                    </a>
+                </li> -->
             </ul>
+            <a class="nav-link" href=# (click)="onLogout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Cerrar sesion
+            </a>
 
         </div>
     </nav>
 
 
-</div>
+<!-- </div> -->

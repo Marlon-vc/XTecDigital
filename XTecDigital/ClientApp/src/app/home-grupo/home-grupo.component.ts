@@ -48,4 +48,10 @@ export class HomeGrupoComponent implements OnInit {
 
   }
 
+  onLogout() {
+    console.log('logging out..');
+    window.localStorage.clear();
+    this.router.navigate(['']);
+  }
+
 }

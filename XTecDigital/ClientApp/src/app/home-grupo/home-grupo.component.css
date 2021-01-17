@@ -131,7 +131,8 @@
     }
 
     .change {
-      height: 90px !important;
+      height: 80px !important;
+      width: 110px !important;
     }
 
   }

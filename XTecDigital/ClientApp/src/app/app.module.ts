@@ -18,7 +18,6 @@ import { NewsManagementComponent } from './news-management/news-management.compo
 import { SeeGroupNewsComponent } from './see-group-news/see-group-news.component';
 import { EvaluationPageComponent } from './evaluation-page/evaluation-page.component';
 import { EvaluateTaskComponent } from './evaluate-task/evaluate-task.component';
-import { HomeAdminComponent } from './home-admin/home-admin.component';
 import { HomeStudentComponent } from './home-student/home-student.component';
 import { HomeTeacherComponent } from './home-teacher/home-teacher.component';
 import { AsignarEvaluacionComponent } from './asignar-evaluacion/asignar-evaluacion.component';
@@ -39,7 +38,6 @@ import { AsignarEvaluacionComponent } from './asignar-evaluacion/asignar-evaluac
     SeeGroupNewsComponent,
     EvaluationPageComponent,
     EvaluateTaskComponent,
-    HomeAdminComponent,
     HomeStudentComponent,
     HomeTeacherComponent,
     AsignarEvaluacionComponent
@@ -62,7 +60,6 @@ import { AsignarEvaluacionComponent } from './asignar-evaluacion/asignar-evaluac
       { path: 'ver-noticias/:id', component: SeeGroupNewsComponent},
       { path: 'evaluation/:id', component: EvaluationPageComponent},
       { path: 'evaluate-task/:id', component: EvaluateTaskComponent},
-      { path: 'home-admin', component: HomeAdminComponent},
       { path: 'home-student', component: HomeStudentComponent},
       { path: 'home-teacher', component: HomeTeacherComponent},
       { path: 'asignar-evaluacion/:id', component: AsignarEvaluacionComponent}
