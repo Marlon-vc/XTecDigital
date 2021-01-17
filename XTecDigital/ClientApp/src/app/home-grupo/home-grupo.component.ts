@@ -13,35 +13,38 @@ export class HomeGrupoComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private router: Router) { }
 
+  //obtener el id del grupo
+  groupId = 1;
+  userType = window.localStorage.getItem('user-type');
+
   ngOnInit(): void {
-    let groupId = this.route.snapshot.params.id;
-
-    let userType = SessionHandler.getUserType();
+    // let groupId = this.route.snapshot.params.id
+  //   let userType = SessionHandler.getUserType();
     
-    if (userType == null) {
-      this.router.navigate['/']
-      console.log('Error');
-      return;
-    }
+  //   if (userType == null) {
+  //     this.router.navigate['/']
+  //     console.log('Error');
+  //     return;
+  //   }
 
-    this.links = [
-      {
-        target: `/documentos/${groupId}`,
-        title: 'Documentos'
-      },
-      {
-        target: `/evaluaciones/${groupId}`,
-        title: 'Evaluaciones'
-      },
-      {
-        target: `/noticias/${groupId}`,
-        title: 'Noticias'
-      },
-      {
-        target: `/estudiantes/${groupId}`,
-        title: 'Lista de Estudiantes'
-      },
-    ]; 
+  //   this.links = [
+  //     {
+  //       target: `/documentos/${groupId}`,
+  //       title: 'Documentos'
+  //     },
+  //     {
+  //       target: `/evaluaciones/${groupId}`,
+  //       title: 'Evaluaciones'
+  //     },
+  //     {
+  //       target: `/noticias/${groupId}`,
+  //       title: 'Noticias'
+  //     },
+  //     {
+  //       target: `/estudiantes/${groupId}`,
+  //       title: 'Lista de Estudiantes'
+  //     },
+  //   ]; 
 
   }
 
