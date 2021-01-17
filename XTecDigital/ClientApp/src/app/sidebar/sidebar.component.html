@@ -24,7 +24,7 @@
     <nav id="sidebar" class="sidebar-wrapper">
       <div class="sidebar-content">
         <div class="sidebar-brand">
-          <a [routerLink]="['/home']">XTecDigital</a>
+          <a>XTecDigital</a>
           <div id="close-sidebar">
             <i class="fas fa-times" style="color: white;"></i>
           </div>
@@ -46,17 +46,20 @@
               <li class="header-menu">
                 <span style="color: white;">Acciones</span>
               </li>
-              <li>
+              
+              <li class="sidebar-dropdown" *ngFor="let semestre of semestres">
                 <a href="#">
                   <i class="fas fa-university"></i>
-                  <span>Gestión de documentos</span>
+                  <span>Semestre {{semestre.periodo}} - {{semestre.anio}}</span>
+                  <!-- <span class="badge badge-pill badge-danger">3</span> -->
                 </a>
-              </li>
-              <li>
-                <a href="#">
-                  <i class="fas fa-book"></i>
-                  <span>Gestión de rubros</span>
-                </a>
+                <div class="sidebar-submenu">
+                  <ul *ngFor="let grupo of semestre.grupos">
+                    <li>
+                      <a href="#">Curso: {{grupo.idCurso}} - Grupo: {{grupo.numero}}</a>
+                    </li>
+                  </ul>
+                </div>
               </li>
             </ul>
           </div>
