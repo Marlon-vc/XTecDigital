@@ -1,12 +1,11 @@
-using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using XTecDigital.Helpers;
 using XTecDigital.Models;
-using XTecDigital.Models.Requests;
 
 namespace XTecDigital.Controllers
 {
@@ -33,96 +32,77 @@ namespace XTecDigital.Controllers
             return Ok();
         }
 
-        //POST: api/Semestres
         [HttpPost]
-        public async Task<IActionResult> AddSemestreAsync(Models.Requests.SemestreInfo data) {
-            
-            if (data == null || data.Grupos == null) {
+        public async Task<IActionResult> AddSemesterAsync(Models.Requests.SemestreInfo data)
+        {
+            if (data == null || string.IsNullOrWhiteSpace(data.Periodo) || data.Grupos == null)
                 return BadRequest();
-            }
 
             if (SemestreExists(data.Periodo, data.Anio))
                 return Conflict();
-
-            using var dbTransaction = await _context.Database.BeginTransactionAsync();
+            
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
             try {
-                //crear semestre
                 await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                    EXECUTE dbo.sp_create_semester {data.Anio}, {data.Periodo}
+                    dbo.sp_create_semester {data.Anio}, {data.Periodo}
                 ");
                 await _context.SaveChangesAsync();
 
-                //obtener id del semestre actual
-                var idSemestre = _context.Semestre.FromSqlInterpolated($@"
-                    EXECUTE dbo.sp_get_semestre {data.Periodo}, {data.Anio}
-                ").AsEnumerable().FirstOrDefault().Id;
-
                 foreach (var grupo in data.Grupos)
                 {
-                    //Agregar el actual al semestre
-                    // await _context.Database.ExecuteSqlInterpolatedAsync($@" 
-                    //     EXECUTE dbo.sp_create_curso_semestre {grupo.IdCurso}, {idSemestre}
-                    // ");   
-                    // await _context.SaveChangesAsync();
-
-                    //Crear el grupo
+                    // Crear grupo
                     await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                        EXECUTE dbo.sp_create_grupo {grupo.Numero}, {grupo.IdCurso}, {idSemestre}
+                        dbo.sp_create_grupo {grupo.Numero}, {grupo.Curso}, {data.Anio}, {data.Periodo}
                     ");
                     await _context.SaveChangesAsync();
 
-                    var idGrupo = _context.Grupo.FromSqlInterpolated($@"
-                        EXECUTE dbo.sp_get_grupo {grupo.Numero}, {grupo.IdCurso}, {idSemestre}
-                    ").AsEnumerable().FirstOrDefault().Id;
-
-                    //Agregar estudiantes
+                    // Crear grupo_estudiante
                     foreach (var estudiante in grupo.Estudiantes)
                     {
                         await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                            EXECUTE dbo.sp_create_grupo_estudiante {idGrupo}, {estudiante}
-                        "); 
-                        await _context.SaveChangesAsync();
+                            dbo.sp_create_grupo_estudiante {grupo.Numero}, {grupo.Curso}, {data.Anio}, {data.Periodo}, {estudiante}
+                        ");
                     }
-
-                    //Agregar profesores
-                    foreach(var profesor in grupo.Profesores) 
-                    {
-                        await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                            EXECUTE dbo.sp_create_grupo_profesor {idGrupo}, {profesor}
-                        "); 
-                        await _context.SaveChangesAsync();
-                    }
-
-                    //Agregar carpetas
-                    await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                        dbo.sp_create_initial_folders {idGrupo};
-                    ");
-                    //Carpeta de grupo
-                    var carpetaGrupo = FileHandler.GetGroupFolder(idGrupo);
-                    Directory.CreateDirectory(carpetaGrupo);
-                    //Carpeta de documentos
-                    var documentos = Path.Combine(carpetaGrupo, "Documentos");
-                    Directory.CreateDirectory(documentos);
-                    //Carpeta de entregables
-                    var entregables = Path.Combine(carpetaGrupo, "Entregables");
-                    Directory.CreateDirectory(entregables);
-                    //Carpeta de evaluaciones
-                    var evaluaciones = Path.Combine(carpetaGrupo, "Evaluaciones");
-                    Directory.CreateDirectory(evaluaciones);
-
-                    //Agregar rubros
-                    await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                        EXECUTE dbo.sp_create_initial_rubro {idGrupo}
-                    ");
-
                     await _context.SaveChangesAsync();
 
+                    // Crear grupo_profesor
+                    foreach (var profesor in grupo.Profesores)
+                    {
+                        await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                            dbo.sp_create_grupo_profesor {grupo.Numero}, {grupo.Curso}, {data.Anio}, {data.Periodo}, {profesor}
+                        ");
+                    }
+                    await _context.SaveChangesAsync();
+
+                    // Crear carpetas iniciales
+                    await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                        dbo.sp_create_initial_folders {grupo.Numero}, {grupo.Curso}, {data.Anio}, {data.Periodo}
+                    ");
+                    await _context.SaveChangesAsync();
+
+                    var carpetas = await _context.Carpeta.FromSqlInterpolated($@"
+                        dbo.sp_get_all_group_folders {grupo.Numero}, {grupo.Curso}, {data.Anio}, {data.Periodo}
+                    ").ToListAsync();
+
+                    var carpetaGrupo = FileHandler.GetGroupFolder(grupo.Numero, grupo.Curso, data.Anio, data.Periodo);
+                    foreach (var carpeta in carpetas)
+                    {
+                        Directory.CreateDirectory(Path.Combine(carpetaGrupo, carpeta.Nombre));
+                    }
+
+                    // Crear rubros por defecto
+                    await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                        dbo.sp_create_initial_rubro {grupo.Numero}, {grupo.Curso}, {data.Anio}, {data.Periodo}
+                    ");
+                    await _context.SaveChangesAsync();
                 }
-                
-                await dbTransaction.CommitAsync();
-            } catch (DbUpdateException ex) {
-                return StatusCode(500, ex.Message);
+
+                await transaction.CommitAsync();
+
+            } catch (DbUpdateException ex)
+            {
+                return StatusCode(500, ex);
             }
 
             return Ok();
@@ -130,10 +110,9 @@ namespace XTecDigital.Controllers
 
         private bool SemestreExists(string periodo, int anio)
         {
-            var result = _context.Semestre.FromSqlInterpolated(
-                $"EXECUTE dbo.sp_get_semestre {periodo}, {anio}"
-            ).AsEnumerable();
-            return result.Any();
+            return _context.Semestre.FromSqlInterpolated(
+                $"EXECUTE dbo.sp_get_semestre {anio}, {periodo}"
+            ).ToList().Any();
         }
     }
 }
