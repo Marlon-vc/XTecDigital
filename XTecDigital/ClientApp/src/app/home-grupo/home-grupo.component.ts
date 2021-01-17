@@ -48,6 +48,9 @@ export class HomeGrupoComponent implements OnInit {
 
   }
 
+  /**
+   * Metodo para cerrar sesion
+   */
   onLogout() {
     console.log('logging out..');
     window.localStorage.clear();

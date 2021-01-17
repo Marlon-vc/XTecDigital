@@ -23,6 +23,9 @@ export class EvaluationPageComponent implements OnInit {
     this.loadRubros();
   }
 
+  /**
+   * Metodo para cargar los rubros
+   */
   getRubros() {
     this.api.get(`https://localhost/api/Rubros/Grupo/${this.groupId}`).subscribe(
       (rubros: Rubro[]) => {
@@ -56,12 +59,18 @@ export class EvaluationPageComponent implements OnInit {
     );
   }
 
+  /**
+   * Metodo asincrono para cargar rubros
+   */
   async loadRubros() {
     this.rubros = await this.getRubros2();
     console.log(this.rubros);
     
   }
 
+  /**
+   * Metodo con promesa para obtener rubros
+   */
   getRubros2(): Promise<Rubro[]> {
     return new Promise((resolve, reject) => {
       this.api.get(`https://localhost/api/Rubros/Grupo/${this.groupId}`).subscribe(
@@ -79,6 +88,10 @@ export class EvaluationPageComponent implements OnInit {
     });
   }
 
+  /**
+   * Metodo asincrono para obtener las evaluaciones de un rubro
+   * @param rubro Objeto rubro para buscar evaluaciones
+   */
   async getEvaluacionesRubro(rubro: Rubro): Promise<Evaluacion[]> {
     return new Promise((resolve, reject) => {
       this.api.get(`https://localhost/api/Evaluaciones/Rubro/${rubro.id}`).subscribe(
@@ -96,6 +109,10 @@ export class EvaluationPageComponent implements OnInit {
     });
   }
 
+  /**
+   * Metodo asincrono para obtener la informacion de una evaluacion
+   * @param evaluacion  objeto tipo evaluacion
+   */
   async getInfoEvaluacion(evaluacion: Evaluacion): Promise<InfoEvaluacion> {
     return new Promise((resolve, reject) => {
       this.api.get(`https://localhost/api/Evaluaciones/Info/${evaluacion.id}`).subscribe(
@@ -109,6 +126,9 @@ export class EvaluationPageComponent implements OnInit {
     });
   }
 
+  /**
+   * Metodo para realizar animacion de icono
+   */
   changeIcon() {
     console.log(this.change);
     this.change = !this.change;

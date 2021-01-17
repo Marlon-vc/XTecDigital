@@ -64,6 +64,9 @@ export class SidebarComponent implements OnInit {
 
   }
 
+  /**
+   * Metodo para cargar los semestres
+   */
   loadSemestres() {
     // cargar semestres del estudiante o profesor actual
     var grupo1 = new Grupo();
@@ -89,6 +92,9 @@ export class SidebarComponent implements OnInit {
     this.semestres.push(sem);
   }
 
+  /**
+   * Metodo para obtener la informacion del usuario actual
+   */
   getActualUserInfo() {
     // obtener nombre del usuario logueado
     var user = {
@@ -99,6 +105,9 @@ export class SidebarComponent implements OnInit {
     this.actualUser = user;
   }
 
+  /**
+   * Metodo para cerrar sesion
+   */
   onLogout() {
     console.log('logging out..');
     window.localStorage.clear();

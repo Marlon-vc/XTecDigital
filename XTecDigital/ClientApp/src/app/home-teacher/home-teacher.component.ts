@@ -17,6 +17,9 @@ export class HomeTeacherComponent implements OnInit {
     this.loadSemestres();
   }
 
+  /**
+   * Metodo para cargar los semestres y cursos del profesor actual
+   */
   loadSemestres() {
     // cargar semestres del estudiante o profesor actual
     var grupo1 = new Grupo();

@@ -25,7 +25,7 @@ namespace XTecDigital.Controllers
             _context = context;
             _mapper = mapper;
         }
-
+        
         [HttpGet("root/{groupId}")]
         public async Task<IActionResult> GetAllAsync(int groupId)
         {

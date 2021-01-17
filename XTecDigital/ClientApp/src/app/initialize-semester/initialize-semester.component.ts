@@ -35,6 +35,9 @@ export class InitializeSemesterComponent implements OnInit {
     this.loadEstudiantes();
   }
 
+  /**
+   * Metodo para configurar la interfaz
+   */
   init() {
     var current_fs, next_fs, previous_fs; //fieldsets
     var opacity;
@@ -64,6 +67,13 @@ export class InitializeSemesterComponent implements OnInit {
     });
   }
 
+  /**
+   * Metodo para ir a la siguiente ventana
+   * @param current_fs 
+   * @param next_fs 
+   * @param opacity 
+   * @param actual 
+   */
   next(current_fs, next_fs, opacity, actual) {
     current_fs = $(actual).parent();
       next_fs = $(actual).parent().next();
@@ -88,6 +98,13 @@ export class InitializeSemesterComponent implements OnInit {
       });
   }
 
+  /**
+   * Metodo para ir a la ventana anterior
+   * @param current_fs 
+   * @param previous_fs 
+   * @param opacity 
+   * @param actual 
+   */
   previous(current_fs, previous_fs, opacity, actual) {
     current_fs = $(actual).parent();
       previous_fs = $(actual).parent().prev();
@@ -114,6 +131,9 @@ export class InitializeSemesterComponent implements OnInit {
       });
   }
 
+  /**
+   * Metodo para verificar si todos los datos del semestre estan completos
+   */
   checkSemester(): boolean {
     var year = $('#year');
     var period = $('#period');
@@ -136,6 +156,13 @@ export class InitializeSemesterComponent implements OnInit {
     return true;
   }
 
+  /**
+   * Metodo para crear un nuevo semestre
+   * @param current_fs 
+   * @param next_fs 
+   * @param opacity 
+   * @param actual 
+   */
   saveSemester(current_fs, next_fs, opacity, actual) {
 
     var year = $('#year');
@@ -162,6 +189,9 @@ export class InitializeSemesterComponent implements OnInit {
 
   }
 
+  /**
+   * Metodo para cargar los cursos disponibles
+   */
   loadCursos() {
     console.log('loading courses');
     this.api.get(`https://localhost/api/Cursos`)
@@ -174,6 +204,9 @@ export class InitializeSemesterComponent implements OnInit {
       });
   }
 
+  /**
+   * Metodo para cargar los profesores
+   */
   loadProfesores() {
     console.log('loading teachers');
     this.api.get(`https://localhost/api/Profesores`)
@@ -185,6 +218,9 @@ export class InitializeSemesterComponent implements OnInit {
       });
   }
 
+  /**
+   * Metodo para cargar los estudiantes
+   */
   loadEstudiantes() {
     console.log('loading students');
     this.api.get(`https://localhost/api/Estudiantes`)
@@ -197,12 +233,18 @@ export class InitializeSemesterComponent implements OnInit {
       });
   }
 
+  /**
+   * Metodo para mostrar las opciones de un curso
+   */
   setCourseOption() {
     $('#curso').on('change', function() {
       $('#courseInfo').css('display', 'flex');
     });
   }
 
+  /**
+   * Metodo para guardar los grupos
+   */
   saveCourse() {
     $('#courseInfo').css('display', 'none');
     var curso = $('#curso');
@@ -221,6 +263,9 @@ export class InitializeSemesterComponent implements OnInit {
     this.grupos.push(grupoN);
   }
 
+  /**
+   * Metodo para guardar los estudiantes de un grupo
+   */
   saveGroupStudents() {
     var students = $('#estudiantes').val() as string[];
     var groupInfo = $('#grupo').val().toString();  
@@ -236,6 +281,10 @@ export class InitializeSemesterComponent implements OnInit {
 
   }
 
+  /**
+   * Metodo para eliminar un grupo
+   * @param grupo Objeto tipo Grupo
+   */
   deleteGroup(grupo: Grupo) {
     var index = this.grupos.indexOf(grupo);
     if (index > -1) {
@@ -243,6 +292,10 @@ export class InitializeSemesterComponent implements OnInit {
    }
   }
 
+  /**
+   * Metodo para eliminar los estudiantes de un grupo
+   * @param grupo Objeto tipo grupo
+   */
   deleteStudents(grupo: Grupo) {
     grupo.estudiantes = [];
   }

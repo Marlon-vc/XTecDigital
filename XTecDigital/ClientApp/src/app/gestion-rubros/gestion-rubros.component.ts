@@ -25,6 +25,10 @@ export class GestionRubrosComponent implements OnInit {
       $('#context-menu').css('display', 'none');
     });
   }
+
+  /**
+   * Metodo para obtener los rubros de un grupo
+   */
   getRubros() {
     this.api.get(`https://localhost/api/Rubros/Grupo/${this.groupId}`).subscribe(
       (value: any) => {
@@ -40,6 +44,9 @@ export class GestionRubrosComponent implements OnInit {
     );
   }
 
+  /**
+   * Metodo para eliminar un rubro
+   */
   onEliminar() {
     this.api.delete(`https://localhost/api/Rubros/${this.selected.id}`).subscribe(
       (value:any) => {
@@ -52,6 +59,11 @@ export class GestionRubrosComponent implements OnInit {
     );
   }
 
+  /**
+   * Menu para mostrar el menu contextual
+   * @param item Item seleccionado
+   * @param event Evento de la interfaz
+   */
   showContextMenu(item, event) {
     console.log(item);
     this.selected = item;
@@ -63,6 +75,9 @@ export class GestionRubrosComponent implements OnInit {
     return false;
   }
 
+  /**
+   * Metodo para modificar un rubro
+   */
   modifyRubro() {
     var nombre = $('#nombreRubro');
     var porcentaje = $('#porc-rubro');
@@ -102,6 +117,11 @@ export class GestionRubrosComponent implements OnInit {
     }
   }
 
+  /**
+   * Metodo para agregar un rubro
+   * @param nombre Nombre del rubro
+   * @param porcentaje Porcentaje del rubro
+   */
   addRubroApi(nombre: JQuery<HTMLElement>, porcentaje: JQuery<HTMLElement>) {
     console.log(this.groupId);
     var id = Number.parseInt(this.groupId as string);
@@ -123,6 +143,11 @@ export class GestionRubrosComponent implements OnInit {
     );
   }
 
+  /**
+   * Metodo para modificar un rubro
+   * @param nombre Nuevo nombre del rubro
+   * @param porcentaje Nuevo porcentaje del rubro
+   */
   modifyRubroApi(nombre: JQuery<HTMLElement>, porcentaje: JQuery<HTMLElement>) {
     this.selected.nombre = nombre.val() as string;
     this.selected.porcentaje = Number.parseInt(porcentaje.val() as string);
@@ -137,6 +162,9 @@ export class GestionRubrosComponent implements OnInit {
       });
   }
 
+  /**
+   * Metodo para colocar que se esta actualizando
+   */
   updating(){
     this.update = true;
   }

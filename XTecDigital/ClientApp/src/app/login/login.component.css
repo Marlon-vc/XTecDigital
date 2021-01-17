@@ -1,13 +1,46 @@
+.container {
+    width: 150vw;
+    height: 47.6vw;
+    position: relative;
+    /* left: 50%; */
+    /* right: 50%; */
+    /* margin-left: -50vw; */
+    /* margin-right: -50vw; */
+    max-width: 100%;
+    /* margin-top: -15px; */
+
+    background-image: url('https://cdn.pixabay.com/photo/2016/01/19/01/42/library-1147815_1280.jpg');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
 form {
     /* color: white; */
     width: 350px;
     padding: 25px;
     border-radius: 4px;
-    /* background-color: rgba(255, 255, 255, 0.5); */
+    background-color: rgba(255, 255, 255, 0.9);
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
     
     top: 50%;
     left: 50%;
     position: absolute;
     transform: translate(-50%, -50%);
+}
+
+h1 {
+    width: 30%;
+    height: 8%;
+    color: black; 
+    text-align: center; 
+    /* padding-top: 7%; */
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    position: relative;
+    left: 35%; 
+    right: 65%;
+    top: 7%;
+    
+
 }

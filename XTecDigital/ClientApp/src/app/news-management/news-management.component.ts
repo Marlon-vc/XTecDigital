@@ -27,6 +27,9 @@ export class NewsManagementComponent implements OnInit {
     console.log(this.noticias.length);
   }
 
+  /**
+   * Metodo para cargar las noticias de un grupo
+   */
   loadNews() {
 
     this.api.get(`https://localhost/api/Noticias/Grupo/${this.groupId}`).subscribe(
@@ -40,6 +43,10 @@ export class NewsManagementComponent implements OnInit {
     );
 
   }
+
+  /**
+   * Metodo para cargar el nombre del autor
+   */
   loadAutorName() {
     this.noticias.forEach(noticia => {
       this.getAutor(noticia);
@@ -47,6 +54,10 @@ export class NewsManagementComponent implements OnInit {
 
   }
 
+  /**
+   * Metodo para obtener el autor de una noticia
+   * @param noticia Objeto tipo noticia
+   */
   getAutor(noticia: Noticia) {
     console.log('loading teachers');
     this.api.get(`https://localhost/api/Profesores/${noticia.autor}`)
@@ -61,6 +72,10 @@ export class NewsManagementComponent implements OnInit {
         });
   }
 
+  /**
+   * Metodo para modificar una noticia
+   * @param noticia Objeto tipo notica
+   */
   modify(noticia: Noticia) {
     this.updating = true;
     this.selectedNew = noticia;
@@ -68,6 +83,9 @@ export class NewsManagementComponent implements OnInit {
     $('#mensaje').val(noticia.mensaje);
   }
 
+  /**
+   * Metodo para modificar una noticia o agregar una nueva noticia
+   */
   modifyNew() {
     var titulo = $('#titulo');
     var mensaje = $('#mensaje');
@@ -89,6 +107,9 @@ export class NewsManagementComponent implements OnInit {
 
   }
 
+  /**
+   * Metodo para modificar una noticia desde el API
+   */
   modifyNewApi() {
     this.api.put(`https://localhost/api/Noticias/${this.selectedNew.id}`, this.selectedNew).subscribe(
       (value: any) => {
@@ -101,6 +122,11 @@ export class NewsManagementComponent implements OnInit {
     );
   }
 
+  /**
+   * Metodo para crear una nueva noticia desde el api
+   * @param titulo Titulo de la noticia
+   * @param mensaje Mensaje de la noticia
+   */
   createNewApi(titulo: string, mensaje: string) {
     var noticia = new Noticia();
     noticia.idGrupo = Number.parseInt(this.groupId as string);
@@ -121,7 +147,10 @@ export class NewsManagementComponent implements OnInit {
     );
   }
 
-
+  /**
+   * Metodo para eliminar una noticia
+   * @param noticia Objeto tipo noticia
+   */
   delete(noticia: Noticia) {
     this.api.delete(`https://localhost/api/Noticias/${noticia.id}`).subscribe(
       (value: any) => {

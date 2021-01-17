@@ -20,8 +20,10 @@ export class SeeGroupNewsComponent implements OnInit {
     console.log(this.noticias.length);
   }
 
+  /**
+   * Metodo para cargar las noticias de un grupo
+   */
   loadNews() {
-
     this.api.get(`https://localhost/api/Noticias/Grupo/${this.groupId}`).subscribe(
       (value: any) => {
         console.log(value);
@@ -31,8 +33,11 @@ export class SeeGroupNewsComponent implements OnInit {
         console.log(error);
       }
     );
-
   }
+
+  /**
+   * Metodo para cargar los nombres de los autores
+   */
   loadAutorName() {
     this.noticias.forEach(noticia => {
       this.getAutor(noticia);
@@ -40,6 +45,10 @@ export class SeeGroupNewsComponent implements OnInit {
 
   }
 
+  /**
+   * Metodo para obtener el autor de una noticia
+   * @param noticia Objeto tipo noticia
+   */
   getAutor(noticia: Noticia) {
     console.log('loading teachers');
     this.api.get(`https://localhost/api/Profesores/${noticia.autor}`)

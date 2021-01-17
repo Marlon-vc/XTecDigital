@@ -20,6 +20,9 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  /**
+   * Metodo para iniciar sesion
+   */
   logIn() {
     console.log('logging in...');
     
@@ -45,6 +48,10 @@ export class LoginComponent implements OnInit {
       });
   }
 
+  /**
+   * Metodo para recargar una pagina
+   * @param url url al que se desea ir
+   */
   async reload(url: string): Promise<boolean> {
     console.log('reloading');
     
@@ -52,6 +59,9 @@ export class LoginComponent implements OnInit {
     return this.router.navigate([url]);
   }
 
+  /**
+   * Metodo para navegar segun el tipo de usuario
+   */
   navigate() {
     var userType = SessionHandler.getUserType();
       if (userType == 'admin') {
