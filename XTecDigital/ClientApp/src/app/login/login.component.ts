@@ -55,7 +55,7 @@ export class LoginComponent implements OnInit {
   navigate() {
     var userType = SessionHandler.getUserType();
       if (userType == 'admin') {
-        this.router.navigate(['home-admin']);
+        this.router.navigate(['initialize-semester']);
         return;
       }
 
