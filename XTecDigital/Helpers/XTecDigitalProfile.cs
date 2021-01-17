@@ -15,6 +15,10 @@ namespace XTecDigital.Helpers
             //Crear mapas para dtos
             CreateMap<Carpeta, CarpetaDto>();
             CreateMap<Archivo, ArchivoDto>();
+            CreateMap<Curso, CursoDto>();
+            CreateMap<Evaluacion, EvaluacionDto>();
+            CreateMap<Rubro, RubroDto>();
+            CreateMap<Noticia, NoticiaDto>();
         }
     }
 }
