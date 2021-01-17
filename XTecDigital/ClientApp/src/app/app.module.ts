@@ -17,6 +17,10 @@ import { HomeGrupoComponent } from './home-grupo/home-grupo.component';
 import { NewsManagementComponent } from './news-management/news-management.component';
 import { SeeGroupNewsComponent } from './see-group-news/see-group-news.component';
 import { EvaluationPageComponent } from './evaluation-page/evaluation-page.component';
+import { EvaluateTaskComponent } from './evaluate-task/evaluate-task.component';
+import { HomeStudentComponent } from './home-student/home-student.component';
+import { HomeTeacherComponent } from './home-teacher/home-teacher.component';
+import { AsignarEvaluacionComponent } from './asignar-evaluacion/asignar-evaluacion.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +36,11 @@ import { EvaluationPageComponent } from './evaluation-page/evaluation-page.compo
     HomeGrupoComponent,
     NewsManagementComponent,
     SeeGroupNewsComponent,
-    EvaluationPageComponent
+    EvaluationPageComponent,
+    EvaluateTaskComponent,
+    HomeStudentComponent,
+    HomeTeacherComponent,
+    AsignarEvaluacionComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -51,7 +59,10 @@ import { EvaluationPageComponent } from './evaluation-page/evaluation-page.compo
       { path: 'noticias/:id', component: NewsManagementComponent },
       { path: 'ver-noticias/:id', component: SeeGroupNewsComponent},
       { path: 'evaluation/:id', component: EvaluationPageComponent},
-      
+      { path: 'evaluate-task/:id', component: EvaluateTaskComponent},
+      { path: 'home-student', component: HomeStudentComponent},
+      { path: 'home-teacher', component: HomeTeacherComponent},
+      { path: 'asignar-evaluacion/:id', component: AsignarEvaluacionComponent}
       
     ])
   ],

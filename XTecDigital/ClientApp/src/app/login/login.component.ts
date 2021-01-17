@@ -16,7 +16,7 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     if(SessionHandler.isLoggedIn()) {
       //Ir a página de inicio
-      this.router.navigate(['home']);
+      this.navigate();
     }
   }
 
@@ -35,8 +35,10 @@ export class LoginComponent implements OnInit {
       .subscribe((data: any) => {
         console.log('success');
         SessionHandler.logIn(data.userId, data.type);
+        var userType = SessionHandler.getUserType();
         // this.router.navigate(['home']);
-        this.reload('home');
+        // this.reload('home');
+        this.navigate();
       }, (error) => {
           console.log('error logging in');
           console.log(error);
@@ -48,5 +50,20 @@ export class LoginComponent implements OnInit {
     
     await this.router.navigate(['sidebar'], { skipLocationChange: true });
     return this.router.navigate([url]);
+  }
+
+  navigate() {
+    var userType = SessionHandler.getUserType();
+      if (userType == 'admin') {
+        this.router.navigate(['initialize-semester']);
+        return;
+      }
+
+      if (userType == 'estudiante') {
+        this.router.navigate(['home-student']);
+        return;
+      }
+
+      this.router.navigate(['home-teacher']);
   }
 }

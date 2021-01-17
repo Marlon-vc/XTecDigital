@@ -57,7 +57,7 @@ export class SidebarComponent implements OnInit {
       });
     });
 
-    if (this.userType == 'estudiante') {
+    if (this.userType == 'estudiante' || this.userType == 'profesor') {
       this.loadSemestres();
     }
     this.getActualUserInfo();
@@ -65,7 +65,7 @@ export class SidebarComponent implements OnInit {
   }
 
   loadSemestres() {
-    // cargar semestres del estudiante actual
+    // cargar semestres del estudiante o profesor actual
     var grupo1 = new Grupo();
     var grupo2 = new Grupo();
     var grupo3 = new Grupo();
@@ -89,9 +89,10 @@ export class SidebarComponent implements OnInit {
   }
 
   getActualUserInfo() {
+    // obtener nombre del usuario logueado
     var user = {
       nombre: 'Paola Villegas',
-      tipo: 'Estudiante'
+      tipo: this.userType.toLocaleUpperCase()
     }
 
     this.actualUser = user;

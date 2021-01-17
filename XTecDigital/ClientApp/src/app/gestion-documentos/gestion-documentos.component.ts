@@ -9,6 +9,7 @@ import { ApiService } from '../services/api.service';
 })
 export class GestionDocumentosComponent implements OnInit {
 
+  userType = window.localStorage.getItem('user-type');
   selected: any;
   inFolder: boolean;
   currentFolder: any;
