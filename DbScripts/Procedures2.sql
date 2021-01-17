@@ -262,6 +262,18 @@ WHERE
     Nombre = @Nombre AND Tipo = @Tipo AND Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo;
 
 GO
+CREATE PROCEDURE dbo.sp_get_type_folder
+    @Tipo VARCHAR(20),
+    @Numero INT,
+    @Curso VARCHAR(10),
+    @Anio INT,
+    @Periodo CHAR(1)
+AS
+SELECT Nombre, Solo_lectura, Tipo, Numero, Curso, Anio, Periodo
+FROM dbo.CARPETA
+WHERE Tipo = @Tipo AND Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo;
+
+GO
 CREATE PROCEDURE dbo.sp_get_root_folder
 	@Numero INT,
     @Curso VARCHAR(10),
