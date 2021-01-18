@@ -27,7 +27,7 @@ namespace XTecDigital.Controllers
         }
 
         [HttpGet("root")]
-        public async Task<IActionResult> GetAllAsync(GrupoDto grupo)
+        public async Task<IActionResult> GetAllAsync([FromQuery] GrupoDto grupo)
         {
             var folders = await _context.Carpeta.FromSqlInterpolated($@"
                 dbo.sp_get_group_folders {grupo.Numero}, {grupo.Curso}, {grupo.Anio}, {grupo.Periodo}
@@ -53,8 +53,8 @@ namespace XTecDigital.Controllers
             return Ok(data);
         }
 
-        [HttpGet("folder")]
-        public async Task<IActionResult> GetFolderContentsAsync(CarpetaDto carpeta)
+        [HttpGet("contents")]
+        public async Task<IActionResult> GetFolderContentsAsync([FromQuery] CarpetaDto carpeta)
         {
             var files = await _context.Archivo.FromSqlInterpolated($@"
                 dbo.sp_get_files {carpeta.Nombre}, {carpeta.Tipo}, {carpeta.Numero}, {carpeta.Curso}, {carpeta.Anio}, {carpeta.Periodo}
@@ -63,8 +63,8 @@ namespace XTecDigital.Controllers
             return Ok(_mapper.Map<List<ArchivoDto>>(files));
         }
 
-        [HttpGet("file")]
-        public async Task<IActionResult> GetFileAsync(ArchivoDto archivo)
+        [HttpGet("download")]
+        public async Task<IActionResult> GetFileAsync([FromQuery] ArchivoDto archivo)
         {
             var file = (await _context.Archivo.FromSqlInterpolated($@"
                 dbo.sp_get_file {archivo.Nombre}, {archivo.Carpeta}, {archivo.TipoCarpeta}, {archivo.Numero}, {archivo.Curso}, {archivo.Anio}, {archivo.Periodo}
@@ -77,7 +77,7 @@ namespace XTecDigital.Controllers
             var groupFolder = FileHandler.GetGroupFolder(file.Numero, file.Curso, file.Anio, file.Periodo);
 
             string folder;
-            if (file.TipoCarpeta.Equals("DOCUMENTOS_NORMAL"))
+            if (file.TipoCarpeta.Equals("NORMAL"))
             {
                 var rootFolder = (await _context.Carpeta.FromSqlInterpolated($@"
                     dbo.sp_get_root_folder {file.Numero}, {file.Curso}, {file.Anio}, {file.Periodo}
@@ -93,12 +93,9 @@ namespace XTecDigital.Controllers
                 folder = file.Carpeta;
             }
             
-            // var groupFolder = Path.Combine(Environment.CurrentDirectory, "Storage", $"Grupo-{folder.IdGrupo}");
-            
             var filePath = Path.Combine(groupFolder, folder, file.Nombre);
             var contents = await System.IO.File.ReadAllBytesAsync(filePath);
 
-            // return File(contents, "application/force-download", file.Nombre);
             return File(contents, "application/octet-stream", file.Nombre);
         }
 
@@ -116,7 +113,7 @@ namespace XTecDigital.Controllers
 
             string folder;
 
-            if (info.TipoCarpeta.Equals("DOCUMENTOS_NORMAL"))
+            if (info.TipoCarpeta.Equals("NORMAL"))
             {
                 var rootFolder = (await _context.Carpeta.FromSqlInterpolated($@"
                     dbo.sp_get_root_folder {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}
@@ -157,11 +154,11 @@ namespace XTecDigital.Controllers
                 return BadRequest();
 
             await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                dbo.sp_create_folder {info.Nombre}, {0}, {"DOCUMENTOS_NORMAL"}, {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}
+                dbo.sp_create_folder {info.Nombre}, {0}, {"NORMAL"}, {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}
             ");
 
             var folder = (await _context.Carpeta.FromSqlInterpolated($@"
-                dbo.sp_get_folder {info.Nombre}, {"DOCUMENTOS_NORMAL"}, {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}
+                dbo.sp_get_folder {info.Nombre}, {"NORMAL"}, {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}
             ").ToListAsync()).FirstOrDefault();
 
             return CreatedAtRoute("Default", folder);
@@ -178,7 +175,7 @@ namespace XTecDigital.Controllers
 
             string folder;
 
-            if (archivo.TipoCarpeta == "DOCUMENTOS_NORMAL")
+            if (archivo.TipoCarpeta == "NORMAL")
             {
                 var rootFolder = (await _context.Carpeta.FromSqlInterpolated($@"
                     dbo.sp_get_root_folder {archivo.Numero}, {archivo.Curso}, {archivo.Anio}, {archivo.Periodo}
@@ -203,7 +200,7 @@ namespace XTecDigital.Controllers
         [HttpDelete("folder")]
         public async Task<IActionResult> DeleteFolderAsync(CarpetaDto carpeta)
         {
-            if (!carpeta.Tipo.Equals("DOCUMENTOS_NORMAL"))
+            if (!carpeta.Tipo.Equals("NORMAL"))
                 return BadRequest();
 
             var rows = await _context.Database.ExecuteSqlInterpolatedAsync($@"
