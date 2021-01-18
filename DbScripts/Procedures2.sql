@@ -600,6 +600,18 @@ LEFT JOIN dbo.EVALUACION_INTEGRANTES as EI ON
 WHERE
     Nombre = @Evaluacion AND Rubro = @Rubro AND Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo;
 
+
+GO
+CREATE PROCEDURE dbo.get_students_group
+	@Numero INT,
+    @Curso VARCHAR(10),
+    @Anio INT,
+    @Periodo CHAR(1)
+AS
+SELECT Estudiante, Numero, Curso, Anio, Periodo
+FROM dbo.ESTUDIANTE_GRUPO
+WHERE Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo
+
 GO
 CREATE PROCEDURE dbo.sp_get_student_groups
     @Student VARCHAR(50)
@@ -630,6 +642,24 @@ WHERE
 	PG.Profesor = @Cedula
 ORDER BY CG.Anio_semestre DESC, CG.Periodo_semestre DESC;
 
+--- Procedimientos para asignar evaluaciones
+GO
+CREATE PROCEDURE dbo.sp_assign_evaluation
+	@Nombre_evaluacion VARCHAR(100),
+	@Rubro VARCHAR(100),
+	@Peso DECIMAL(5,2),
+	@Fecha DATETIME,
+	@Espec VARCHAR(100),
+	@Individual BIT,
+	@Numero INT,
+    @Curso VARCHAR(10),
+    @Anio INT,
+    @Periodo CHAR(1)
+AS
+BEGIN
+
+
+END;
 
 -- ACTUALIZADOS
 --dbo.sp_create_grupo_estudiante
