@@ -10,7 +10,7 @@
                 <div class="form-group">
                     <select class="form-control" id="rubro">
                         <option selected="" value="Seleccione un rubro"> Seleccione un rubro</option>
-                        <option *ngFor="let rubro of rubros" value="{{rubro.id}}">{{ rubro.nombre }}</option>
+                        <option *ngFor="let rubro of rubros" value="{{rubro.nombre}}">{{ rubro.nombre }}</option>
                     </select>
                 </div> <!-- form-group// -->
                 <!-- <div class="form-group">
@@ -22,12 +22,8 @@
                     <input type="number" min=1, max=100, name="peso" id="peso" class="form-control">
                 </div>
                 <div class="form-group">
-                    <label for="fecha">Fecha maxima</label>
-                    <input type="date" name="fecha" id="fecha" class="form-control">
-                </div>
-                <div class="form-group">
-                    <label for="hora">Hora maxima</label>
-                    <input type="datetime" name="hora" id="hora" class="form-control">
+                    <label for="fecha">Fecha y hora maxima</label>
+                    <input type="datetime-local" name="fecha" id="fecha" class="form-control">
                 </div>
                 <div class="form-group">
                     <label for="espec">Especificacion</label>
@@ -51,12 +47,14 @@
                 </div>
                 <div id="grupalOption" style="display: none;" class="form-group input-group">
                     <div class="input-group-prepend">
-                        <span class="input-group-text"> <i class="fas fa-handshake"></i> </span>
+                        <span class="input-group-text"> 
+                            <i class="fas fa-users"></i> 
+                        </span>
                     </div>
                     
                     <select class="selectpicker" multiple id="groups">
                         <option value="Seleccione los estudiantes"> Seleccione los estudiantes</option>
-                        <option *ngFor="let estudiante of estudiantes" value="{{estudiante.id}}">{{ estudiante.nombre }}</option>
+                        <option *ngFor="let estudiante of estudiantes" value="{{estudiante.carnet}}">{{ estudiante.nombre }}, {{ estudiante.carnet }} </option>
                     </select>
                 </div> <!-- form-group end.// -->
                 <div class="form-group">
@@ -73,8 +71,7 @@
                         <th class="text-center align-middle" scope="col">Rubro</th>
                         <th class="text-center align-middle" scope="col">Nombre</th>
                         <th class="text-center align-middle" scope="col">Peso</th>
-                        <th class="text-center align-middle" scope="col">Fecha maxima</th>
-                        <th class="text-center align-middle"scope="col">Hora maxima</th>
+                        <th class="text-center align-middle" scope="col">Fecha y hora maxima</th>
                         <th class="text-center align-middle"scope="col">Especificacion</th>
                         <th class="text-center align-middle" scope="col">Grupal</th>
                         <th class="text-center align-middle" scope="col">Integrantes del grupo</th>
@@ -86,7 +83,6 @@
                         <td class="text-center align-middle">{{ evaluacion.nombre }}</td>
                         <td class="text-center align-middle">{{ evaluacion.peso }}</td>
                         <td class="text-center align-middle">{{ evaluacion.fechaMaxima }}</td>
-                        <td class="text-center align-middle">{{ evaluacion.horaMaxima }}</td>
                         <td class="text-center align-middle">{{ evaluacion.especificacion }}</td>
                         <td class="text-center align-middle">{{ evaluacion.grupal }}</td>
                         <td class="text-center align-middle">
