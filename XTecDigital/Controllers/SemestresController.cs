@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,6 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using XTecDigital.Helpers;
 using XTecDigital.Models;
+using XTecDigital.Models.Requests;
+using ExcelDataReader;
+using System.Text;
+using System.Data;
+using System.Collections.Generic;
 
 namespace XTecDigital.Controllers
 {
@@ -22,13 +28,15 @@ namespace XTecDigital.Controllers
 
         // GET: api/Semestres
         [HttpGet]
-        public IActionResult GetSemestres() {
+        public IActionResult GetSemestres()
+        {
             return Ok();
         }
 
         //GET: api/Semestres/5
         [HttpGet("{id}")]
-        public IActionResult GetSemestre(int id) {
+        public IActionResult GetSemestre(int id)
+        {
             return Ok();
         }
 
@@ -52,6 +60,7 @@ namespace XTecDigital.Controllers
             return Ok(grupos);
         }
 
+        //POST: api/Semestres
         [HttpPost]
         public async Task<IActionResult> AddSemesterAsync(Models.Requests.SemestreInfo data)
         {
@@ -60,10 +69,12 @@ namespace XTecDigital.Controllers
 
             if (SemestreExists(data.Periodo, data.Anio))
                 return Conflict();
-            
+
             using var transaction = await _context.Database.BeginTransactionAsync();
 
-            try {
+            try
+            {
+                //crear semestre
                 await _context.Database.ExecuteSqlInterpolatedAsync($@"
                     dbo.sp_create_semester {data.Anio}, {data.Periodo}
                 ");
@@ -86,7 +97,7 @@ namespace XTecDigital.Controllers
                     }
                     await _context.SaveChangesAsync();
 
-                    // Crear grupo_profesor
+                    //Agregar profesores
                     foreach (var profesor in grupo.Profesores)
                     {
                         await _context.Database.ExecuteSqlInterpolatedAsync($@"
@@ -95,7 +106,7 @@ namespace XTecDigital.Controllers
                     }
                     await _context.SaveChangesAsync();
 
-                    // Crear carpetas iniciales
+                    //Agregar carpetas
                     await _context.Database.ExecuteSqlInterpolatedAsync($@"
                         dbo.sp_create_initial_folders {grupo.Numero}, {grupo.Curso}, {data.Anio}, {data.Periodo}
                     ");
@@ -113,11 +124,11 @@ namespace XTecDigital.Controllers
                     }
 
                     var carpetasNormales = await _context.Carpeta.FromSqlInterpolated($@"
-                        dbo.sp_get_type_folder {"NORMAL"}, {grupo.Numero}, {grupo.Curso}, {grupo.Anio}, {grupo.Periodo}
+                        dbo.sp_get_type_folder {"NORMAL"}, {grupo.Numero}, {grupo.Curso}, {data.Anio}, {data.Periodo}
                     ").ToListAsync();
 
                     var rootFolder = (await _context.Carpeta.FromSqlInterpolated($@"
-                        dbo.sp_get_root_folder {grupo.Numero}, {grupo.Curso}, {grupo.Anio}, {grupo.Periodo}
+                        dbo.sp_get_root_folder {grupo.Numero}, {grupo.Curso}, {data.Anio}, {data.Periodo}
                     ").ToListAsync()).FirstOrDefault();
 
                     var docsPath = Path.Combine(carpetaGrupo, rootFolder.Nombre);
@@ -128,7 +139,7 @@ namespace XTecDigital.Controllers
                         Directory.CreateDirectory(Path.Combine(docsPath, carpeta.Nombre));
                     }
 
-                    // Crear rubros por defecto
+                    //Agregar rubros
                     await _context.Database.ExecuteSqlInterpolatedAsync($@"
                         dbo.sp_create_initial_rubro {grupo.Numero}, {grupo.Curso}, {data.Anio}, {data.Periodo}
                     ");
@@ -137,13 +148,110 @@ namespace XTecDigital.Controllers
 
                 await transaction.CommitAsync();
 
-            } catch (DbUpdateException ex)
+            }
+            catch (DbUpdateException ex)
             {
                 return StatusCode(500, ex);
             }
 
             return Ok();
         }
+
+        [HttpPost("file")]
+        public IActionResult AddSemestreExcel([FromBody] String data)
+        {
+            var index = data.IndexOf(',') + 1;
+            data = data[index..];
+            byte[] fileAsBytes = Convert.FromBase64String(data);
+            Stream streamData = new MemoryStream(fileAsBytes, 0, fileAsBytes.Length);
+
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+            List<SemestreExcel> cursos = new List<SemestreExcel>();
+            var count = 0;
+
+            // using (var stream = System.IO.File.Open(filePath, FileMode.Open, FileAccess.Read))
+            using (streamData)
+            {
+                using var reader = ExcelReaderFactory.CreateReader(streamData);
+                do
+                {
+                    while (reader.Read())
+                    {
+                        if (count == 0)
+                        {
+                            count++;
+                            continue;
+                        }
+                        if (reader.GetString(0) == null)
+                        {
+                            break;
+                        }
+                        SemestreExcel sem = new SemestreExcel
+                        {
+                            Carnet = reader.GetString(0),
+                            Nombre = reader.GetString(1),
+                            Apellido1 = reader.GetString(2),
+                            Apellido2 = reader.GetString(3),
+                            IdCurso = reader.GetString(4),
+                            NombreCurso = reader.GetString(5),
+                            Anio = reader.GetDouble(6),
+                            Periodo = reader.GetDouble(7),
+                            Grupo = reader.GetDouble(8),
+                            IdProfesor = reader.GetString(9),
+                            NombreProfesor = reader.GetString(10),
+                            Apellido1Profesor = reader.GetString(11),
+                            Apellido2Profesor = reader.GetString(12)
+                        };
+                        cursos.Add(sem);
+                    }
+                } while (reader.NextResult());
+            }
+
+            if (cursos.Count < 0)
+                return NoContent();
+
+            var dataInserted = AddToTemporalTable(cursos);
+
+            return Ok();
+        }
+
+        private async Task<bool> AddToTemporalTable(List<SemestreExcel> data) {
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try 
+            {
+                await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                    dbo.sp_create_temporal_table
+                ");
+                await _context.SaveChangesAsync();
+
+                foreach (var row in data)
+                {
+                    await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                        dbo.sp_insert_temporal_table {row.Carnet}, {row.IdCurso}, {row.NombreCurso}, 
+                        {row.Anio}, {row.Periodo}, {row.Grupo}, {row.IdProfesor}
+                    ");   
+                    await _context.SaveChangesAsync();
+                }
+
+                //crear nuevo semestre
+                await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                        dbo.sp_initialize_semester
+                ");
+                await _context.SaveChangesAsync();
+
+
+            }
+            catch (DbUpdateException ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+
+            return true;
+        }
+
 
         private bool SemestreExists(string periodo, int anio)
         {

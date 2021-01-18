@@ -40,6 +40,9 @@ export class GestionDocumentosComponent implements OnInit {
     this.loadDocumentos();
   }
 
+  /**
+   * Metodo para cargar los documentos de un curso
+   */
   loadDocumentos() {
 
     var query = new URLSearchParams(this.group).toString();
@@ -55,6 +58,10 @@ export class GestionDocumentosComponent implements OnInit {
       });
   }
 
+  /**
+   * Metodo para leer un archivo
+   * @param file 
+   */
   readFile(file: File) {
     let promise = new Promise((resolve) => {
       var reader = new FileReader();
@@ -66,6 +73,9 @@ export class GestionDocumentosComponent implements OnInit {
     return promise;
   }
 
+  /**
+   * Metodo para subir un archivo
+   */
   async onSubirArchivo() {
     console.log('subir archivo');
     // @ts-ignore
@@ -122,6 +132,10 @@ export class GestionDocumentosComponent implements OnInit {
       })
   }
 
+  /**
+   * Metodo para mejorar apareciendia del tamaño de un archivo
+   * @param size 
+   */
   getPrettySize(size) {
     if (size < 1000) {
       return `${new Number(size).toFixed(1)} b`
@@ -134,15 +148,25 @@ export class GestionDocumentosComponent implements OnInit {
     return 'TOO_BIG';
   }
 
+  /**
+   * Metodo para mejor apariencia de una fecha
+   * @param date 
+   */
   getPrettyDate(date: string) {
     return date.substring(0, date.indexOf('T'));
   }
 
+  /**
+   * Metodo para cancelar subir archivo
+   */
   onCancelUpload() {
     console.log(' upload cancelled');
     $('#upload-file').val('');  
   }
 
+  /**
+   * Metodo para crear una carpeta
+   */
   onCrearCarpeta() {
     console.log('crear carpeta');
     let nombre = $('input#folder-name').val() as string;
@@ -176,6 +200,10 @@ export class GestionDocumentosComponent implements OnInit {
 
   }
 
+  /**
+   * Metodo que se llama al presiona una carpeta para abrirla
+   * @param folder Carpeta
+   */
   folderDoubleClicked(folder) {
     console.log('Double clicked');
     console.log(folder);
@@ -201,6 +229,9 @@ export class GestionDocumentosComponent implements OnInit {
       });
   }
 
+  /**
+   * Metodo para ir a la pagina principal de documentos
+   */
   toHome() {
     this.inFolder = false;
     this.currentFolder = null;

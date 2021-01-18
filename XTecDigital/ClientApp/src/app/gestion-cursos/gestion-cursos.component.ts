@@ -23,6 +23,9 @@ export class GestionCursosComponent implements OnInit {
     });
   }
 
+  /**
+   * Metodo para cargar todos los cursos
+   */
   loadCursos() {
     console.log('loading courses');
     this.api.get(`https://localhost/api/Cursos`)
@@ -33,6 +36,11 @@ export class GestionCursosComponent implements OnInit {
       });
   }
 
+  /**
+   * Metodo para mostrar menu contextual
+   * @param item Item seleccionado
+   * @param event Evento de interdaz
+   */
   onRightClick(item, event) {
     $('#context-menu').css({
       'display': 'block',
@@ -43,6 +51,10 @@ export class GestionCursosComponent implements OnInit {
     return false;
   }
 
+  /**
+   * Metodo para colocar informacion a modificar
+   * @param event Evento de interfaz
+   */
   onModificar(event) {
     this.modificando = true;
 
@@ -62,11 +74,18 @@ export class GestionCursosComponent implements OnInit {
     return false;
   }
 
+  /**
+   * Metodo para mostrar modal
+   * @param event Evento de interfaz
+   */
   onEliminar(event) {
     // @ts-ignore
     $('#delete-modal').modal('show');
   }
 
+  /**
+   * Metodo para eliminar un curso
+   */
   onEliminarConfirm() {
     console.log("eliminando...");
     // @ts-ignore
@@ -81,6 +100,9 @@ export class GestionCursosComponent implements OnInit {
       });
   }
 
+  /**
+   * Metodo para modificar interfaz
+   */
   onCancelEdit() {
     this.modificando = false;
     $('#action-title').text('Crear curso');
@@ -92,6 +114,9 @@ export class GestionCursosComponent implements OnInit {
     $('#habilitado1').prop('checked', true); 
   }
 
+  /**
+   * Metodo para agregar o modificar un curso
+   */
   onAction() {
     //TODO: validar entrada
 
@@ -136,10 +161,20 @@ export class GestionCursosComponent implements OnInit {
     }
   }
 
+  /**
+   * Metodo para verificar si un string esta vacio
+   * @param str String a verificar
+   */
   isEmpty(str: string) {
     return str === null || str.match(/^ *$/) !== null;
   }
 
+  /**
+   * Metodo para mostrar un modal
+   * @param title Titulo de la modal
+   * @param body Cuerpo de la modal
+   * @param okText Texto del boton
+   */
   showModal(title: string, body: string, okText: string = "Aceptar") {
     $('#modal-title').text(title);
     $('#modal-body').text(body);

@@ -26,7 +26,7 @@ namespace XTecDigital.Controllers
 
         //GET: api/Noticias/Grupo/1
         [HttpGet("Grupo")]
-        public async Task<IActionResult> GetNoticiasGrupoAsync(GrupoDto grupo)
+        public async Task<IActionResult> GetNoticiasGrupoAsync([FromQuery] GrupoDto grupo)
         {
             var result = await _context.Noticia.FromSqlInterpolated($@"
                 dbo.sp_get_noticias_grupo {grupo.Numero}, {grupo.Curso}, {grupo.Anio}, {grupo.Periodo}
@@ -37,7 +37,7 @@ namespace XTecDigital.Controllers
 
         //GET: api/Rubros/1
         [HttpGet]
-        public async Task<IActionResult> GetNoticiaAsync(NoticiaRequest info)
+        public async Task<IActionResult> GetNoticiaAsync([FromQuery] NoticiaRequest info)
         {
             var noticia = (await _context.Noticia.FromSqlInterpolated($@"
                 dbo.sp_get_noticia {info.Titulo}, {info.FechaPublicacion}, {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}
@@ -55,12 +55,13 @@ namespace XTecDigital.Controllers
         {
             if (noticia == null)
                 return BadRequest();
+
+            noticia.FechaPublicacion = DateTime.Now;
             
             if (NoticiaExists(noticia))
                 return Conflict();
             
-            noticia.FechaPublicacion = DateTime.Now;
-            
+        
             await _context.Database.ExecuteSqlInterpolatedAsync($@"
                 dbo.sp_create_noticia {noticia.Titulo}, {noticia.Mensaje}, {noticia.Autor}, {noticia.FechaPublicacion}, {noticia.Numero}, {noticia.Curso}, {noticia.Anio}, {noticia.Periodo}
             ");
@@ -85,7 +86,7 @@ namespace XTecDigital.Controllers
 
         // DELETE: api/Noticias/1
         [HttpDelete]
-        public async Task<IActionResult> DeleteNoticiaAsync(NoticiaRequest noticia)
+        public async Task<IActionResult> DeleteNoticiaAsync([FromQuery] NoticiaRequest noticia)
         {
             var rows = await _context.Database.ExecuteSqlInterpolatedAsync($@"
                 dbo.sp_delete_noticia {noticia.Titulo}, {noticia.FechaPublicacion}, {noticia.Numero}, {noticia.Curso}, {noticia.Anio}, {noticia.Periodo}

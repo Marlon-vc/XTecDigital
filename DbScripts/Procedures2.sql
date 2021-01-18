@@ -75,6 +75,75 @@ SELECT Anio, Periodo
 FROM dbo.SEMESTRE
 WHERE Anio = @Anio AND Periodo = @Periodo;
 
+-- Crear tabla temporal de semestre
+GO
+CREATE PROCEDURE dbo.sp_create_temporal_table
+AS
+CREATE TABLE [#EXCEL_TABLE] (
+	[Carnet] varchar(50),
+	[IdCurso] varchar(10),
+	[NombreCurso] varchar(100),
+	[Anio] int,
+	[Periodo] char(1),
+	[Grupo] int,
+	[IdProfesor] varchar(50)
+);
+
+GO
+CREATE PROCEDURE dbo.sp_delete_temporal_table
+AS
+IF OBJECT_ID('tempdb.dbo.#EXCEL_TABLE', 'U') IS NOT NULL
+  DROP TABLE #EXCEL_TABLE; 
+
+GO
+CREATE PROCEDURE dbo.sp_insert_temporal_table
+	@Carnet varchar(50),
+	@IdCurso varchar(10),
+	@NombreCurso varchar(100),
+	@Anio int,
+	@Periodo char(1),
+	@Grupo int,
+	@IdProfesor varchar(50)
+AS
+INSERT INTO #EXCEL_TABLE (Carnet, IdCurso, NombreCurso, Anio, Periodo, Grupo, IdProfesor)
+VALUES (@Carnet, @IdCurso, @NombreCurso, @Anio, @Periodo, @Grupo, @IdProfesor);
+
+--insertar desde tabla temporal
+GO
+CREATE PROCEDURE dbo.sp_initialize_semester
+AS
+INSERT INTO dbo.SEMESTRE (Anio, Periodo)
+SELECT DISTINCT Anio, Periodo FROM #EXCEL_TABLE;
+
+CREATE PROCEDURE dbo.sp_semester_excel
+	@Carnet varchar(50),
+	@IdCurso varchar(10),
+	@NombreCurso varchar(100),
+	@Anio int,
+	@Periodo char(1),
+	@Grupo int,
+	@IdProfesor varchar(50)
+AS
+BEGIN
+CREATE TABLE [#EXCEL_TABLE] (
+	[Carnet] varchar(50),
+	[IdCurso] varchar(10),
+	[NombreCurso] varchar(100),
+	[Anio] int,
+	[Periodo] char(1),
+	[Grupo] int,
+	[IdProfesor] varchar(50)
+)
+
+INSERT INTO #EXCEL_TABLE (Carnet, IdCurso, NombreCurso, Anio, Periodo, Grupo, IdProfesor)
+VALUES (@Carnet, @IdCurso, @NombreCurso, @Anio, @Periodo, @Grupo, @IdProfesor);
+
+
+
+END;
+
+
+
 -- Crear grupo
 GO
 CREATE PROCEDURE dbo.sp_create_grupo
@@ -531,6 +600,18 @@ LEFT JOIN dbo.EVALUACION_INTEGRANTES as EI ON
 WHERE
     Nombre = @Evaluacion AND Rubro = @Rubro AND Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo;
 
+
+GO
+CREATE PROCEDURE dbo.get_students_group
+	@Numero INT,
+    @Curso VARCHAR(10),
+    @Anio INT,
+    @Periodo CHAR(1)
+AS
+SELECT Estudiante, Numero, Curso, Anio, Periodo
+FROM dbo.ESTUDIANTE_GRUPO
+WHERE Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo
+
 GO
 CREATE PROCEDURE dbo.sp_get_student_groups
     @Student VARCHAR(50)
@@ -561,6 +642,24 @@ WHERE
 	PG.Profesor = @Cedula
 ORDER BY CG.Anio_semestre DESC, CG.Periodo_semestre DESC;
 
+--- Procedimientos para asignar evaluaciones
+GO
+CREATE PROCEDURE dbo.sp_assign_evaluation
+	@Nombre_evaluacion VARCHAR(100),
+	@Rubro VARCHAR(100),
+	@Peso DECIMAL(5,2),
+	@Fecha DATETIME,
+	@Espec VARCHAR(100),
+	@Individual BIT,
+	@Numero INT,
+    @Curso VARCHAR(10),
+    @Anio INT,
+    @Periodo CHAR(1)
+AS
+BEGIN
+
+
+END;
 
 -- ACTUALIZADOS
 --dbo.sp_create_grupo_estudiante

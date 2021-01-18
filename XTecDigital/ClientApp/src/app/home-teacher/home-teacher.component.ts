@@ -20,6 +20,9 @@ export class HomeTeacherComponent implements OnInit {
     this.loadSemestres();
   }
 
+  /**
+   * Metodo para cargar los semestres y cursos del profesor actual
+   */
   loadSemestres() {
     this.api.get(`https://localhost/api/Semestres/profesor/${SessionHandler.getUserId()}`).subscribe(
       (groups: any[]) => {
