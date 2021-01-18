@@ -297,6 +297,7 @@ export class InitializeSemesterComponent implements OnInit {
     grupoN.curso = curso;
     grupoN.numero = Number.parseInt(grupo);
     grupoN.profesores = profesores;
+    
 
     this.grupos.push(grupoN);
   }
