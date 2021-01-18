@@ -198,7 +198,7 @@ namespace XTecDigital.Controllers
         }
 
         [HttpDelete("folder")]
-        public async Task<IActionResult> DeleteFolderAsync(CarpetaDto carpeta)
+        public async Task<IActionResult> DeleteFolderAsync([FromQuery] CarpetaDto carpeta)
         {
             if (!carpeta.Tipo.Equals("NORMAL"))
                 return BadRequest();
