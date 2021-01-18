@@ -79,14 +79,14 @@ WHERE Anio = @Anio AND Periodo = @Periodo;
 GO
 CREATE PROCEDURE dbo.sp_create_temporal_table
 AS
-CREATE TABLE #EXCEL_TABLE (
-	Carnet varchar(50),
-	IdCurso varchar(10),
-	NombreCurso varchar(100),
-	Anio int,
-	Periodo char(1),
-	Grupo int,
-	IdProfesor varchar(50)
+CREATE TABLE [#EXCEL_TABLE] (
+	[Carnet] varchar(50),
+	[IdCurso] varchar(10),
+	[NombreCurso] varchar(100),
+	[Anio] int,
+	[Periodo] char(1),
+	[Grupo] int,
+	[IdProfesor] varchar(50)
 );
 
 GO
@@ -107,6 +107,14 @@ CREATE PROCEDURE dbo.sp_insert_temporal_table
 AS
 INSERT INTO #EXCEL_TABLE (Carnet, IdCurso, NombreCurso, Anio, Periodo, Grupo, IdProfesor)
 VALUES (@Carnet, @IdCurso, @NombreCurso, @Anio, @Periodo, @Grupo, @IdProfesor);
+
+--insertar desde tabla temporal
+GO
+CREATE PROCEDURE dbo.sp_initialize_semester
+AS
+INSERT INTO dbo.SEMESTRE (Anio, Periodo)
+SELECT DISTINCT Anio, Periodo FROM #EXCEL_TABLE;
+
 -- Crear grupo
 GO
 CREATE PROCEDURE dbo.sp_create_grupo
