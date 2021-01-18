@@ -8,9 +8,9 @@ namespace XTecDigital.Helpers
     {
         public static string StoragePath { get; set; }
 
-        public static string GetGroupFolder(int groupId)
+        public static string GetGroupFolder(int numero, string curso, int anio, string periodo)
         {
-            return Path.Combine(StoragePath, $"Grupo-{groupId}");
+            return Path.Combine(StoragePath, $"G{numero}-{curso}-{anio}-{periodo}");
         }
 
         public static byte[] FromBase64String(string input)
@@ -21,7 +21,7 @@ namespace XTecDigital.Helpers
 
             return Convert.FromBase64String(input[index..]);
         }
-
+        
         /// <summary>
         /// Strip illegal chars and reserved words from a candidate filename (should not include the directory path)
         /// </summary>

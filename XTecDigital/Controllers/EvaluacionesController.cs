@@ -1,8 +1,12 @@
 using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using XTecDigital.Models;
+using XTecDigital.Models.Dtos;
+using XTecDigital.Models.Requests;
 
 namespace XTecDigital.Controllers
 {
@@ -11,32 +15,34 @@ namespace XTecDigital.Controllers
     public class EvaluacionesController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IMapper _mapper;
 
-        public EvaluacionesController(AppDbContext context) 
+        public EvaluacionesController(AppDbContext context, IMapper mapper) 
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        //GET: api/Evaluaciones/Rubro/idRubro
-        [HttpGet("Rubro/{idRubro}")]
-        public async Task<IActionResult> GetEvaluacionesRubroAsync(int idRubro) 
+        //GET: api/Evaluaciones/Rubro
+        [HttpGet("Rubro")]
+        public async Task<IActionResult> GetEvaluacionesRubroAsync(Rubro rubro) 
         {
             var result = await _context.Evaluacion.FromSqlInterpolated($@"
-                EXECUTE dbo.sp_get_evaluaciones_rubro {idRubro}
+                dbo.sp_get_evaluaciones_rubro {rubro.Nombre}, {rubro.Numero}, {rubro.Curso}, {rubro.Anio}, {rubro.Periodo}
             ").ToListAsync();
 
-            return Ok(result);
+            return Ok(_mapper.Map<List<EvaluacionDto>>(result));
         }
 
-        //GET: api/Evaluaciones/Info/{idEvaluacion}
-        [HttpGet("Info/{idEvaluacion}")]
-        public async Task<IActionResult> GetInfoEvaluacionAsync(int idEvaluacion)
+        //GET: api/Evaluaciones/Info
+        [HttpGet("Info")]
+        public async Task<IActionResult> GetInfoEvaluacionAsync(EvaluacionInfo info)
         {
             var result = (await _context.InfoEvaluacion.FromSqlInterpolated($@"
-                EXECUTE dbo.sp_get_info_evaluacion {idEvaluacion}
+                dbo.sp_get_info_evaluacion {info.Nombre}, {info.Rubro}, {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}, {info.Estudiante}
             ").ToListAsync()).FirstOrDefault();
 
-            return Ok(result);
+            return Ok(result); 
         }
                
     }

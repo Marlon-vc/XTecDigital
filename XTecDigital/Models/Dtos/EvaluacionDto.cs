@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 
-namespace XTecDigital.Models
+namespace XTecDigital.Models.Dtos
 {
-    public partial class Evaluacion
+    public class EvaluacionDto
     {
-        public Evaluacion()
-        {
-            EvaluacionGrupo = new HashSet<EvaluacionGrupo>();
-        }
-
         public string Nombre { get; set; }
         public bool NotasPublicadas { get; set; }
         public DateTime FechaEntrega { get; set; }
@@ -23,9 +17,5 @@ namespace XTecDigital.Models
         public string Curso { get; set; }
         public int Anio { get; set; }
         public string Periodo { get; set; }
-
-        public virtual Archivo Archivo { get; set; }
-        public virtual Rubro RubroNavigation { get; set; }
-        public virtual ICollection<EvaluacionGrupo> EvaluacionGrupo { get; set; }
     }
 }

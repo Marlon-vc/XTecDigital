@@ -25,24 +25,24 @@ namespace XTecDigital.Controllers
             _context = context;
             _mapper = mapper;
         }
-        
-        [HttpGet("root/{groupId}")]
-        public async Task<IActionResult> GetAllAsync(int groupId)
+
+        [HttpGet("root")]
+        public async Task<IActionResult> GetAllAsync([FromQuery] GrupoDto grupo)
         {
             var folders = await _context.Carpeta.FromSqlInterpolated($@"
-                dbo.sp_get_group_folders {groupId}
+                dbo.sp_get_group_folders {grupo.Numero}, {grupo.Curso}, {grupo.Anio}, {grupo.Periodo}
             ").ToListAsync();
 
             var files = await _context.Archivo.FromSqlInterpolated($@"
-                dbo.sp_get_group_files {groupId}
+                dbo.sp_get_group_files {grupo.Numero}, {grupo.Curso}, {grupo.Anio}, {grupo.Periodo}
             ").ToListAsync();
 
             var rootFolder = (await _context.Carpeta.FromSqlInterpolated($@"
-                dbo.sp_get_root_folder {groupId}
+                dbo.sp_get_root_folder {grupo.Numero}, {grupo.Curso}, {grupo.Anio}, {grupo.Periodo}
             ").ToListAsync()).FirstOrDefault();
 
             if (rootFolder == null)
-                return BadRequest();
+                return NotFound();
 
             var data = new {
                 files = _mapper.Map<List<ArchivoDto>>(files),
@@ -53,38 +53,49 @@ namespace XTecDigital.Controllers
             return Ok(data);
         }
 
-        [HttpGet("folder/{folderId}")]
-        public async Task<IActionResult> GetFolderContentsAsync(int folderId)
+        [HttpGet("contents")]
+        public async Task<IActionResult> GetFolderContentsAsync([FromQuery] CarpetaDto carpeta)
         {
             var files = await _context.Archivo.FromSqlInterpolated($@"
-                dbo.sp_get_files {folderId}
+                dbo.sp_get_files {carpeta.Nombre}, {carpeta.Tipo}, {carpeta.Numero}, {carpeta.Curso}, {carpeta.Anio}, {carpeta.Periodo}
             ").ToListAsync();
 
             return Ok(_mapper.Map<List<ArchivoDto>>(files));
         }
 
-        [HttpGet("file/{fileId}")]
-        public async Task<IActionResult> GetFileAsync(int fileId)
+        [HttpGet("download")]
+        public async Task<IActionResult> GetFileAsync([FromQuery] ArchivoDto archivo)
         {
-            var file = _context.Archivo.FromSqlInterpolated($@"
-                dbo.sp_get_file {fileId}
-            ").AsEnumerable()
-            .FirstOrDefault();
+            var file = (await _context.Archivo.FromSqlInterpolated($@"
+                dbo.sp_get_file {archivo.Nombre}, {archivo.Carpeta}, {archivo.TipoCarpeta}, {archivo.Numero}, {archivo.Curso}, {archivo.Anio}, {archivo.Periodo}
+            ").ToListAsync()).FirstOrDefault();
 
-            var folder = _context.Carpeta.FromSqlInterpolated($@"
-                dbo.sp_get_folder {file.IdCarpeta}
-            ").AsEnumerable()
-            .FirstOrDefault();
-            
-            if (file == null || folder == null)
+            if (file == null)
                 return NotFound();
 
-            //DEBUG: probar que se descargue correctamente
-            var groupFolder = Path.Combine(Environment.CurrentDirectory, "Storage", $"Grupo-{folder.IdGrupo}");
-            var filePath = Path.Combine(groupFolder, "Documentos", file.Nombre);
+            // Carpeta general del grupo
+            var groupFolder = FileHandler.GetGroupFolder(file.Numero, file.Curso, file.Anio, file.Periodo);
+
+            string folder;
+            if (file.TipoCarpeta.Equals("NORMAL"))
+            {
+                var rootFolder = (await _context.Carpeta.FromSqlInterpolated($@"
+                    dbo.sp_get_root_folder {file.Numero}, {file.Curso}, {file.Anio}, {file.Periodo}
+                ").ToListAsync()).FirstOrDefault();
+
+                if (rootFolder == null)
+                    return NotFound();
+
+                //DEBUG: si es tipo normal está dentro de la carpeta Documentos del grupo
+                folder = Path.Combine(rootFolder.Nombre, file.Carpeta);
+            } else
+            {
+                folder = file.Carpeta;
+            }
+            
+            var filePath = Path.Combine(groupFolder, folder, file.Nombre);
             var contents = await System.IO.File.ReadAllBytesAsync(filePath);
 
-            // return File(contents, "application/force-download", file.Nombre);
             return File(contents, "application/octet-stream", file.Nombre);
         }
 
@@ -96,95 +107,129 @@ namespace XTecDigital.Controllers
 
             var fileName = info.Name.CoerceValidFileName();
 
-            //TODO: almacenar el archivo en filesystem
             var data = FileHandler.FromBase64String(info.FileData);
 
-            var path = Path.Combine(FileHandler.StoragePath, $"Grupo-{info.GroupId}", "Documentos", fileName);
+            var groupFolder = FileHandler.GetGroupFolder(info.Numero, info.Curso, info.Anio, info.Periodo);
 
-            await System.IO.File.WriteAllBytesAsync(path, data);
+            string folder;
+
+            if (info.TipoCarpeta.Equals("NORMAL"))
+            {
+                var rootFolder = (await _context.Carpeta.FromSqlInterpolated($@"
+                    dbo.sp_get_root_folder {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}
+                ").ToListAsync()).FirstOrDefault();
+
+                if (rootFolder == null)
+                    return NotFound();
+
+                folder = Path.Combine(rootFolder.Nombre, info.Carpeta);
+            } else
+            {
+                folder = info.Carpeta;
+            }
+
+            var filePath = Path.Combine(groupFolder, folder, fileName);
+            await System.IO.File.WriteAllBytesAsync(filePath, data);
 
             await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                dbo.sp_create_file {info.FolderId}, {fileName}, {DateTime.Now}, {info.Size}
+                dbo.sp_create_file {fileName}, {DateTime.Now}, {info.Size}, {info.Carpeta}, {info.TipoCarpeta}, {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}
             ");
 
+            // var file = (await _context.Archivo.FromSqlInterpolated($@"
+            //     dbo.sp_get_file_from_name {info.FolderId}, {fileName}
+            // ").ToListAsync()).FirstOrDefault();
+
             var file = (await _context.Archivo.FromSqlInterpolated($@"
-                dbo.sp_get_file_from_name {info.FolderId}, {fileName} 
+                dbo.sp_get_file {fileName}, {info.Carpeta}, {info.TipoCarpeta}, {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}
             ").ToListAsync()).FirstOrDefault();
 
-            return CreatedAtRoute("Default", new { id = file.Id }, file);
+            return CreatedAtRoute("Default", file);
         }
 
+        // Solo se pueden crear carpetas dentro de los documentos del grupo 
         [HttpPost("folder")]
         public async Task<IActionResult> CreateFolderAsync(FolderCreation info)
         {
-            if (string.IsNullOrWhiteSpace(info.Name))
-                return BadRequest();
-            
-            await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                dbo.sp_create_folder {info.GroupId}, {info.Name}, {0}, {0}
-            ");
-
-            var folder = (await _context.Carpeta.FromSqlInterpolated($@"
-                dbo.sp_get_folder_by_name {info.GroupId}, {info.Name}
-            ").ToListAsync()).FirstOrDefault();
-
-            return CreatedAtRoute("Default", new { id = folder.Id }, folder);
-        }
-
-        [HttpDelete("file/{fileId}")]
-        public async Task<IActionResult> DeleteFileAsync(int fileId)
-        {
-            var file = (await _context.Archivo.FromSqlInterpolated($@"
-                dbo.sp_get_file {fileId}
-            ").ToListAsync()).FirstOrDefault();
-
-            if (file == null)
-                return BadRequest();
-
-            var folder = (await _context.Carpeta.FromSqlInterpolated($@"
-                dbo.sp_get_folder {file.IdCarpeta}
-            ").ToListAsync()).FirstOrDefault();
-
-            if (folder == null)
+            if (string.IsNullOrWhiteSpace(info.Nombre))
                 return BadRequest();
 
             await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                dbo.sp_delete_file {fileId}
+                dbo.sp_create_folder {info.Nombre}, {0}, {"NORMAL"}, {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}
             ");
 
-            var path = Path.Combine(FileHandler.StoragePath, $"Grupo-{folder.IdGrupo}", "Documentos", file.Nombre);
+            var folder = (await _context.Carpeta.FromSqlInterpolated($@"
+                dbo.sp_get_folder {info.Nombre}, {"NORMAL"}, {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}
+            ").ToListAsync()).FirstOrDefault();
 
-            System.IO.File.Delete(path);
-
-            return Ok();
+            return CreatedAtRoute("Default", folder);
         }
 
-        [HttpDelete("folder/{folderId}")]
-        public async Task<IActionResult> DeleteFolderAsync(int folderId)
+        [HttpDelete("file")]
+        public async Task<IActionResult> DeleteFileAsync([FromBody] ArchivoDto archivo)
         {
-            var files = await _context.Archivo.FromSqlInterpolated($@"
-                dbo.sp_get_files {folderId}
-            ").ToListAsync();
+            await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                dbo.sp_delete_file {archivo.Nombre}, {archivo.Carpeta}, {archivo.TipoCarpeta}, {archivo.Numero}, {archivo.Curso}, {archivo.Anio}, {archivo.Periodo}
+            ");
 
-            foreach (var file in files)
+            var groupFolder = FileHandler.GetGroupFolder(archivo.Numero, archivo.Curso, archivo.Anio, archivo.Periodo);
+
+            string folder;
+
+            if (archivo.TipoCarpeta == "NORMAL")
             {
-                await DeleteFileAsync(file.Id);
+                var rootFolder = (await _context.Carpeta.FromSqlInterpolated($@"
+                    dbo.sp_get_root_folder {archivo.Numero}, {archivo.Curso}, {archivo.Anio}, {archivo.Periodo}
+                ").ToListAsync()).FirstOrDefault();
+
+                if (rootFolder == null)
+                    return NotFound();
+
+                folder = Path.Combine(rootFolder.Nombre, archivo.Carpeta);
+            } else
+            {
+                folder = archivo.Carpeta;
             }
 
-            await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                dbo.sp_delete_folder {folderId}
-            ");
+            // var path = Path.Combine(FileHandler.StoragePath, $"Grupo-{folder.IdGrupo}", "Documentos", file.Nombre);
+
+            System.IO.File.Delete(Path.Combine(groupFolder, folder, archivo.Nombre));
 
             return Ok();
         }
 
-        // [HttpPost("test")]
-        // public IActionResult TestMethod([FromForm] TestInfo data)
-        // {
-        //     Console.WriteLine(data.GroupId);
-        //     Console.WriteLine(data.FolderId);
+        [HttpDelete("folder")]
+        public async Task<IActionResult> DeleteFolderAsync(CarpetaDto carpeta)
+        {
+            if (!carpeta.Tipo.Equals("NORMAL"))
+                return BadRequest();
 
-        //     return Ok(data);
-        // }
+            var rows = await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                dbo.sp_delete_folder {carpeta.Nombre}, {carpeta.Tipo}, {carpeta.Numero}, {carpeta.Curso}, {carpeta.Anio}, {carpeta.Periodo}
+            ");
+
+            if (rows == 0)
+                return NotFound();
+
+            var groupFolder = FileHandler.GetGroupFolder(carpeta.Numero, carpeta.Curso, carpeta.Anio, carpeta.Periodo);
+
+            var rootFolder = (await _context.Carpeta.FromSqlInterpolated($@"
+                dbo.sp_get_root_folder {carpeta.Numero}, {carpeta.Curso}, {carpeta.Anio}, {carpeta.Periodo}
+            ").ToListAsync()).FirstOrDefault();
+
+            if (rootFolder == null)
+                return NotFound();
+
+            var path = Path.Combine(groupFolder, rootFolder.Nombre, carpeta.Nombre);
+            
+            if (Directory.Exists(path))
+            {
+                Directory.Delete(path, true);
+            } else 
+            {
+                return NotFound();
+            }
+            
+            return Ok();
+        }
     }
 }

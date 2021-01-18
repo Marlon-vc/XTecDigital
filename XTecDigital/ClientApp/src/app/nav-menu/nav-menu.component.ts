@@ -1,18 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-nav-menu',
   templateUrl: './nav-menu.component.html',
   styleUrls: ['./nav-menu.component.css']
 })
-export class NavMenuComponent {
-  isExpanded = false;
+export class NavMenuComponent implements OnInit {
 
-  collapse() {
-    this.isExpanded = false;
+  links: any[];
+
+  constructor(private router: Router) {
+
   }
 
-  toggle() {
-    this.isExpanded = !this.isExpanded;
+  ngOnInit() {
+    console.log('Called');
+    
+  }
+
+  onLogout() {
+    console.log('logging out..');
+    window.localStorage.clear();
+    this.router.navigate(['']);
   }
 }

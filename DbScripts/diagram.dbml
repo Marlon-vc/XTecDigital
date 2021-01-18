@@ -1,0 +1,153 @@
+table SEMESTRE as S {
+  Id int [pk, increment]
+  Anio int [not null]
+  Periodo char(1) [not null]
+  
+  indexes {
+    (Anio, Periodo) [unique]
+  }
+}
+
+table CURSO as C {
+  Codigo varchar(10) [pk]
+  Nombre varchar(100) [not null]
+  Creditos int [not null]
+  Carrera varchar(100) [not null]
+  Habilitado bit [not null]
+}
+
+table GRUPO as G {
+  Id int [pk, increment]
+  Numero int [not null]
+  Id_curso varchar(10) [not null]
+  Id_semestre int [not null]
+  
+  indexes {
+    (Id_curso, Numero, Id_semestre) [unique]
+  }
+}
+
+table PROFESOR_GRUPO as PG {
+  Profesor varchar(50) [not null]
+  Id_grupo int [not null]
+  
+  indexes {
+    (Profesor, Id_grupo) [pk]
+  }
+}
+
+table ESTUDIANTE_GRUPO as EG {
+  Estudiante varchar(50) [not null]
+  Id_grupo int [not null]
+  
+  indexes {
+    (Estudiante, Id_grupo) [pk]
+  }
+}
+
+table NOTICIA as N {
+  Id int [pk, increment]
+  Id_grupo int [not null]
+  Titulo varchar(100) [not null]
+  Mensaje text [not null]
+  Autor varchar(50) [not null]
+  Fecha_publicacion timestamp [not null]
+  
+  indexes {
+    (Id_grupo, Titulo, Fecha_publicacion) [unique]
+  }
+}
+
+table RUBRO as R {
+  Id int [pk, increment]
+  Id_grupo int [not null]
+  Nombre varchar(100) [not null]
+  Porcentaje decimal(5,2) [not null]
+  
+  indexes {
+    (Id_grupo, Nombre) [unique]
+  }
+}
+
+table EVALUACION as E {
+  Id int [pk, increment]
+  Id_rubro int [not null]
+  Id_especificacion int [not null]
+  Nombre varchar(100) [not null]
+  Notas_publicadas bit [not null]
+  Fecha_entrega timestamp [not null]
+  Peso_nota decimal(5,2) [not null]
+  Grupal bit [not null]
+  
+  indexes {
+    (Id_rubro, Nombre) [unique]
+  }
+}
+
+table EVALUACION_GRUPO as EGR {
+  Id int [pk, increment]
+  Id_evaluacion int [not null]
+  Observaciones text
+  Id_entregable int
+  Id_detalle int
+}
+
+table EVALUACION_INTEGRANTES as EI {
+  Estudiante varchar(50) [not null]
+  Id_grupo int [not null]
+  
+  indexes {
+    (Estudiante, Id_grupo) [pk]
+  }
+}
+
+table CARPETA as CA {
+  Id int [pk, increment]
+  Id_grupo int [not null]
+  Nombre varchar(100) [not null]
+  Solo_lectura bit [not null]
+  Ruta varchar(150) [not null]
+  Raiz bit [not null]
+  
+  indexes {
+    (Id_grupo, Nombre, Raiz) [unique]
+  }
+}
+
+table ARCHIVO as A {
+  Id int [pk, increment]
+  Id_carpeta int [not null]
+  Nombre varchar(100) [not null]
+  Fecha_creacion timestamp [not null]
+  Tamanio decimal(8,2) [not null]
+  
+  indexes {
+    (Id_carpeta, Nombre) [unique]
+  }
+}
+
+table ARCHIVO_EVALUACION as AE {
+  Id int [pk, increment]
+  Nombre varchar(150) [not null]
+  Ruta varchar(250) [not null]
+  Fecha_creacion timestamp [not null]
+  
+}
+
+// Llaves foráneas
+ref: G.Id_curso > C.Codigo
+ref: G.Id_semestre > S.Id
+ref: PG.Id_grupo > G.Id
+ref: EG.Id_grupo > G.Id
+ref: N.Id_grupo > G.Id
+ref: R.Id_grupo > G.Id
+ref: E.Id_rubro > R.Id
+ref: CA.Id_grupo > G.Id
+ref: A.Id_carpeta > CA.Id
+ref: E.Id_especificacion - AE.Id
+ref: EGR.Id_evaluacion > E.Id
+ref: EI.Id_grupo > EGR.Id
+ref: EGR.Id_entregable - AE.Id
+ref: EGR.Id_detalle - AE.Id
+
+

@@ -1,8 +1,9 @@
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css">
 
 <div class="container" style="margin-top: 5%;">
-    <h4>Estudiante: Paola Villegas Chacon</h4>
-    <h4>Carnet: 2017094282</h4>
+    <h4>Estudiante: Nombre estudiante</h4>
+    <h4>Carnet: Carnet estudiante</h4>
+
     <div id="accordion" style="margin-top: 5%;">
         <div class="card" *ngFor="let semestre of semestres">
             <div class="card-header" id="heading-1">
@@ -24,8 +25,8 @@
                                 <h5 class="mb-0">
                                     <a class="collapsed" role="button" data-toggle="collapse"
                                         href="#collapse-{{semestre.id}}-{{grupo.idCurso}}" aria-expanded="false"
-                                        aria-controls="collapse-1-1">
-                                        {{grupo.idCurso}}
+                                        aria-controls="collapse-1-1" (click)="onGroupClicked(grupo)">
+                                        {{grupo.codigo}} - {{ grupo.nombreCurso }}
                                     </a>
                                 </h5>
                             </div>

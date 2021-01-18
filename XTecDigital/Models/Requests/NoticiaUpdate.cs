@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 
-namespace XTecDigital.Models
+namespace XTecDigital.Models.Requests
 {
-    public partial class Noticia
+    public class NoticiaUpdate
     {
         public string Titulo { get; set; }
+        public string NuevoTitulo { get; set; }        
         public string Mensaje { get; set; }
         public string Autor { get; set; }
         public DateTime FechaPublicacion { get; set; }
@@ -13,7 +13,5 @@ namespace XTecDigital.Models
         public string Curso { get; set; }
         public int Anio { get; set; }
         public string Periodo { get; set; }
-
-        public virtual Grupo Grupo { get; set; }
     }
 }

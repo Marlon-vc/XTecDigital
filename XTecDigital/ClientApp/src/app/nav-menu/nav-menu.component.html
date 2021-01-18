@@ -1,44 +1,161 @@
-<header>
-  <nav
-    class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3"
-  >
-    <div class="container">
-      <a class="navbar-brand" [routerLink]="['/']">XTecDigital</a>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target=".navbar-collapse"
-        aria-label="Toggle navigation"
-        [attr.aria-expanded]="isExpanded"
-        (click)="toggle()"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div
-        class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse"
-        [ngClass]="{ show: isExpanded }"
-      >
-        <ul class="navbar-nav flex-grow">
-          <li
-            class="nav-item"
-            [routerLinkActive]="['link-active']"
-            [routerLinkActiveOptions]="{ exact: true }"
-          >
-            <a class="nav-link text-dark" [routerLink]="['/']">Home</a>
-          </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-dark" [routerLink]="['/counter']"
-              >Counter</a
-            >
-          </li>
-          <li class="nav-item" [routerLinkActive]="['link-active']">
-            <a class="nav-link text-dark" [routerLink]="['/fetch-data']"
-              >Fetch data</a
-            >
-          </li>
-        </ul>
+<!-- <div class="container"> -->
+    <!-- <nav class="nav">
+        <a href="{{ link.target }}" class="nav-link" *ngFor="let link of links">{{ link.title }}</a>
+    </nav> -->
+
+    <nav *ngIf="userType == 'admin'" class="navbar navbar-icon-top navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
+      <a class="navbar-brand" href="#">XTecDigital</a>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+              
+              <li class="nav-item">
+                  <a class="nav-link" href="/initialize-semester">
+                      <i class="fas fa-flag-checkered"></i>
+                      Inicializar semestre
+                      <span class="sr-only"></span>
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="/gestion-cursos">
+                      <i class="fas fa-book"></i>
+                      Gestion de cursos
+                  </a>
+              </li>
+
+              <!-- <li class="nav-item float-right">
+                  <a class="nav-link" href=# (click)="onLogout()">
+                      <i class="fas fa-book"></i>
+                      Cerrar sesion
+                  </a>
+              </li> -->
+          </ul>
+          <a class="nav-link" href=# (click)="onLogout()">
+              <i class="fas fa-sign-out-alt"></i>
+              Cerrar sesion
+          </a>
+
       </div>
-    </div>
   </nav>
-</header>
+
+  <nav *ngIf="userType == 'estudiante'" class="navbar navbar-icon-top navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
+      <a class="navbar-brand" href="#">XTecDigital</a>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+              <li class="nav-item active">
+                  <a class="nav-link" href="#">
+                      <i class="fa fa-home"></i>
+                      Inicio
+                      <span class="sr-only">(current)</span>
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="/documentos/{{groupId}}">
+                      <i class="fas fa-folder"></i>
+                      Documentos
+                      <span class="sr-only"></span>
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="/evaluation/{{groupId}}">
+                      <i class="fas fa-tasks"></i>
+                      Evaluaciones
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="/ver-noticias/{{groupId}}">
+                      <i class="far fa-newspaper"></i>
+                      Noticias
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="#">
+                      <i class="far fa-file-alt"></i>
+                      Reporte de Notas
+                  </a>
+              </li>
+              
+          </ul>
+          <a class="nav-link" href=# (click)="onLogout()">
+              <i class="fas fa-sign-out-alt"></i>
+              Cerrar sesion
+          </a>
+
+      </div>
+  </nav>
+
+  <nav *ngIf="userType == 'profesor'" class="navbar navbar-icon-top navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
+      <a class="navbar-brand" href="#">XTecDigital</a>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+              <li class="nav-item active">
+                  <a class="nav-link change" href="#">
+                      <i class="fa fa-home"></i>
+                      Inicio
+                      <span class="sr-only">(current)</span>
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link change" href="/documentos/{{groupId}}">
+                      <i class="fas fa-folder"></i>
+                      Gestion de documentos
+                      <span class="sr-only"></span>
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link change" href="/gestion-rubros/{{groupId}}">
+                      <i class="fas fa-tasks"></i>
+                      Gestion de rubros 
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link change" href="/asignar-evaluacion/{{groupId}}">
+                      <i class="far fa-hand-pointer"></i>
+                      Asignar evaluaciones
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link change" href="/evaluate-task/{{groupId}}">
+                      <i class="fas fa-check-square"></i>
+                      Evaluar entregables
+                  </a>
+              </li>
+              
+              <li class="nav-item">
+                  <a class="nav-link change" href="/noticias/{{groupId}}">
+                      <i class="far fa-newspaper"></i>
+                      Gestion de noticias
+                  </a>
+              </li>
+              
+              <li class="nav-item">
+                  <a class="nav-link change" href="#">
+                      <i class="far fa-file-alt"></i>
+                      Reporte de notas
+                  </a>
+              </li>
+              
+              <li class="nav-item">
+                  <a class="nav-link change" style="width: 180px !important;" href="#">
+                      <i class="far fa-file-alt"></i>
+                      Reporte de estudiantes matriculados
+                  </a>
+              </li>
+              <!-- <li class="nav-item">
+                  <a class="nav-link" href=# (click)="onLogout()">
+                      <i class="fas fa-book"></i>
+                      Cerrar sesion
+                  </a>
+              </li> -->
+          </ul>
+          <a class="nav-link" href=# (click)="onLogout()">
+              <i class="fas fa-sign-out-alt"></i>
+              Cerrar sesion
+          </a>
+
+      </div>
+  </nav>
+
+<!-- </div> -->

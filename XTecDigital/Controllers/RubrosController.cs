@@ -1,8 +1,11 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using XTecDigital.Models;
+using XTecDigital.Models.Dtos;
 using XTecDigital.Models.Requests;
 
 namespace XTecDigital.Controllers
@@ -12,92 +15,91 @@ namespace XTecDigital.Controllers
     public class RubrosController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IMapper _mapper;
 
-        public RubrosController(AppDbContext context)
+        public RubrosController(AppDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        //GET: api/Rubros/Grupo/1
-        [HttpGet("Grupo/{idGrupo}")]
-        public IActionResult GetRubrosGrupo(string idGrupo)
+        //GET: api/Rubros/Grupo
+        [HttpGet("Grupo")]
+        public async Task<IActionResult> GetRubrosGrupoAsync([FromBody] GrupoDto grupo)
         {
-            var result = _context.Rubro.FromSqlInterpolated($@"
-                EXECUTE dbo.sp_get_rubros_grupo {idGrupo}
-            ");
+            var result = await _context.Rubro.FromSqlInterpolated($@"
+                dbo.sp_get_rubros_grupo {grupo.Numero}, {grupo.Curso}, {grupo.Anio}, {grupo.Periodo}
+            ").ToListAsync();
 
-            return Ok(result);
+            return Ok(_mapper.Map<List<RubroDto>>(result));
         }
 
-        //GET: api/Rubros/1
-        [HttpGet("{id}")]
-        public IActionResult GetRubro(int id)
+        //GET: api/Rubros
+        [HttpGet("Rubro")]
+        public async Task<IActionResult> GetRubroAsync([FromBody] RubroRequest rubro)
         {
-            var rubro = _context.Rubro.FromSqlInterpolated($@"
-                EXECUTE dbo.sp_get_rubro {id}
-            ").AsEnumerable().FirstOrDefault();
+            var result = (await _context.Rubro.FromSqlInterpolated($@"
+                dbo.sp_get_rubro {rubro.Nombre}, {rubro.Numero}, {rubro.Curso}, {rubro.Anio}, {rubro.Periodo}
+            ").ToListAsync()).FirstOrDefault();
 
-            if (rubro == null) 
+            if (result == null) 
                 return NotFound();
 
-            return Ok(rubro);
+            return Ok(_mapper.Map<RubroDto>(result));
         }
 
         // POST: api/Rubros
         [HttpPost]
-        public async Task<IActionResult> AddRubroAsync(Rubro rubro) 
+        public async Task<IActionResult> AddRubroAsync(RubroDto rubro) 
         {
             if (rubro == null)
                 return BadRequest();
 
-            if (RubroExists(rubro.Id))
+            if (RubroExists(rubro))
                 return Conflict();
 
             await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                EXECUTE dbo.sp_create_rubro {rubro.Nombre}, {rubro.Porcentaje}, {rubro.IdGrupo}
+                dbo.sp_create_rubro {rubro.Nombre}, {rubro.Porcentaje}, {rubro.Numero}, {rubro.Curso}, {rubro.Anio}, {rubro.Periodo}
             ");
-            
             await _context.SaveChangesAsync();
 
-            return CreatedAtRoute("Default", new { rubro.Id }, rubro);
+            return CreatedAtRoute("Default", rubro);
         }
 
         // PUT: api/Rubros/1
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRubroAsync(int id, Rubro rubro) 
+        [HttpPut]
+        public async Task<IActionResult> UpdateRubroAsync([FromBody] RubroUpdate rubro) 
         {
-            if (id != rubro.Id)
+            if (rubro == null)
                 return BadRequest();
             
             await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                EXECUTE dbo.sp_update_rubro {rubro.Nombre}, {rubro.Id}, {rubro.Porcentaje}
+                dbo.sp_update_rubro {rubro.Nombre}, {rubro.Numero}, {rubro.Porcentaje}, {rubro.Numero}, {rubro.Curso}, {rubro.Anio}, {rubro.Periodo}
             ");
 
             return NoContent();
         }
 
         // DELETE: api/Rubros/1
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRubroAsync(int id) 
+        [HttpDelete]
+        public async Task<IActionResult> DeleteRubroAsync([FromBody] RubroRequest rubro) 
         {
             var rows = await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                EXECUTE dbo.sp_delete_rubro {id};
+                EXECUTE dbo.sp_delete_rubro {rubro.Nombre}, {rubro.Numero}, {rubro.Curso}, {rubro.Anio}, {rubro.Periodo}
             ");
 
             if (rows == 0)
                 return NotFound();
 
-            return Ok();
+            return NoContent();
         }
 
-        private bool RubroExists(int id) 
+        private bool RubroExists(RubroDto rubro) 
         {
-            var rubro = _context.Rubro.FromSqlInterpolated($@"
-                EXECUTE dbo.sp_get_rubro {id}
-            ").AsEnumerable();
-            return rubro.Any();
+            return _context.Rubro.FromSqlInterpolated($@"
+                EXECUTE dbo.sp_get_rubro {rubro.Nombre}, {rubro.Numero}, {rubro.Curso}, {rubro.Anio}, {rubro.Periodo}
+            ").ToList().Any();
         }
-
-        
+   
     }
 }

@@ -16,9 +16,9 @@ namespace XTecDigital.Models
         }
 
         public virtual DbSet<Archivo> Archivo { get; set; }
-        public virtual DbSet<ArchivoEvaluacion> ArchivoEvaluacion { get; set; }
         public virtual DbSet<Carpeta> Carpeta { get; set; }
         public virtual DbSet<Curso> Curso { get; set; }
+        public virtual DbSet<CursoGrupo> CursoGrupo { get; set; }
         public virtual DbSet<EstudianteGrupo> EstudianteGrupo { get; set; }
         public virtual DbSet<Evaluacion> Evaluacion { get; set; }
         public virtual DbSet<EvaluacionGrupo> EvaluacionGrupo { get; set; }
@@ -29,14 +29,13 @@ namespace XTecDigital.Models
         public virtual DbSet<ProfesorGrupo> ProfesorGrupo { get; set; }
         public virtual DbSet<Rubro> Rubro { get; set; }
         public virtual DbSet<Semestre> Semestre { get; set; }
-        public virtual DbSet<SemestreInfo> SemestreInfo { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=tcp:xtecdigitalcr.database.windows.net,1433;Initial Catalog=xtecdigital;Persist Security Info=False;User ID=xtec_admin;Password=ONCEdeENERO-99;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+                optionsBuilder.UseSqlServer("Server=tcp:xtecdigitalcr.database.windows.net,1433;Initial Catalog=xtecdigital2;Persist Security Info=False;User ID=xtec_admin;Password=ONCEdeENERO-99;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
             }
         }
 
@@ -44,75 +43,79 @@ namespace XTecDigital.Models
         {
             modelBuilder.Entity<Archivo>(entity =>
             {
+                entity.HasKey(e => new { e.Nombre, e.Carpeta, e.TipoCarpeta, e.Numero, e.Curso, e.Anio, e.Periodo })
+                    .HasName("PK__ARCHIVO__0C346F4BFE2FE18B");
+
                 entity.ToTable("ARCHIVO");
 
-                entity.HasIndex(e => new { e.IdCarpeta, e.Nombre })
-                    .HasName("ARCHIVO_index_6")
-                    .IsUnique();
-
-                entity.Property(e => e.FechaCreacion)
-                    .HasColumnName("Fecha_creacion")
-                    .HasColumnType("datetime");
-
-                entity.Property(e => e.IdCarpeta).HasColumnName("Id_carpeta");
-
                 entity.Property(e => e.Nombre)
-                    .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.HasOne(d => d.IdCarpetaNavigation)
-                    .WithMany(p => p.Archivo)
-                    .HasForeignKey(d => d.IdCarpeta)
-                    .HasConstraintName("FK__ARCHIVO__Id_carp__7B5B524B");
-            });
+                entity.Property(e => e.Carpeta)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
-            modelBuilder.Entity<ArchivoEvaluacion>(entity =>
-            {
-                entity.ToTable("ARCHIVO_EVALUACION");
+                entity.Property(e => e.TipoCarpeta)
+                    .HasColumnName("Tipo_carpeta")
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Curso)
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Periodo)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .IsFixedLength();
 
                 entity.Property(e => e.FechaCreacion)
                     .HasColumnName("Fecha_creacion")
                     .HasColumnType("datetime");
 
-                entity.Property(e => e.Nombre)
-                    .IsRequired()
-                    .HasMaxLength(150)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Ruta)
-                    .IsRequired()
-                    .HasMaxLength(250)
-                    .IsUnicode(false);
+                entity.HasOne(d => d.CarpetaNavigation)
+                    .WithMany(p => p.Archivo)
+                    .HasForeignKey(d => new { d.Carpeta, d.TipoCarpeta, d.Numero, d.Curso, d.Anio, d.Periodo })
+                    .HasConstraintName("FK__ARCHIVO__7A672E12");
             });
 
             modelBuilder.Entity<Carpeta>(entity =>
             {
+                entity.HasKey(e => new { e.Nombre, e.Tipo, e.Numero, e.Curso, e.Anio, e.Periodo })
+                    .HasName("PK__CARPETA__8AF656455EBE9C6E");
+
                 entity.ToTable("CARPETA");
 
-                entity.HasIndex(e => new { e.IdGrupo, e.Nombre, e.Raiz })
-                    .HasName("CARPETA_index_5")
-                    .IsUnique();
-
-                entity.Property(e => e.IdGrupo).HasColumnName("Id_grupo");
-
                 entity.Property(e => e.Nombre)
-                    .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
+                entity.Property(e => e.Tipo)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Curso)
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Periodo)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
                 entity.Property(e => e.SoloLectura).HasColumnName("Solo_lectura");
 
-                entity.HasOne(d => d.IdGrupoNavigation)
+                entity.HasOne(d => d.Grupo)
                     .WithMany(p => p.Carpeta)
-                    .HasForeignKey(d => d.IdGrupo)
-                    .HasConstraintName("FK__CARPETA__Id_grup__7A672E12");
+                    .HasForeignKey(d => new { d.Numero, d.Curso, d.Anio, d.Periodo })
+                    .HasConstraintName("FK__CARPETA__797309D9");
             });
 
             modelBuilder.Entity<Curso>(entity =>
             {
                 entity.HasKey(e => e.Codigo)
-                    .HasName("PK__CURSO__06370DADE4EE40B0");
+                    .HasName("PK__CURSO__06370DAD16BE4953");
 
                 entity.ToTable("CURSO");
 
@@ -131,10 +134,41 @@ namespace XTecDigital.Models
                     .IsUnicode(false);
             });
 
+            modelBuilder.Entity<CursoGrupo>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("CURSO_GRUPO");
+
+                entity.Property(e => e.AnioSemestre).HasColumnName("Anio_semestre");
+
+                entity.Property(e => e.Carrera)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Codigo)
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.NombreCurso)
+                    .HasColumnName("Nombre_curso")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.NumeroGrupo).HasColumnName("Numero_grupo");
+
+                entity.Property(e => e.PeriodoSemestre)
+                    .IsRequired()
+                    .HasColumnName("Periodo_semestre")
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+            });
+
             modelBuilder.Entity<EstudianteGrupo>(entity =>
             {
-                entity.HasKey(e => new { e.Estudiante, e.IdGrupo })
-                    .HasName("PK__ESTUDIAN__C6A208F245680971");
+                entity.HasKey(e => new { e.Estudiante, e.Numero, e.Curso, e.Anio, e.Periodo })
+                    .HasName("PK__ESTUDIAN__21A73E33DAF04C1F");
 
                 entity.ToTable("ESTUDIANTE_GRUPO");
 
@@ -142,34 +176,59 @@ namespace XTecDigital.Models
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.IdGrupo).HasColumnName("Id_grupo");
+                entity.Property(e => e.Curso)
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
 
-                entity.HasOne(d => d.IdGrupoNavigation)
+                entity.Property(e => e.Periodo)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.Grupo)
                     .WithMany(p => p.EstudianteGrupo)
-                    .HasForeignKey(d => d.IdGrupo)
-                    .HasConstraintName("FK__ESTUDIANT__Id_gr__76969D2E");
+                    .HasForeignKey(d => new { d.Numero, d.Curso, d.Anio, d.Periodo })
+                    .HasConstraintName("FK__ESTUDIANTE_GRUPO__73BA3083");
             });
 
             modelBuilder.Entity<Evaluacion>(entity =>
             {
+                entity.HasKey(e => new { e.Nombre, e.Rubro, e.Numero, e.Curso, e.Anio, e.Periodo })
+                    .HasName("PK__EVALUACI__E802BACABBA968AF");
+
                 entity.ToTable("EVALUACION");
 
-                entity.HasIndex(e => new { e.IdRubro, e.Nombre })
-                    .HasName("EVALUACION_index_4")
-                    .IsUnique();
+                entity.Property(e => e.Nombre)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Rubro)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Curso)
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Periodo)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
+                entity.Property(e => e.CarpetaEspecificacion)
+                    .IsRequired()
+                    .HasColumnName("Carpeta_especificacion")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Especificacion)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.FechaEntrega)
                     .HasColumnName("Fecha_entrega")
                     .HasColumnType("datetime");
-
-                entity.Property(e => e.IdEspecificacion).HasColumnName("Id_especificacion");
-
-                entity.Property(e => e.IdRubro).HasColumnName("Id_rubro");
-
-                entity.Property(e => e.Nombre)
-                    .IsRequired()
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
 
                 entity.Property(e => e.NotasPublicadas).HasColumnName("Notas_publicadas");
 
@@ -177,94 +236,143 @@ namespace XTecDigital.Models
                     .HasColumnName("Peso_nota")
                     .HasColumnType("decimal(5, 2)");
 
-                entity.HasOne(d => d.IdEspecificacionNavigation)
-                    .WithMany(p => p.Evaluacion)
-                    .HasForeignKey(d => d.IdEspecificacion)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__EVALUACIO__Id_es__7C4F7684");
+                entity.Property(e => e.TipoCarpetaEspecificacion)
+                    .IsRequired()
+                    .HasColumnName("Tipo_carpeta_especificacion")
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
 
-                entity.HasOne(d => d.IdRubroNavigation)
+                entity.HasOne(d => d.RubroNavigation)
                     .WithMany(p => p.Evaluacion)
-                    .HasForeignKey(d => d.IdRubro)
-                    .HasConstraintName("FK__EVALUACIO__Id_ru__797309D9");
+                    .HasForeignKey(d => new { d.Rubro, d.Numero, d.Curso, d.Anio, d.Periodo })
+                    .HasConstraintName("FK__EVALUACION__76969D2E");
+
+                entity.HasOne(d => d.Archivo)
+                    .WithMany(p => p.Evaluacion)
+                    .HasForeignKey(d => new { d.Especificacion, d.CarpetaEspecificacion, d.TipoCarpetaEspecificacion, d.Numero, d.Curso, d.Anio, d.Periodo })
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__EVALUACION__7B5B524B");
             });
 
             modelBuilder.Entity<EvaluacionGrupo>(entity =>
             {
                 entity.ToTable("EVALUACION_GRUPO");
 
-                entity.Property(e => e.IdDetalle).HasColumnName("Id_detalle");
+                entity.Property(e => e.CarpetaDetalle)
+                    .HasColumnName("Carpeta_detalle")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.IdEntregable).HasColumnName("Id_entregable");
+                entity.Property(e => e.CarpetaEntregable)
+                    .HasColumnName("Carpeta_entregable")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.IdEvaluacion).HasColumnName("Id_evaluacion");
+                entity.Property(e => e.Curso)
+                    .IsRequired()
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Detalle)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Entregable)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Evaluacion)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Nota).HasColumnType("decimal(5, 2)");
 
                 entity.Property(e => e.Observaciones).HasColumnType("text");
 
-                entity.HasOne(d => d.IdDetalleNavigation)
-                    .WithMany(p => p.EvaluacionGrupoIdDetalleNavigation)
-                    .HasForeignKey(d => d.IdDetalle)
-                    .HasConstraintName("FK__EVALUACIO__Id_de__00200768");
+                entity.Property(e => e.Periodo)
+                    .IsRequired()
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .IsFixedLength();
 
-                entity.HasOne(d => d.IdEntregableNavigation)
-                    .WithMany(p => p.EvaluacionGrupoIdEntregableNavigation)
-                    .HasForeignKey(d => d.IdEntregable)
-                    .HasConstraintName("FK__EVALUACIO__Id_en__7F2BE32F");
+                entity.Property(e => e.Rubro)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
-                entity.HasOne(d => d.IdEvaluacionNavigation)
+                entity.Property(e => e.TipoCarpetaDetalle)
+                    .HasColumnName("Tipo_carpeta_detalle")
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TipoCarpetaEntregable)
+                    .HasColumnName("Tipo_carpeta_entregable")
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.EvaluacionNavigation)
                     .WithMany(p => p.EvaluacionGrupo)
-                    .HasForeignKey(d => d.IdEvaluacion)
-                    .HasConstraintName("FK__EVALUACIO__Id_ev__7D439ABD");
+                    .HasForeignKey(d => new { d.Evaluacion, d.Rubro, d.Numero, d.Curso, d.Anio, d.Periodo })
+                    .HasConstraintName("FK__EVALUACION_GRUPO__778AC167");
+
+                entity.HasOne(d => d.Archivo)
+                    .WithMany(p => p.EvaluacionGrupoArchivo)
+                    .HasForeignKey(d => new { d.Detalle, d.CarpetaDetalle, d.TipoCarpetaDetalle, d.Numero, d.Curso, d.Anio, d.Periodo })
+                    .HasConstraintName("FK__EVALUACION_GRUPO__7D439ABD");
+
+                entity.HasOne(d => d.ArchivoNavigation)
+                    .WithMany(p => p.EvaluacionGrupoArchivoNavigation)
+                    .HasForeignKey(d => new { d.Entregable, d.CarpetaEntregable, d.TipoCarpetaEntregable, d.Numero, d.Curso, d.Anio, d.Periodo })
+                    .HasConstraintName("FK__EVALUACION_GRUPO__7C4F7684");
             });
 
             modelBuilder.Entity<EvaluacionIntegrantes>(entity =>
             {
-                entity.HasKey(e => new { e.Estudiante, e.IdGrupo })
-                    .HasName("PK__EVALUACI__C6A208F208283C93");
+                entity.HasNoKey();
 
                 entity.ToTable("EVALUACION_INTEGRANTES");
 
                 entity.Property(e => e.Estudiante)
+                    .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
                 entity.Property(e => e.IdGrupo).HasColumnName("Id_grupo");
 
                 entity.HasOne(d => d.IdGrupoNavigation)
-                    .WithMany(p => p.EvaluacionIntegrantes)
+                    .WithMany()
                     .HasForeignKey(d => d.IdGrupo)
-                    .HasConstraintName("FK__EVALUACIO__Id_gr__7E37BEF6");
+                    .HasConstraintName("FK__EVALUACIO__Id_gr__787EE5A0");
             });
 
             modelBuilder.Entity<Grupo>(entity =>
             {
+                entity.HasKey(e => new { e.Numero, e.Curso, e.Anio, e.Periodo })
+                    .HasName("PK__GRUPO__F2DB40B6C86CA1A4");
+
                 entity.ToTable("GRUPO");
 
-                entity.HasIndex(e => new { e.IdCurso, e.Numero, e.IdSemestre })
-                    .HasName("GRUPO_index_1")
-                    .IsUnique();
-
-                entity.Property(e => e.IdCurso)
-                    .IsRequired()
-                    .HasColumnName("Id_curso")
+                entity.Property(e => e.Curso)
                     .HasMaxLength(10)
                     .IsUnicode(false);
 
-                entity.Property(e => e.IdSemestre).HasColumnName("Id_semestre");
+                entity.Property(e => e.Periodo)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .IsFixedLength();
 
-                entity.HasOne(d => d.IdCursoNavigation)
+                entity.HasOne(d => d.CursoNavigation)
                     .WithMany(p => p.Grupo)
-                    .HasForeignKey(d => d.IdCurso)
+                    .HasForeignKey(d => d.Curso)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__GRUPO__Id_curso__73BA3083");
+                    .HasConstraintName("FK__GRUPO__Curso__71D1E811");
 
-                entity.HasOne(d => d.IdSemestreNavigation)
+                entity.HasOne(d => d.Semestre)
                     .WithMany(p => p.Grupo)
-                    .HasForeignKey(d => d.IdSemestre)
+                    .HasForeignKey(d => new { d.Anio, d.Periodo })
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__GRUPO__Id_semest__74AE54BC");
+                    .HasConstraintName("FK__GRUPO__70DDC3D8");
             });
 
             modelBuilder.Entity<InfoEvaluacion>(entity =>
@@ -273,81 +381,133 @@ namespace XTecDigital.Models
 
                 entity.ToView("INFO_EVALUACION");
 
-                entity.Property(e => e.ArchivoEntregable)
-                    .HasColumnName("Archivo_entregable")
-                    .HasMaxLength(150)
+                entity.Property(e => e.CarpetaDetalle)
+                    .HasColumnName("Carpeta_detalle")
+                    .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ArchivoEspecificacion)
-                    .HasColumnName("Archivo_especificacion")
-                    .HasMaxLength(150)
+                entity.Property(e => e.CarpetaEntregable)
+                    .HasColumnName("Carpeta_entregable")
+                    .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.FechaCreacionEntre)
-                    .HasColumnName("Fecha_creacion_entre")
+                entity.Property(e => e.CarpetaEspecificacion)
+                    .HasColumnName("Carpeta_especificacion")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Curso)
+                    .IsRequired()
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Detalle)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Entregable)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Especificacion)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FechaEntrega)
+                    .HasColumnName("Fecha_entrega")
                     .HasColumnType("datetime");
 
-                entity.Property(e => e.FechaCreacionEspec)
-                    .HasColumnName("Fecha_creacion_espec")
+                entity.Property(e => e.FechaEntregable)
+                    .HasColumnName("Fecha_entregable")
                     .HasColumnType("datetime");
 
-                entity.Property(e => e.IdEntre).HasColumnName("Id_Entre");
+                entity.Property(e => e.IdEvaluacionGrupo).HasColumnName("Id_evaluacion_grupo");
 
-                entity.Property(e => e.IdEspec).HasColumnName("Id_Espec");
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.IdEvaluacion).HasColumnName("Id_evaluacion");
+                entity.Property(e => e.Nota).HasColumnType("decimal(5, 2)");
 
-                entity.Property(e => e.IdGrupo).HasColumnName("Id_grupo");
-
-                entity.Property(e => e.IdRetro).HasColumnName("Id_retro");
-
-                entity.Property(e => e.NotaFinal).HasColumnType("decimal(5, 2)");
+                entity.Property(e => e.NotasPublicadas).HasColumnName("Notas_publicadas");
 
                 entity.Property(e => e.Observaciones).HasColumnType("text");
 
-                entity.Property(e => e.Retroalimentacion)
-                    .HasMaxLength(150)
+                entity.Property(e => e.Periodo)
+                    .IsRequired()
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
+                entity.Property(e => e.PesoNota)
+                    .HasColumnName("Peso_nota")
+                    .HasColumnType("decimal(5, 2)");
+
+                entity.Property(e => e.Rubro)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TipoCarpetaDetalle)
+                    .HasColumnName("Tipo_carpeta_detalle")
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TipoCarpetaEntregable)
+                    .HasColumnName("Tipo_carpeta_entregable")
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TipoCarpetaEspecificacion)
+                    .HasColumnName("Tipo_carpeta_especificacion")
+                    .HasMaxLength(20)
                     .IsUnicode(false);
             });
 
             modelBuilder.Entity<Noticia>(entity =>
             {
+                entity.HasKey(e => new { e.Titulo, e.FechaPublicacion, e.Numero, e.Curso, e.Anio, e.Periodo })
+                    .HasName("PK__NOTICIA__ED790B51C96E810B");
+
                 entity.ToTable("NOTICIA");
 
-                entity.HasIndex(e => new { e.IdGrupo, e.Titulo, e.FechaPublicacion })
-                    .HasName("NOTICIA_index_2")
-                    .IsUnique();
-
-                entity.Property(e => e.Autor)
-                    .IsRequired()
-                    .HasMaxLength(50)
+                entity.Property(e => e.Titulo)
+                    .HasMaxLength(200)
                     .IsUnicode(false);
 
                 entity.Property(e => e.FechaPublicacion)
                     .HasColumnName("Fecha_publicacion")
                     .HasColumnType("datetime");
 
-                entity.Property(e => e.IdGrupo).HasColumnName("Id_grupo");
+                entity.Property(e => e.Curso)
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Periodo)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
+                entity.Property(e => e.Autor)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Mensaje)
                     .IsRequired()
                     .HasColumnType("text");
 
-                entity.Property(e => e.Titulo)
-                    .IsRequired()
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.HasOne(d => d.IdGrupoNavigation)
+                entity.HasOne(d => d.Grupo)
                     .WithMany(p => p.Noticia)
-                    .HasForeignKey(d => d.IdGrupo)
-                    .HasConstraintName("FK__NOTICIA__Id_grup__778AC167");
+                    .HasForeignKey(d => new { d.Numero, d.Curso, d.Anio, d.Periodo })
+                    .HasConstraintName("FK__NOTICIA__74AE54BC");
             });
 
             modelBuilder.Entity<ProfesorGrupo>(entity =>
             {
-                entity.HasKey(e => new { e.Profesor, e.IdGrupo })
-                    .HasName("PK__PROFESOR__026E6B3C5A96DB9D");
+                entity.HasKey(e => new { e.Profesor, e.Numero, e.Curso, e.Anio, e.Periodo })
+                    .HasName("PK__PROFESOR__E56B5DFDF267FEC7");
 
                 entity.ToTable("PROFESOR_GRUPO");
 
@@ -355,95 +515,60 @@ namespace XTecDigital.Models
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.IdGrupo).HasColumnName("Id_grupo");
+                entity.Property(e => e.Curso)
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
 
-                entity.HasOne(d => d.IdGrupoNavigation)
+                entity.Property(e => e.Periodo)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
+                entity.HasOne(d => d.Grupo)
                     .WithMany(p => p.ProfesorGrupo)
-                    .HasForeignKey(d => d.IdGrupo)
-                    .HasConstraintName("FK__PROFESOR___Id_gr__75A278F5");
+                    .HasForeignKey(d => new { d.Numero, d.Curso, d.Anio, d.Periodo })
+                    .HasConstraintName("FK__PROFESOR_GRUPO__72C60C4A");
             });
 
             modelBuilder.Entity<Rubro>(entity =>
             {
+                entity.HasKey(e => new { e.Nombre, e.Numero, e.Curso, e.Anio, e.Periodo })
+                    .HasName("PK__RUBRO__0ACE5BC563C72AEE");
+
                 entity.ToTable("RUBRO");
 
-                entity.HasIndex(e => new { e.IdGrupo, e.Nombre })
-                    .HasName("RUBRO_index_3")
-                    .IsUnique();
-
-                entity.Property(e => e.IdGrupo).HasColumnName("Id_grupo");
-
                 entity.Property(e => e.Nombre)
-                    .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
+                entity.Property(e => e.Curso)
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Periodo)
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .IsFixedLength();
+
                 entity.Property(e => e.Porcentaje).HasColumnType("decimal(5, 2)");
 
-                entity.HasOne(d => d.IdGrupoNavigation)
+                entity.HasOne(d => d.Grupo)
                     .WithMany(p => p.Rubro)
-                    .HasForeignKey(d => d.IdGrupo)
-                    .HasConstraintName("FK__RUBRO__Id_grupo__787EE5A0");
+                    .HasForeignKey(d => new { d.Numero, d.Curso, d.Anio, d.Periodo })
+                    .HasConstraintName("FK__RUBRO__75A278F5");
             });
 
             modelBuilder.Entity<Semestre>(entity =>
             {
+                entity.HasKey(e => new { e.Anio, e.Periodo })
+                    .HasName("PK__SEMESTRE__3264416F75071B1F");
+
                 entity.ToTable("SEMESTRE");
 
-                entity.HasIndex(e => new { e.Anio, e.Periodo })
-                    .HasName("SEMESTRE_index_0")
-                    .IsUnique();
-
                 entity.Property(e => e.Periodo)
-                    .IsRequired()
                     .HasMaxLength(1)
                     .IsUnicode(false)
                     .IsFixedLength();
-            });
-
-            modelBuilder.Entity<SemestreInfo>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToView("SEMESTRE_INFO");
-
-                entity.Property(e => e.Carrera)
-                    .IsRequired()
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Estudiante)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.IdCurso)
-                    .IsRequired()
-                    .HasColumnName("Id_curso")
-                    .HasMaxLength(10)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.IdGrupo).HasColumnName("Id_grupo");
-
-                entity.Property(e => e.IdSemestre).HasColumnName("Id_semestre");
-
-                entity.Property(e => e.Nombre)
-                    .IsRequired()
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.NumeroGrupo).HasColumnName("Numero_grupo");
-
-                entity.Property(e => e.Periodo)
-                    .IsRequired()
-                    .HasMaxLength(1)
-                    .IsUnicode(false)
-                    .IsFixedLength();
-
-                entity.Property(e => e.Profesor)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
             });
 
             OnModelCreatingPartial(modelBuilder);

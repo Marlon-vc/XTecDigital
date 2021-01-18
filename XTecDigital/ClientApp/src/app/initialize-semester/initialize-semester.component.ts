@@ -5,6 +5,7 @@ import { Estudiante } from '../models/estudiante';
 import { Grupo } from '../models/grupo';
 import { Periodo } from '../models/periodo';
 import { Profesor } from '../models/profesor';
+import { Semestre } from '../models/semestre';
 import { ApiService } from '../services/api.service';
 
 @Component({
@@ -22,8 +23,10 @@ export class InitializeSemesterComponent implements OnInit {
   cursos: Curso[] = [];
   profesores: Profesor[] = [];
   grupos: Grupo[] = [];
+  gruposResumen: Grupo[] = [];
   estudiantes: Estudiante[] = [];
-  actualSemestre;
+  actualSemestre: Semestre;
+  semesterValid: boolean = false;
 
   constructor(private api: ApiService) { }
 
@@ -58,6 +61,8 @@ export class InitializeSemesterComponent implements OnInit {
     $('.submit').on('click', function(){
       console.log('Registro completado.');
       var complete = c.checkSemester();
+      console.log(complete);
+      
       if (complete) {
         c.saveSemester(current_fs, next_fs, opacity, this);
       } else {
@@ -75,27 +80,30 @@ export class InitializeSemesterComponent implements OnInit {
    * @param actual 
    */
   next(current_fs, next_fs, opacity, actual) {
+    if (!this.semesterValid)
+      return;
+
     current_fs = $(actual).parent();
-      next_fs = $(actual).parent().next();
-      
-      //Add Class Active
-      $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
-      
-      //show the next fieldset
-      next_fs.show();
-      //hide the current fieldset with style
-      current_fs.animate({opacity: 0}, {
-        step: function(now) {
-          // for making fielset appear animation
-          opacity = 1 - now;
-          current_fs.css({
-            'display': 'none',
-            'position': 'relative'
-          });
-          next_fs.css({'opacity': opacity});
-        },
-        duration: 600
-      });
+    next_fs = $(actual).parent().next();
+    
+    //Add Class Active
+    $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+    
+    //show the next fieldset
+    next_fs.show();
+    //hide the current fieldset with style
+    current_fs.animate({opacity: 0}, {
+      step: function(now) {
+        // for making fielset appear animation
+        opacity = 1 - now;
+        current_fs.css({
+          'display': 'none',
+          'position': 'relative'
+        });
+        next_fs.css({'opacity': opacity});
+      },
+      duration: 600
+    });
   }
 
   /**
@@ -131,27 +139,53 @@ export class InitializeSemesterComponent implements OnInit {
       });
   }
 
+  createSemester() {
+    let anio = $('#year').val() as string;
+    let periodo = $('#period').val() as string;
+
+    if (anio == "" || periodo == "")
+      return;
+
+    let semester = new Semestre();
+    semester.anio = Number.parseInt(anio);
+    semester.periodo = periodo;
+
+    this.actualSemestre = semester;
+    this.semesterValid = true;
+  }
+
   /**
    * Metodo para verificar si todos los datos del semestre estan completos
    */
   checkSemester(): boolean {
-    var year = $('#year');
-    var period = $('#period');
+    // var year = $('#year');
+    // var period = $('#period');
     
-    var groupLength = this.grupos.length;
+    // var groupLength = this.grupos.length;
 
-    console.log('year ' + year.val());
-    console.log('period ' + period.val());
+    // console.log('year ' + year.val());
+    // console.log('period ' + period.val());
 
-    if (year.val() == '' || period.val() == 'Seleccione un periodo' || groupLength == 0) {
+    // if (year.val() == '' || period.val() == 'Seleccione un periodo' || groupLength == 0) {
+    //   return false;
+    // }
+
+    if (this.grupos.length == 0) {
+      console.log("Debe crear grupos para inicializar el semestre");
       return false;
     }
 
-    this.grupos.forEach(grupo => {
-      if (grupo.estudiantes.length == 0) {
+    for (let i = 0; i < this.grupos.length; i++) {
+      let current = this.grupos[i];
+      if (current.estudiantes == null || current.estudiantes.length == 0)
         return false;
-      }
-    });
+    }
+
+    // this.grupos.forEach(grupo => {
+    //   if (grupo.estudiantes == null || grupo.estudiantes.length == 0) {
+    //     return false;
+    //   }
+    // });
 
     return true;
   }
@@ -165,12 +199,9 @@ export class InitializeSemesterComponent implements OnInit {
    */
   saveSemester(current_fs, next_fs, opacity, actual) {
 
-    var year = $('#year');
-    var period = $('#period');
-
     var semestreInfo = {
-      Anio : Number.parseInt(year.val() as string),
-      Periodo : period.val() as string,
+      Anio : this.actualSemestre.anio,
+      Periodo : this.actualSemestre.periodo,
       Grupos : this.grupos
     }
 
@@ -180,7 +211,8 @@ export class InitializeSemesterComponent implements OnInit {
     this.api.post(`https://localhost/api/Semestres`, semestreInfo)
       .subscribe((data: any) => {
         console.log('Semestre creado correctamente');
-        this.actualSemestre = semestreInfo;
+        this.gruposResumen = this.grupos;
+        
         this.next(current_fs, next_fs, opacity, actual);
       }, (error) => {
         console.log("Error creating semester...");
@@ -246,18 +278,24 @@ export class InitializeSemesterComponent implements OnInit {
    * Metodo para guardar los grupos
    */
   saveCourse() {
+    console.log('guardando grupo');
+
     $('#courseInfo').css('display', 'none');
-    var curso = $('#curso');
-    var grupo = $('#group');
+    var curso = $('#curso').val() as string;
+    var grupo = $('#group').val() as string;
     var profesores = $('#profesor').val() as string[];
+
+    $('#curso').val('');
+    $('#group').val('');
+    $('#profesor').val('');
 
     if (profesores.length < 1) {
       return;
     }
     
     var grupoN = new Grupo();
-    grupoN.idCurso = curso.val().toString();
-    grupoN.numero = Number.parseInt(grupo.val() as string);
+    grupoN.curso = curso;
+    grupoN.numero = Number.parseInt(grupo);
     grupoN.profesores = profesores;
 
     this.grupos.push(grupoN);
@@ -269,16 +307,18 @@ export class InitializeSemesterComponent implements OnInit {
   saveGroupStudents() {
     var students = $('#estudiantes').val() as string[];
     var groupInfo = $('#grupo').val().toString();  
-    var info = groupInfo.split(', ', 2);
+
+    console.log(students);
+    console.log(groupInfo);
+    
+    
+    var info = groupInfo.split('-', 2);
 
     var numeroGrupo = Number.parseInt(info[0]);
-    var idCursoG = info[1];
-   
+    var curso = info[1];
 
-    var actualGroup = this.grupos.find(g => g.numero == numeroGrupo && g.idCurso == idCursoG);
-    
+    var actualGroup = this.grupos.find(g => g.numero == numeroGrupo && g.curso == curso);
     actualGroup.estudiantes = students;
-
   }
 
   /**

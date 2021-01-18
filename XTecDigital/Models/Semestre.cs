@@ -10,7 +10,6 @@ namespace XTecDigital.Models
             Grupo = new HashSet<Grupo>();
         }
 
-        public int Id { get; set; }
         public int Anio { get; set; }
         public string Periodo { get; set; }
 

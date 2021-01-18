@@ -15,9 +15,10 @@ export class HomeGrupoComponent implements OnInit {
 
   //obtener el id del grupo
   groupId = 1;
-  userType = window.localStorage.getItem('user-type');
+  userType: string;
 
   ngOnInit(): void {
+    this.userType = SessionHandler.getUserType();
     // let groupId = this.route.snapshot.params.id
   //   let userType = SessionHandler.getUserType();
     
