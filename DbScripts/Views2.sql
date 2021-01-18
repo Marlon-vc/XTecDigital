@@ -62,3 +62,20 @@ LEFT JOIN dbo.ARCHIVO as detalle ON
 	detalle.Curso = evaluacion.Curso AND
 	detalle.Anio = evaluacion.Anio AND
 	detalle.Periodo = evaluacion.Periodo;
+
+GO
+CREATE VIEW CURSO_GRUPO
+AS
+SELECT
+	curso.Codigo,
+	curso.Nombre as Nombre_curso,
+	curso.Creditos,
+	curso.Carrera,
+	grupo.Numero as Numero_grupo,
+	grupo.Anio as Anio_semestre,
+	grupo.Periodo as Periodo_semestre
+FROM dbo.GRUPO as grupo
+LEFT JOIN dbo.CURSO as curso ON
+	curso.Codigo = grupo.Curso;
+
+--SELECT * FROM dbo.CURSO_GRUPO;
