@@ -7,6 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using XTecDigital.Helpers;
 using XTecDigital.Models;
 using XTecDigital.Models.Requests;
+using ExcelDataReader;
+using System.Text;
+using System.Data;
+using System.Collections.Generic;
 
 namespace XTecDigital.Controllers
 {
@@ -128,6 +132,72 @@ namespace XTecDigital.Controllers
             return Ok();
         }
 
+        [HttpPost("file")]
+        public IActionResult AddSemestreExcel([FromBody]String data) {
+            string filePath = "C:/Users/pvill/Desktop/Proyecto.xlsx";
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+            // using var stream = System.IO.File.Open(filePath, FileMode.Open, FileAccess.Read);
+            // using var reader = ExcelReaderFactory.CreateReader(stream);
+            // var result = reader.AsDataSet();
+
+            
+            // // // Ejemplos de acceso a datos
+            // DataTable table = result.Tables[0];
+            // DataRow row = table.Rows[0];
+            // table.Rows.Count;
+            // string cell = row[0].ToString();
+            // Console.WriteLine(row.ToString());
+
+            List<SemestreExcel> cursos = new List<SemestreExcel>();
+            var count = 0;
+
+            using (var stream = System.IO.File.Open(filePath, FileMode.Open, FileAccess.Read))
+            {
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    do
+                    {
+                         while (reader.Read()){
+                             if (count == 0) {
+                                count++;
+                                continue;
+                            }
+
+                            if (reader.GetString(0) == null) {
+                                break;
+                            }
+                            SemestreExcel sem = new SemestreExcel
+                            {
+                                Carnet = reader.GetString(0),
+                                Nombre = reader.GetString(1),
+                                Apellido1 = reader.GetString(2),
+                                Apellido2 = reader.GetString(3),
+                                IdCurso = reader.GetString(4),
+                                NombreCurso = reader.GetString(5),
+                                Anio = reader.GetDouble(6),
+                                Periodo = reader.GetDouble(7),
+                                Grupo = reader.GetDouble(8),
+                                IdProfesor = reader.GetString(9),
+                                NombreProfesor = reader.GetString(10),
+                                Apellido1Profesor = reader.GetString(11),
+                                Apellido2Profesor = reader.GetString(12)
+                            };
+
+
+                            cursos.Add(sem);
+                            Console.WriteLine(cursos.Count());
+                        }
+                    } while (reader.NextResult());
+                }
+            }
+
+            Console.WriteLine(cursos.Count());
+            
+            return Ok();
+        }
+
+        
         private bool SemestreExists(string periodo, int anio)
         {
             var result = _context.Semestre.FromSqlInterpolated(

@@ -21,6 +21,7 @@ import { EvaluateTaskComponent } from './evaluate-task/evaluate-task.component';
 import { HomeStudentComponent } from './home-student/home-student.component';
 import { HomeTeacherComponent } from './home-teacher/home-teacher.component';
 import { AsignarEvaluacionComponent } from './asignar-evaluacion/asignar-evaluacion.component';
+import { InitializeExcelComponent } from './initialize-excel/initialize-excel.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { AsignarEvaluacionComponent } from './asignar-evaluacion/asignar-evaluac
     EvaluateTaskComponent,
     HomeStudentComponent,
     HomeTeacherComponent,
-    AsignarEvaluacionComponent
+    AsignarEvaluacionComponent,
+    InitializeExcelComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -62,7 +64,8 @@ import { AsignarEvaluacionComponent } from './asignar-evaluacion/asignar-evaluac
       { path: 'evaluate-task/:id', component: EvaluateTaskComponent},
       { path: 'home-student', component: HomeStudentComponent},
       { path: 'home-teacher', component: HomeTeacherComponent},
-      { path: 'asignar-evaluacion/:id', component: AsignarEvaluacionComponent}
+      { path: 'asignar-evaluacion/:id', component: AsignarEvaluacionComponent},
+      { path: 'initialize-excel', component: InitializeExcelComponent},
       
     ])
   ],

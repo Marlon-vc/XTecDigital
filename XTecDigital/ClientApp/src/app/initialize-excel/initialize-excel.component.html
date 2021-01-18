@@ -1,0 +1,10 @@
+<div class="container">
+    <form action="#" method="POST">
+        <h4>Subir archivo de Excel</h4>
+        <div class="form-group">
+            <label for="user">Excel</label>
+            <input type="file" name="excel" id="excel" class="form-control" (change)="load($event)">
+        </div>
+        <button class="btn btn-primary" (click)="upload()">Inicializar semestre</button>
+    </form>    
+</div>
