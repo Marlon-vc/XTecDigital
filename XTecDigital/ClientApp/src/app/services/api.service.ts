@@ -69,17 +69,33 @@ export class ApiService {
   }
 
   sendRequest(method: string, url: string, body: object) {
+    // return new Promise((resolve, reject) => {
+    //   let req = new XMLHttpRequest();
+    //   req.open(method, url, true);
+    //   req.setRequestHeader('Content-Type', 'application/json');
+    //   req.setRequestHeader('Accept', 'application/json');
+    //   req.send(JSON.stringify(body));
+    //   req.onreadystatechange = () => {
+    //     if (req.status >= 200 && req.status < 300) {
+    //       resolve(req.response);
+    //     } else {
+    //       reject(req.response);
+    //     }
+    //   }
+    // });
     return new Promise((resolve, reject) => {
-      let req = new XMLHttpRequest();
-      req.open(method, url, true);
-      req.send(JSON.stringify(body));
-      req.onreadystatechange = () => {
-        if (req.status >= 200 && req.status < 300) {
-          resolve(req.response);
-        } else {
-          reject(req.response);
+      $.ajax({
+        type: method,
+        url: url,
+        data: JSON.stringify(body),
+        contentType: "application/json; charset=utf-8",
+        success: (data) => {
+          resolve(data);
+        },
+        error: (error) => {
+          reject(error);
         }
-      }
+      })
     });
   }
 }
