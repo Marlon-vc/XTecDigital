@@ -18,6 +18,7 @@ namespace XTecDigital.Models
         public virtual DbSet<Archivo> Archivo { get; set; }
         public virtual DbSet<Carpeta> Carpeta { get; set; }
         public virtual DbSet<Curso> Curso { get; set; }
+        public virtual DbSet<CursoGrupo> CursoGrupo { get; set; }
         public virtual DbSet<EstudianteGrupo> EstudianteGrupo { get; set; }
         public virtual DbSet<Evaluacion> Evaluacion { get; set; }
         public virtual DbSet<EvaluacionGrupo> EvaluacionGrupo { get; set; }
@@ -131,6 +132,37 @@ namespace XTecDigital.Models
                     .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<CursoGrupo>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("CURSO_GRUPO");
+
+                entity.Property(e => e.AnioSemestre).HasColumnName("Anio_semestre");
+
+                entity.Property(e => e.Carrera)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Codigo)
+                    .HasMaxLength(10)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.NombreCurso)
+                    .HasColumnName("Nombre_curso")
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.NumeroGrupo).HasColumnName("Numero_grupo");
+
+                entity.Property(e => e.PeriodoSemestre)
+                    .IsRequired()
+                    .HasColumnName("Periodo_semestre")
+                    .HasMaxLength(1)
+                    .IsUnicode(false)
+                    .IsFixedLength();
             });
 
             modelBuilder.Entity<EstudianteGrupo>(entity =>
