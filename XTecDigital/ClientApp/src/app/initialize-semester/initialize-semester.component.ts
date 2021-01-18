@@ -205,7 +205,7 @@ export class InitializeSemesterComponent implements OnInit {
       Grupos : this.grupos
     }
 
-    console.log(semestreInfo);
+    console.log('info to send ' + semestreInfo.Anio + ' ' + semestreInfo.Periodo);
 
     console.log('saving semester');
     this.api.post(`https://localhost/api/Semestres`, semestreInfo)
