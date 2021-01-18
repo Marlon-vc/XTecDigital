@@ -124,11 +124,11 @@ namespace XTecDigital.Controllers
                     }
 
                     var carpetasNormales = await _context.Carpeta.FromSqlInterpolated($@"
-                        dbo.sp_get_type_folder {"NORMAL"}, {grupo.Numero}, {grupo.Curso}, {grupo.Anio}, {grupo.Periodo}
+                        dbo.sp_get_type_folder {"NORMAL"}, {grupo.Numero}, {grupo.Curso}, {data.Anio}, {data.Periodo}
                     ").ToListAsync();
 
                     var rootFolder = (await _context.Carpeta.FromSqlInterpolated($@"
-                        dbo.sp_get_root_folder {grupo.Numero}, {grupo.Curso}, {grupo.Anio}, {grupo.Periodo}
+                        dbo.sp_get_root_folder {grupo.Numero}, {grupo.Curso}, {data.Anio}, {data.Periodo}
                     ").ToListAsync()).FirstOrDefault();
 
                     var docsPath = Path.Combine(carpetaGrupo, rootFolder.Nombre);
