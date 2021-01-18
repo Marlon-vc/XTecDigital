@@ -32,7 +32,7 @@ export class EvaluationPageComponent implements OnInit {
         // console.log(rubros);
         rubros.forEach(rubro => {
           // console.log(rubro);
-          this.api.get(`https://localhost/api/Evaluaciones/Rubro/${rubro.id}`).subscribe(
+          this.api.get(`https://localhost/api/Evaluaciones/Rubro/`).subscribe(
             (evaluaciones:Evaluacion[]) => {
               // console.log(evaluaciones);
               rubro.evaluaciones = evaluaciones;
@@ -94,7 +94,7 @@ export class EvaluationPageComponent implements OnInit {
    */
   async getEvaluacionesRubro(rubro: Rubro): Promise<Evaluacion[]> {
     return new Promise((resolve, reject) => {
-      this.api.get(`https://localhost/api/Evaluaciones/Rubro/${rubro.id}`).subscribe(
+      this.api.get(`https://localhost/api/Evaluaciones/Rubro/`).subscribe(
         async (evaluaciones: Evaluacion[]) => {
           for (let i = 0; i < evaluaciones.length; i++) {
             const evaluacion = evaluaciones[i];
