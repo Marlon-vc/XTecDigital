@@ -32,6 +32,26 @@ namespace XTecDigital.Controllers
             return Ok();
         }
 
+        [HttpGet("estudiante/{carnet}")]
+        public async Task<IActionResult> GetGruposEstudianteAsync(string carnet)
+        {
+            var grupos = await _context.CursoGrupo.FromSqlInterpolated($@"
+                dbo.sp_get_student_groups {carnet}
+            ").ToListAsync();
+
+            return Ok(grupos);
+        }
+
+        [HttpGet("profesor/{cedula}")]
+        public async Task<IActionResult> GetGruposProfesorAsync(string cedula)
+        {
+            var grupos = await _context.CursoGrupo.FromSqlInterpolated($@"
+                dbo.sp_get_profesor_groups {cedula}
+            ").ToListAsync();
+
+            return Ok(grupos);
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddSemesterAsync(Models.Requests.SemestreInfo data)
         {
@@ -85,10 +105,27 @@ namespace XTecDigital.Controllers
                         dbo.sp_get_all_group_folders {grupo.Numero}, {grupo.Curso}, {data.Anio}, {data.Periodo}
                     ").ToListAsync();
 
+                    // Crear carpetas especiales
                     var carpetaGrupo = FileHandler.GetGroupFolder(grupo.Numero, grupo.Curso, data.Anio, data.Periodo);
                     foreach (var carpeta in carpetas)
                     {
                         Directory.CreateDirectory(Path.Combine(carpetaGrupo, carpeta.Nombre));
+                    }
+
+                    var carpetasNormales = await _context.Carpeta.FromSqlInterpolated($@"
+                        dbo.sp_get_type_folder {"NORMAL"}, {grupo.Numero}, {grupo.Curso}, {grupo.Anio}, {grupo.Periodo}
+                    ").ToListAsync();
+
+                    var rootFolder = (await _context.Carpeta.FromSqlInterpolated($@"
+                        dbo.sp_get_root_folder {grupo.Numero}, {grupo.Curso}, {grupo.Anio}, {grupo.Periodo}
+                    ").ToListAsync()).FirstOrDefault();
+
+                    var docsPath = Path.Combine(carpetaGrupo, rootFolder.Nombre);
+
+                    // Crear carpetas de documentos
+                    foreach (var carpeta in carpetasNormales)
+                    {
+                        Directory.CreateDirectory(Path.Combine(docsPath, carpeta.Nombre));
                     }
 
                     // Crear rubros por defecto
