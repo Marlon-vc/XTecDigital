@@ -211,8 +211,45 @@ namespace XTecDigital.Controllers
             if (cursos.Count < 0)
                 return NoContent();
 
+            var dataInserted = AddToTemporalTable(cursos);
 
             return Ok();
+        }
+
+        private async Task<bool> AddToTemporalTable(List<SemestreExcel> data) {
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try 
+            {
+                await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                    dbo.sp_create_temporal_table
+                ");
+                await _context.SaveChangesAsync();
+
+                foreach (var row in data)
+                {
+                    await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                        dbo.sp_insert_temporal_table {row.Carnet}, {row.IdCurso}, {row.NombreCurso}, 
+                        {row.Anio}, {row.Periodo}, {row.Grupo}, {row.IdProfesor}
+                    ");   
+                    await _context.SaveChangesAsync();
+                }
+
+                //crear nuevo semestre
+                await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                        dbo.sp_initialize_semester
+                ");
+                await _context.SaveChangesAsync();
+
+
+            }
+            catch (DbUpdateException ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+
+            return true;
         }
 
 
