@@ -75,6 +75,38 @@ SELECT Anio, Periodo
 FROM dbo.SEMESTRE
 WHERE Anio = @Anio AND Periodo = @Periodo;
 
+-- Crear tabla temporal de semestre
+GO
+CREATE PROCEDURE dbo.sp_create_temporal_table
+AS
+CREATE TABLE #EXCEL_TABLE (
+	Carnet varchar(50),
+	IdCurso varchar(10),
+	NombreCurso varchar(100),
+	Anio int,
+	Periodo char(1),
+	Grupo int,
+	IdProfesor varchar(50)
+);
+
+GO
+CREATE PROCEDURE dbo.sp_delete_temporal_table
+AS
+IF OBJECT_ID('tempdb.dbo.#EXCEL_TABLE', 'U') IS NOT NULL
+  DROP TABLE #EXCEL_TABLE; 
+
+GO
+CREATE PROCEDURE dbo.sp_insert_temporal_table
+	@Carnet varchar(50),
+	@IdCurso varchar(10),
+	@NombreCurso varchar(100),
+	@Anio int,
+	@Periodo char(1),
+	@Grupo int,
+	@IdProfesor varchar(50)
+AS
+INSERT INTO #EXCEL_TABLE (Carnet, IdCurso, NombreCurso, Anio, Periodo, Grupo, IdProfesor)
+VALUES (@Carnet, @IdCurso, @NombreCurso, @Anio, @Periodo, @Grupo, @IdProfesor);
 -- Crear grupo
 GO
 CREATE PROCEDURE dbo.sp_create_grupo
