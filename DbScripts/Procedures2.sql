@@ -115,6 +115,35 @@ AS
 INSERT INTO dbo.SEMESTRE (Anio, Periodo)
 SELECT DISTINCT Anio, Periodo FROM #EXCEL_TABLE;
 
+CREATE PROCEDURE dbo.sp_semester_excel
+	@Carnet varchar(50),
+	@IdCurso varchar(10),
+	@NombreCurso varchar(100),
+	@Anio int,
+	@Periodo char(1),
+	@Grupo int,
+	@IdProfesor varchar(50)
+AS
+BEGIN
+CREATE TABLE [#EXCEL_TABLE] (
+	[Carnet] varchar(50),
+	[IdCurso] varchar(10),
+	[NombreCurso] varchar(100),
+	[Anio] int,
+	[Periodo] char(1),
+	[Grupo] int,
+	[IdProfesor] varchar(50)
+)
+
+INSERT INTO #EXCEL_TABLE (Carnet, IdCurso, NombreCurso, Anio, Periodo, Grupo, IdProfesor)
+VALUES (@Carnet, @IdCurso, @NombreCurso, @Anio, @Periodo, @Grupo, @IdProfesor);
+
+
+
+END;
+
+
+
 -- Crear grupo
 GO
 CREATE PROCEDURE dbo.sp_create_grupo
