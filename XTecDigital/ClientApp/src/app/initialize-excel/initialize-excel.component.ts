@@ -12,8 +12,7 @@ export class InitializeExcelComponent implements OnInit {
 
   constructor(private api: ApiService) { }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void { }
 
   
   /**
@@ -40,10 +39,22 @@ export class InitializeExcelComponent implements OnInit {
     this.api.post(`https://localhost/api/Semestres/file`, excelData)
       .subscribe((data: any) => {
         console.log("Semestre creado correctamente")
+        this.showModal();
       }, (error) => {
         console.log("Error creating semester...");
         console.log(error);
       });
+  }
+
+  /**
+   * Metodo para mostrar un modal
+   * @param title Titulo de la modal
+   * @param body Cuerpo de la modal
+   * @param okText Texto del boton
+   */
+  showModal() {
+    // @ts-ignore
+    $('#confirm-modal').modal('show');
   }
 
 }
