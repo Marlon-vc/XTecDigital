@@ -165,7 +165,7 @@ namespace XTecDigital.Controllers
         }
 
         [HttpDelete("file")]
-        public async Task<IActionResult> DeleteFileAsync([FromBody] ArchivoDto archivo)
+        public async Task<IActionResult> DeleteFileAsync([FromQuery] ArchivoDto archivo)
         {
             await _context.Database.ExecuteSqlInterpolatedAsync($@"
                 dbo.sp_delete_file {archivo.Nombre}, {archivo.Carpeta}, {archivo.TipoCarpeta}, {archivo.Numero}, {archivo.Curso}, {archivo.Anio}, {archivo.Periodo}

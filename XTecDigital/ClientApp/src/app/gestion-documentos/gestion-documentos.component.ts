@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { SessionHandler } from '../helpers/sessionHandler';
 import { ApiService } from '../services/api.service';
 
 @Component({
@@ -9,12 +10,12 @@ import { ApiService } from '../services/api.service';
 })
 export class GestionDocumentosComponent implements OnInit {
 
-  userType = window.localStorage.getItem('user-type');
+  userType: string;
+  group: any;
   selected: any;
   inFolder: boolean;
   currentFolder: any;
   rootFolder: any;
-  groupId: number;
 
   archivos: any[];
   carpetas: any[];
@@ -22,7 +23,15 @@ export class GestionDocumentosComponent implements OnInit {
   constructor(private route: ActivatedRoute, private api: ApiService) { }
 
   ngOnInit(): void {
-    this.groupId = this.route.snapshot.params.id;
+    this.userType = SessionHandler.getUserType();
+    let groupInfo = JSON.parse(window.localStorage.getItem('group'));
+
+    this.group = {
+      numero: Number.parseInt(groupInfo.numeroGrupo),
+      curso: groupInfo.codigo,
+      anio: Number.parseInt(groupInfo.anioSemestre),
+      periodo: groupInfo.periodoSemestre
+    }
 
     $(window).on('click', () => {
       $('#context-menu').css('display', 'none');
@@ -35,14 +44,16 @@ export class GestionDocumentosComponent implements OnInit {
    * Metodo para cargar los documentos de un curso
    */
   loadDocumentos() {
-    this.api.get(`https://localhost/api/Archivos/root/${this.groupId}`)
+
+    var query = new URLSearchParams(this.group).toString();
+    console.log(query);
+
+    this.api.get(`https://localhost/api/Archivos/root?${query}`)
       .subscribe((data: any) => {
-        console.log(data);
         this.carpetas = data.folders;
         this.archivos = data.files;
         this.rootFolder = data.root;
-      }, (error) => {
-        console.log('Error retrieving files');
+      }, error => {
         console.log(error);
       });
   }
@@ -79,28 +90,38 @@ export class GestionDocumentosComponent implements OnInit {
     // @ts-ignore
     $('#upload-modal').modal('hide');
 
+    var fileData: any;
 
-    let folderId;
-    if (this.currentFolder != null) {
-      folderId = this.currentFolder.id;
+    if (this.inFolder) {
+      fileData = {
+        FileData: await this.readFile(file),
+        Name: file.name,
+        Size: file.size,
+        Carpeta: this.currentFolder.nombre,
+        TipoCarpeta: this.currentFolder.tipo,
+        Numero: this.group.numero,
+        Curso: this.group.curso,
+        Anio: this.group.anio,
+        Periodo: this.group.periodo
+      };
     } else {
-      folderId = this.rootFolder.id;
+      fileData = {
+        FileData: await this.readFile(file),
+        Name: file.name,
+        Size: file.size,
+        Carpeta: this.rootFolder.nombre,
+        TipoCarpeta: this.rootFolder.tipo,
+        Numero: this.group.numero,
+        Curso: this.group.curso,
+        Anio: this.group.anio,
+        Periodo: this.group.periodo
+      };
     }
-
-    console.log(`Current folder Id: ${folderId}`);
-
-    var fileData = {
-      FileData: await this.readFile(file),
-      Name: file.name,
-      Size: file.size,
-      FolderId: folderId,
-      GroupId: new Number(this.groupId)
-    };
 
     this.api.post(`https://localhost/api/Archivos/file`, fileData)
       .subscribe((success) => {
         if (this.inFolder) {
-          this.loadFolderContents(this.currentFolder.id);
+          this.loadFolderContents(this.currentFolder);
         } else {
           this.loadDocumentos();
         }
@@ -140,8 +161,7 @@ export class GestionDocumentosComponent implements OnInit {
    */
   onCancelUpload() {
     console.log(' upload cancelled');
-    $('#upload-file').val('');
-    
+    $('#upload-file').val('');  
   }
 
   /**
@@ -159,9 +179,13 @@ export class GestionDocumentosComponent implements OnInit {
     $('input#folder-name').val('');
 
     let data = {
-      GroupId: new Number(this.groupId),
-      Name: nombre
+      Nombre: nombre,
+      Numero: this.group.numero,
+      Curso: this.group.curso,
+      Anio: this.group.anio,
+      Periodo: this.group.periodo
     };
+
     this.api.post('https://localhost/api/Archivos/folder', data)
       .subscribe((success) => {
         if (this.inFolder) {
@@ -187,15 +211,15 @@ export class GestionDocumentosComponent implements OnInit {
     this.currentFolder = folder;
     this.archivos = [];
     this.carpetas = [];
-    this.loadFolderContents(folder.id);
+    this.loadFolderContents(folder);
   }
 
-  /**
-   * Metodo para cargar los archivos de una carpeta
-   * @param id Identificador de la carpeta
-   */
-  loadFolderContents(id: number) {
-    this.api.get(`https://localhost/api/Archivos/folder/${id}`)
+  loadFolderContents(folder: any) {
+
+    var query = new URLSearchParams(folder).toString();
+    console.log(query);
+     
+    this.api.get(`https://localhost/api/Archivos/contents?${query}`)
       .subscribe((data: any[]) => {
         console.log(data);
         this.archivos = data;
@@ -214,80 +238,46 @@ export class GestionDocumentosComponent implements OnInit {
     this.loadDocumentos();
   }
 
-  /**
-   * Metodo para descargar un archivo
-   * @param file Archivo
-   * @param event Evento de interfaz
-   */
-  fileDoubleClicked(file, event) {
-    console.log(file);
-    this.api.get(`https://localhost/api/Archivos/file/${file.id}`)
-      .subscribe((data) => {
-        console.log(data);
-        
-      }, (error) => {
-        console.log('Error downloading file');
-        console.log(error);
-      });
+  onDescargarArchivo(file: any) {
+    this.selected = file;
+    this.onDescargar();
   }
 
-  /**
-   * Metodo para descargar 
-   * @param event Evento de la interfaz
-   */
-  onDescargar(event) {
+  onDescargar() {
     console.log('descargando');
-
-    window.location.replace(`https://localhost/api/Archivos/file/${this.selected.id}`);
-    return;
+    var query = new URLSearchParams(this.selected).toString();
+    window.location.replace(`https://localhost/api/Archivos/download?${query}`);
   }
 
-  /**
-   * Metodo para modificar
-   * @param event Evento de la interfaz
-   */
-  onModificar(event) {
+  onModificar() {
     console.log('modificando');
     //@ts-ignore
     $('#modal').modal();
   }
 
-  /**
-   * Metodo para eliminar
-   * @param event Evento de la interfaz
-   */
-  onEliminar(event) {
+  onEliminar() {
     console.log('eliminando');
 
-    let folder = (this.selected.raiz != undefined) ? 'folder' : 'file';
+    let folder = (this.selected.tamanio != undefined) ? 'file' : 'folder';
 
-    let info = new FormData();
-    info.append('FileId', this.selected.id);
-    info.append('GroupId', `${this.groupId}`);
-    
-    this.api.delete(`https://localhost/api/Archivos/${folder}/${this.selected.id}`)
-      .subscribe((success) => {
-        console.log('File deleted!');
+    let query = new URLSearchParams(this.selected).toString();
 
+    this.api.delete(`https://localhost/api/Archivos/${folder}?${query}`).subscribe(
+      (success) => {
+        console.log('File or folder deleted');
         if (this.inFolder) {
-          this.loadFolderContents(this.currentFolder.id);
+          this.loadFolderContents(this.currentFolder);
         } else {
           this.loadDocumentos();
         }
       }, (error) => {
         console.log(error);
-        
-      });
-    
+      }
+    );
   }
 
 
-  /**
-   * Metodo para mostrar el menu contextual
-   * @param item Elemento seleccionado
-   * @param event Evento de interfaz
-   */
-  showContextMenu(item, event) {
+  showContextMenu(item: any, event: any) {
     console.log(item);
     this.selected = item;
     $('#context-menu').css({

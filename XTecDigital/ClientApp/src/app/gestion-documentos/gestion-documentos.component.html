@@ -2,14 +2,14 @@
     <h3 *ngIf="userType == 'profesor'">Gestión de documentos</h3>
     <h3 *ngIf="userType == 'estudiante'">Documentos</h3>
 
-    <div *ngIf="userType == 'profesor'" class="btn-group mt-lg-4 mb-lg-1" role="group" aria-label="Controles">
+    <div class="btn-group mt-lg-4 mb-lg-1" role="group" aria-label="Controles">
         <button type="button" *ngIf="inFolder" class="btn btn-secondary" (click)="toHome()">
             Atrás
         </button>
-        <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#upload-modal">
+        <button *ngIf="userType == 'profesor'" type="button" class="btn btn-secondary" data-toggle="modal" data-target="#upload-modal">
             Subir archivo
         </button>
-        <button type="button" *ngIf="!inFolder" class="btn btn-secondary" data-toggle="modal" data-target="#folder-modal">
+        <button type="button" *ngIf="userType == 'profesor' && !inFolder" class="btn btn-secondary" data-toggle="modal" data-target="#folder-modal">
             Crear carpeta
         </button>
     </div>
@@ -32,7 +32,7 @@
                 <td>{{ carpeta.modificado }}</td>
             </tr>
             <tr *ngFor="let archivo of archivos" (contextmenu)="showContextMenu(archivo, $event)"
-                (dblclick)="fileDoubleClicked(archivo, $event)">
+                (dblclick)="onDescargarArchivo(archivo)">
                 <td><img src="assets/img/file.png" alt="file" /></td>
                 <td>{{ archivo.nombre }}</td>
                 <td>{{ getPrettySize(archivo.tamanio) }}</td>
@@ -96,10 +96,10 @@
     <button class="list-group-item list-group-item-action" (click)="onDescargar($event)">
         Descargar
     </button>
-    <button class="list-group-item list-group-item-action" (click)="onModificar($event)">
+    <button *ngIf="userType == 'profesor'" class="list-group-item list-group-item-action" (click)="onModificar($event)">
         Modificar
     </button>
-    <button class="list-group-item list-group-item-action" (click)="onEliminar($event)">
+    <button *ngIf="userType == 'profesor'" class="list-group-item list-group-item-action" (click)="onEliminar($event)">
         Eliminar
     </button>
 </div>
