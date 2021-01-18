@@ -21,6 +21,7 @@ import { EvaluateTaskComponent } from './evaluate-task/evaluate-task.component';
 import { HomeStudentComponent } from './home-student/home-student.component';
 import { HomeTeacherComponent } from './home-teacher/home-teacher.component';
 import { AsignarEvaluacionComponent } from './asignar-evaluacion/asignar-evaluacion.component';
+import { GroupInfoComponent } from './group-info/group-info.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { AsignarEvaluacionComponent } from './asignar-evaluacion/asignar-evaluac
     EvaluateTaskComponent,
     HomeStudentComponent,
     HomeTeacherComponent,
-    AsignarEvaluacionComponent
+    AsignarEvaluacionComponent,
+    GroupInfoComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -52,17 +54,17 @@ import { AsignarEvaluacionComponent } from './asignar-evaluacion/asignar-evaluac
       { path: 'initialize-semester', component: InitializeSemesterComponent},
       { path: 'gestion-cursos', component: GestionCursosComponent },
       { path: 'gestion-documentos', component: GestionDocumentosComponent },
-      { path: 'gestion-rubros/:id', component: GestionRubrosComponent},
+      { path: 'gestion-rubros', component: GestionRubrosComponent},
       { path: 'sidebar', component: SidebarComponent},
-      { path: 'documentos/:id', component: GestionDocumentosComponent },
-      { path: 'grupo/:id', component: HomeGrupoComponent },
-      { path: 'noticias/:id', component: NewsManagementComponent },
-      { path: 'ver-noticias/:id', component: SeeGroupNewsComponent},
-      { path: 'evaluation/:id', component: EvaluationPageComponent},
-      { path: 'evaluate-task/:id', component: EvaluateTaskComponent},
+      { path: 'documentos', component: GestionDocumentosComponent },
+      { path: 'grupo', component: GroupInfoComponent },
+      { path: 'noticias', component: NewsManagementComponent },
+      { path: 'ver-noticias', component: SeeGroupNewsComponent},
+      { path: 'evaluation', component: EvaluationPageComponent},
+      { path: 'evaluate-task', component: EvaluateTaskComponent},
       { path: 'home-student', component: HomeStudentComponent},
       { path: 'home-teacher', component: HomeTeacherComponent},
-      { path: 'asignar-evaluacion/:id', component: AsignarEvaluacionComponent}
+      { path: 'asignar-evaluacion', component: AsignarEvaluacionComponent}
       
     ])
   ],
