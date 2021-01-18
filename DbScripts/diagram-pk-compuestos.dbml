@@ -112,6 +112,9 @@ table EVALUACION_GRUPO as EGR {
 table EVALUACION_INTEGRANTES as EI {
   Estudiante varchar(50) [not null]
   Id_grupo int [not null]
+  indexes {
+    (Estudiante, Id_grupo) [pk]
+  }
 }
 
 table CARPETA as CA {

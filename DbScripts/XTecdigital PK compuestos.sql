@@ -106,7 +106,8 @@ GO
 
 CREATE TABLE [EVALUACION_INTEGRANTES] (
   [Estudiante] varchar(50) NOT NULL,
-  [Id_grupo] int NOT NULL
+  [Id_grupo] int NOT NULL,
+  PRIMARY KEY ([Estudiante], [Id_grupo])
 )
 GO
 
