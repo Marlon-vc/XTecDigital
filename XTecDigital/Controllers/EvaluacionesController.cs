@@ -104,7 +104,7 @@ namespace XTecDigital.Controllers
                 foreach (var estudiante in info.Estudiantes)
                 {
                     await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                        dbo.sp_create_evaluation_students {idEvaluacionGrupo}, {estudiante}
+                        dbo.sp_create_evaluation_student {idEvaluacionGrupo}, {estudiante}
                     ");
                     await _context.SaveChangesAsync();
 

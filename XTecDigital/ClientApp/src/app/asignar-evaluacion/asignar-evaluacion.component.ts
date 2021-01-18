@@ -10,6 +10,7 @@ import { ApiService } from '../services/api.service';
 export class AsignarEvaluacionComponent implements OnInit {
 
   userType: string;
+  idUser: string;
   group: any;
   rubros = [];
   estudiantes = [];
@@ -19,6 +20,8 @@ export class AsignarEvaluacionComponent implements OnInit {
 
   ngOnInit(): void {
     this.userType = SessionHandler.getUserType();
+    this.idUser = SessionHandler.getUserId();
+
     let groupInfo = JSON.parse(window.localStorage.getItem('group'));
 
     this.group = {
@@ -82,20 +85,6 @@ export class AsignarEvaluacionComponent implements OnInit {
     );
   }
 
-  /**
-   * Metodo para ocultar el campo de estudiantes en la interfaz
-   */
-  clearGroups() {
-    document.getElementById('grupalOption').style.display = 'none';
-  }
-
-  /**
-  * Metodo para mostrar el campo de estudiantes en la interfaz
-  */
-  setGroups() {
-    document.getElementById('grupalOption').style.display = 'flex';
-  }
-
   getInfoAsignaciones() {
 
   }
@@ -103,15 +92,17 @@ export class AsignarEvaluacionComponent implements OnInit {
   /**
    * Metodo para crear una nueva asignacion
    */
-  async onAction() { 
+  async onAction() {
     // var nombre = $('#nombre').val().toString();
-    var nombre = $('#nombre').toString();
-    var rubro = $('#rubro').toString();
+    var nombre = $('#nombre').val().toString();
+    var rubro = $('#rubro').val().toString();
     var peso = Number.parseInt($('#peso').val().toString());
-    var fecha = $('#fecha').toString();
-    var file: File = $('espec').prop('files')[0];
-    var individual = Number.parseInt($('#individual').val().toString());
+    var fecha = $('#fecha').val().toString();
+    var file: File = $('#espec').prop('files')[0];
+    var individual = $('input[name=\"individual\"]:checked').val() === "1"
     var estudiantes = $('#groups').val();
+
+    
 
     if (file == undefined) {
       console.log('no file selected');
@@ -120,7 +111,33 @@ export class AsignarEvaluacionComponent implements OnInit {
 
     var fileData = await this.readFile(file);
 
-    var check = this.validateData(nombre, rubro, peso, fecha, individual, estudiantes);
+    // var check = this.validateData(nombre, rubro, peso, fecha, individual, estudiantes);
+
+    var data = {
+      nombreEvaluacion: nombre,
+      fechaEntrega: fecha,
+      pesoNota: peso,
+      grupal: !individual,
+      nombreEspec: file.name,
+      rubro: rubro,
+      numero: this.group.numero,
+      curso: this.group.curso,
+      anio: this.group.anio,
+      periodo: this.group.periodo,
+      fileData: fileData,
+      size: file.size,
+      estudiantes: estudiantes
+    }
+
+    console.log(data);
+
+    this.api.post(`https://localhost/api/Evaluaciones/asignacion`, data)
+      .subscribe((data: any) => {
+        console.log('Asignacion creada correctamente');
+      }, (error) => {
+        console.log("Error...");
+        console.log(error);
+      });
 
   }
   validateData(nombre: string, rubro: string, peso: number, fecha: string, individual: number, estudiantes: string | number | string[]) {
