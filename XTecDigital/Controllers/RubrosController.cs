@@ -25,7 +25,7 @@ namespace XTecDigital.Controllers
 
         //GET: api/Rubros/Grupo
         [HttpGet("Grupo")]
-        public async Task<IActionResult> GetRubrosGrupoAsync([FromBody] GrupoDto grupo)
+        public async Task<IActionResult> GetRubrosGrupoAsync([FromQuery] GrupoDto grupo)
         {
             var result = await _context.Rubro.FromSqlInterpolated($@"
                 dbo.sp_get_rubros_grupo {grupo.Numero}, {grupo.Curso}, {grupo.Anio}, {grupo.Periodo}
@@ -68,13 +68,13 @@ namespace XTecDigital.Controllers
 
         // PUT: api/Rubros/1
         [HttpPut]
-        public async Task<IActionResult> UpdateRubroAsync([FromBody] RubroUpdate rubro) 
+        public async Task<IActionResult> UpdateRubroAsync(RubroUpdate rubro) 
         {
             if (rubro == null)
                 return BadRequest();
             
             await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                dbo.sp_update_rubro {rubro.Nombre}, {rubro.Numero}, {rubro.Porcentaje}, {rubro.Numero}, {rubro.Curso}, {rubro.Anio}, {rubro.Periodo}
+                dbo.sp_update_rubro {rubro.Nombre}, {rubro.NuevoNombre}, {rubro.Porcentaje}, {rubro.Numero}, {rubro.Curso}, {rubro.Anio}, {rubro.Periodo}
             ");
 
             return NoContent();
@@ -82,7 +82,7 @@ namespace XTecDigital.Controllers
 
         // DELETE: api/Rubros/1
         [HttpDelete]
-        public async Task<IActionResult> DeleteRubroAsync([FromBody] RubroRequest rubro) 
+        public async Task<IActionResult> DeleteRubroAsync([FromQuery] RubroRequest rubro) 
         {
             var rows = await _context.Database.ExecuteSqlInterpolatedAsync($@"
                 EXECUTE dbo.sp_delete_rubro {rubro.Nombre}, {rubro.Numero}, {rubro.Curso}, {rubro.Anio}, {rubro.Periodo}
