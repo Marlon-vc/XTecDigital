@@ -7,6 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using XTecDigital.Models;
 using XTecDigital.Models.Dtos;
 using XTecDigital.Models.Requests;
+using XTecDigital.Helpers;
+using System.IO;
+using System;
 
 namespace XTecDigital.Controllers
 {
@@ -17,7 +20,7 @@ namespace XTecDigital.Controllers
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
 
-        public EvaluacionesController(AppDbContext context, IMapper mapper) 
+        public EvaluacionesController(AppDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -25,7 +28,7 @@ namespace XTecDigital.Controllers
 
         //GET: api/Evaluaciones/Rubro
         [HttpGet("Rubro")]
-        public async Task<IActionResult> GetEvaluacionesRubroAsync(Rubro rubro) 
+        public async Task<IActionResult> GetEvaluacionesRubroAsync(Rubro rubro)
         {
             var result = await _context.Evaluacion.FromSqlInterpolated($@"
                 dbo.sp_get_evaluaciones_rubro {rubro.Nombre}, {rubro.Numero}, {rubro.Curso}, {rubro.Anio}, {rubro.Periodo}
@@ -42,8 +45,84 @@ namespace XTecDigital.Controllers
                 dbo.sp_get_info_evaluacion {info.Nombre}, {info.Rubro}, {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}, {info.Estudiante}
             ").ToListAsync()).FirstOrDefault();
 
-            return Ok(result); 
+            return Ok(result);
         }
-               
+
+        // [HttpGet("Evaluaciones")]
+        // public async Task<IActionResult> GetEvaluacionesProfAsync(EvaluacionProfInfo info) {}
+
+        [HttpPost("asignacion")]
+        public async Task<IActionResult> AsignarEvaluacion(AsignacionInfo info)
+        {
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                // Crear el archivo
+                if (string.IsNullOrWhiteSpace(info.FileData))
+                    return BadRequest();
+
+                var fileName = info.NombreEspec.CoerceValidFileName();
+                var data = FileHandler.FromBase64String(info.FileData);
+                var groupFolder = FileHandler.GetGroupFolder(info.Numero, info.Curso, info.Anio, info.Periodo);
+                string folder = "Especificaciones";
+                string tipoCarpeta = "ESPECIFICACIONES";
+
+                var filePath = Path.Combine(groupFolder, folder, fileName);
+                await System.IO.File.WriteAllBytesAsync(filePath, data);
+
+                await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                    dbo.sp_create_file {fileName}, {DateTime.Now}, {info.Size}, {folder}, {tipoCarpeta}, {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}
+                ");
+
+                await _context.SaveChangesAsync();
+
+                //Crear la evaluacion
+                await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                    dbo.sp_create_evaluation {info.NombreEvaluacion}, {info.FechaEntrega}, {info.PesoNota}, {info.Grupal}, {info.NombreEspec},
+                    {info.Rubro}, {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}
+                ");
+                await _context.SaveChangesAsync();
+
+                //Crear la evaluacion grupo
+                await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                    dbo.sp_create_evaluation_group {info.NombreEvaluacion}, {info.Rubro}, {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}
+                ");
+                await _context.SaveChangesAsync();
+
+                //Obtener evaluacion grupo recien creada
+
+                var EvaluacionGrupo = (await _context.EvaluacionGrupo.FromSqlInterpolated($@"
+                    dbo.sp_get_inserted_grupo
+                ").ToListAsync()).FirstOrDefault(); 
+
+                Console.WriteLine(EvaluacionGrupo.Id);
+
+                var idEvaluacionGrupo = EvaluacionGrupo.Id; // obtener id de la evaluacion recien creada
+                //Crear la evaluacion integrantes
+                foreach (var estudiante in info.Estudiantes)
+                {
+                    await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                        dbo.sp_create_evaluation_students {idEvaluacionGrupo}, {estudiante}
+                    ");
+                    await _context.SaveChangesAsync();
+
+                }
+
+
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, ex);
+            }
+
+            return Ok();
+
+
+        }
+
+
+
     }
 }
