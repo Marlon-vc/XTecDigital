@@ -531,6 +531,37 @@ LEFT JOIN dbo.EVALUACION_INTEGRANTES as EI ON
 WHERE
     Nombre = @Evaluacion AND Rubro = @Rubro AND Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo;
 
+GO
+CREATE PROCEDURE dbo.sp_get_student_groups
+    @Student VARCHAR(50)
+AS
+SELECT CG.Codigo, CG.Nombre_curso, CG.Creditos, CG.Carrera, CG.Numero_grupo, CG.Anio_semestre, CG.Periodo_semestre
+FROM dbo.CURSO_GRUPO as CG
+LEFT JOIN dbo.ESTUDIANTE_GRUPO as EG ON
+    EG.Numero = CG.Numero_grupo AND
+    EG.Curso = CG.Codigo AND 
+    EG.Anio = CG.Anio_semestre AND
+    EG.Periodo = CG.Periodo_semestre
+WHERE
+    EG.Estudiante = @Student
+ORDER BY CG.Anio_semestre DESC, CG.Periodo_semestre DESC;
+
+GO
+CREATE PROCEDURE dbo.sp_get_profesor_groups
+	@Cedula VARCHAR(50)
+AS
+SELECT CG.Codigo, CG.Nombre_curso, CG.Creditos, CG.Carrera, CG.Numero_grupo, CG.Anio_semestre, CG.Periodo_semestre
+FROM dbo.CURSO_GRUPO as CG
+LEFT JOIN dbo.PROFESOR_GRUPO AS PG ON
+	PG.Numero = CG.Numero_grupo AND
+	PG.Curso = CG.Codigo AND
+	PG.Anio = CG.Anio_semestre AND
+	PG.Periodo = CG.Periodo_semestre
+WHERE
+	PG.Profesor = @Cedula
+ORDER BY CG.Anio_semestre DESC, CG.Periodo_semestre DESC;
+
+
 -- ACTUALIZADOS
 --dbo.sp_create_grupo_estudiante
 --dbo.sp_create_grupo_profesor
@@ -569,7 +600,7 @@ WHERE
 --dbo.sp_get_file_from_name
 
 -- TIPOS DE CARPETA
--- 0 -> DOCUMENTOS_NORMAL
+-- 0 -> NORMAL
 -- 1 -> RAIZ
 -- 2 -> ESPECIFICACIONES
 -- 3 -> ENTREGABLES
