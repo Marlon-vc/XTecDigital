@@ -600,6 +600,23 @@ LEFT JOIN dbo.EVALUACION_INTEGRANTES as EI ON
 WHERE
     Nombre = @Evaluacion AND Rubro = @Rubro AND Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo;
 
+GO
+CREATE PROCEDURE dbo.sp_get_info_evaluaciones_prof
+    @Numero INT,
+    @Curso VARCHAR(10),
+    @Anio INT,
+    @Periodo CHAR(1),
+    @Prof VARCHAR(50)
+AS
+SELECT 
+	Rubro, IE.Nombre, Peso_nota, Fecha_entrega, Especificacion, Carpeta_especificacion, Tipo_carpeta_especificacion, Grupal
+
+FROM dbo.INFO_EVALUACION as IE
+JOIN dbo.RUBRO as R ON R.Nombre = IE.Rubro AND  R.Numero = IE.Numero AND R.Curso = IE.Curso AND R.Anio = IE.Anio AND R.Periodo = IE.Periodo
+JOIN dbo.GRUPO as G ON G.Numero = IE.Numero AND G.Curso = IE.Curso AND G.Anio = IE.Anio AND G.Periodo = IE.Periodo
+JOIN dbo.PROFESOR_GRUPO as PG ON PG.Numero = IE.Numero AND PG.Curso = IE.Curso AND PG.Anio = IE.Anio AND PG.Periodo = IE.Periodo
+WHERE IE.Numero = @Numero AND IE.Curso = @Curso AND IE.Anio = @Anio AND IE.Periodo = @Periodo AND PG.Profesor = @Prof;
+
 
 GO
 CREATE PROCEDURE dbo.get_students_group
