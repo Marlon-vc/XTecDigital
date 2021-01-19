@@ -735,48 +735,24 @@ AS
 INSERT INTO dbo.EVALUACION_INTEGRANTES (Estudiante, Id_grupo)
 VALUES (@Estudiante, @Id_evaluacion_grupo);
 
+GO
+CREATE PROCEDURE dbo.sp_get_students_in_group
+    @GroupId INT
+AS
+SELECT Estudiante, Id_grupo
+FROM dbo.EVALUACION_INTEGRANTES
+WHERE Id_grupo = @GroupId;
 
-
--- ACTUALIZADOS
---dbo.sp_create_grupo_estudiante
---dbo.sp_create_grupo_profesor
---dbo.sp_create_initial_rubro
---dbo.sp_get_semestre
---dbo.sp_create_rubro
---dbo.sp_get_rubro
---dbo.sp_get_rubros_grupo
---dbo.sp_update_rubro
---dbo.sp_delete_rubro
---dbo.sp_get_group_folders
---dbo.sp_get_group_files
---dbo.sp_create_initial_folders
---dbo.sp_get_folder
---dbo.sp_get_folder_by_name
---dbo.sp_get_root_folder
---dbo.sp_update_folder
---dbo.sp_create_folder
---dbo.sp_delete_folder
---dbo.sp_get_files
---dbo.sp_get_file
---dbo.sp_create_file
---dbo.sp_update_file
---dbo.sp_delete_file
---dbo.sp_get_noticias_grupo
---dbo.sp_get_noticia
---dbo.sp_create_noticia
---dbo.sp_update_noticia
---dbo.sp_delete_noticia
---dbo.sp_get_evaluaciones_rubro
-
-
--- ELIMINADOS
---dbo.sp_get_semestre
---dbo.sp_get_grupo
---dbo.sp_get_file_from_name
-
--- TIPOS DE CARPETA
--- 0 -> NORMAL
--- 1 -> RAIZ
--- 2 -> ESPECIFICACIONES
--- 3 -> ENTREGABLES
--- 4 -> DETALLES
+GO
+CREATE PROCEDURE dbo.sp_update_grupo_with_entregable
+    @GroupId INT,
+    @Entregable VARCHAR(100),
+    @Carpeta_entregable VARCHAR(100),
+    @Tipo_carpeta_entregable VARCHAR(20)
+AS
+UPDATE dbo.EVALUACION_GRUPO
+SET 
+    Entregable = @Entregable, 
+    Carpeta_entregable = @Carpeta_entregable,
+    Tipo_carpeta_entregable = @Tipo_carpeta_entregable
+WHERE Id = @GroupId;
