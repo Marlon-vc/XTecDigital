@@ -58,6 +58,47 @@ namespace XTecDigital.Controllers
             return Ok(result);
         }
 
+        [HttpGet("integrantes/{idGrupo}")]
+        public async Task<IActionResult> GetIntegrantesGrupoAsync(int idGrupo)
+        {
+            var result = await _context.EvaluacionIntegrantes.FromSqlInterpolated($@"
+                dbo.sp_get_students_in_group {idGrupo}
+            ").ToListAsync();
+
+            return Ok(result);
+        }
+
+        [HttpPost("entregable/{idGrupo}")]
+        public async Task<IActionResult> PostEntregableAsync(int idGrupo, UploadInfo info)
+        {
+            if (string.IsNullOrWhiteSpace(info.FileData))
+                return BadRequest();
+
+            var fileName = info.Name.CoerceValidFileName();
+
+            var data = FileHandler.FromBase64String(info.FileData);
+
+            var groupFolder = FileHandler.GetGroupFolder(info.Numero, info.Curso, info.Anio, info.Periodo);
+
+            var filePath = Path.Combine(groupFolder, info.Carpeta, fileName);
+            await System.IO.File.WriteAllBytesAsync(filePath, data);
+
+            await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                dbo.sp_create_file {fileName}, {DateTime.Now}, {info.Size}, {info.Carpeta}, {info.TipoCarpeta}, {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}
+            ");
+
+            var file = (await _context.Archivo.FromSqlInterpolated($@"
+                dbo.sp_get_file {fileName}, {info.Carpeta}, {info.TipoCarpeta}, {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}
+            ").ToListAsync()).FirstOrDefault();
+
+            //TODO: actualizar evaluacion_grupo para registrar entregable
+            await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                dbo.sp_update_grupo_with_entregable {idGrupo}, {file.Nombre}, {file.Carpeta}, {file.TipoCarpeta}
+            ");
+
+            return CreatedAtRoute("Default", file);
+        }
+
         [HttpPost("asignacion")]
         public async Task<IActionResult> AsignarEvaluacion(AsignacionInfo info)
         {
