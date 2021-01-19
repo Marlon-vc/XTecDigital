@@ -10,7 +10,7 @@ import { ApiService } from '../services/api.service';
 export class EvaluateTaskComponent implements OnInit {
 
   groupId = this.route.snapshot.params.id;
-  asiganciones = [];
+  asignaciones = [];
 
   constructor(private route: ActivatedRoute, private api: ApiService) { }
 

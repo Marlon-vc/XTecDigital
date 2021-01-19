@@ -17,6 +17,8 @@ export class EvaluationPageComponent implements OnInit {
   change = false;
   group: any;
 
+  currentEvaluacion: any;
+
   constructor(private route: ActivatedRoute, private api: ApiService) { }
 
   ngOnInit(): void {
@@ -36,42 +38,6 @@ export class EvaluationPageComponent implements OnInit {
     };
     this.loadRubros();
   }
-
-  /**
-   * Metodo para cargar los rubros
-   */
-  // getRubros() {
-  //   this.api.get(`https://localhost/api/Rubros/Grupo/${this.groupId}`).subscribe(
-  //     (rubros: Rubro[]) => {
-  //       // console.log(rubros);
-  //       rubros.forEach(rubro => {
-  //         // console.log(rubro);
-  //         this.api.get(`https://localhost/api/Evaluaciones/Rubro/`).subscribe(
-  //           (evaluaciones:Evaluacion[]) => {
-  //             // console.log(evaluaciones);
-  //             rubro.evaluaciones = evaluaciones;
-  //             rubro.evaluaciones.forEach(evaluacion => {
-  //               this.api.get(`https://localhost/api/Evaluaciones/Info/${evaluacion.id}`).subscribe(
-  //                 (info:InfoEvaluacion) => {
-  //                   console.log(info);
-  //                   evaluacion.info = info;
-  //                 }, (error:any) => {
-  //                   console.log(error);
-  //                 }
-  //               );
-  //             });
-  //             this.rubros = rubros;
-  //             console.log(this.rubros);
-  //           }, (error: any) => {
-  //             console.log(error);
-  //           }
-  //         );
-  //       });
-  //     }, (error: any) => {
-  //       console.log(error);
-  //     }
-  //   );
-  // }
 
   /**
    * Metodo asincrono para cargar rubros
@@ -141,23 +107,95 @@ export class EvaluationPageComponent implements OnInit {
   async getInfoEvaluacion(evaluacion: any): Promise<InfoEvaluacion> {
     return new Promise((resolve, reject) => {
 
-      // let data = {
-      //   Nombre: evaluacion.nombre,
-      //   Rubro: evaluacion.ru
-      // }
-
       let query = new URLSearchParams(evaluacion).toString();
       console.log(query);
       
       this.api.get(`https://localhost/api/Evaluaciones/Info?${query}`).subscribe(
-        (info: InfoEvaluacion) => {
-          resolve(info);
+        async (info: any) => {
+
+          this.api.get(`https://localhost/api/Evaluaciones/integrantes/${info.idEvaluacionGrupo}`)
+          .subscribe(
+            (integrantes) => {
+              info.integrantes = integrantes;
+              resolve(info);
+            }, (error) => {
+              console.log(error);
+              reject(error);
+            }
+          );
         }, (error) => {
           console.log(error);
           reject(error);
         }
       );
     });
+  }
+
+  onButtonClicked(evaluacion) {
+    console.log(evaluacion);
+    this.currentEvaluacion = evaluacion;
+  }
+
+  /**
+   * Método para subir un archivo al api
+   */
+  async onSubirArchivo() {
+    //@ts-ignore
+    $('#upload-modal').modal('hide');
+
+    let file: File = $('#upload-file').prop('files')[0];
+    // this.currentEvaluacion;
+    // console.log(file);
+
+    // console.log(this.currentEvaluacion);
+    
+
+    let nombreEva = this.currentEvaluacion.nombre;
+    let grupoEva = this.currentEvaluacion.idEvaluacionGrupo;
+    let ext = file.name.split('.').pop();
+
+    let request = {
+      FileData: await this.readFile(file),
+      Name: `Entregable ${grupoEva} - ${nombreEva}.${ext}`,
+      Size: file.size,
+      Carpeta: 'Entregables',
+      TipoCarpeta: 'ENTREGABLES',
+      Numero: this.currentEvaluacion.numero,
+      Curso: this.currentEvaluacion.curso,
+      Anio: this.currentEvaluacion.anio,
+      Periodo: this.currentEvaluacion.periodo
+    }
+
+    console.log(request);
+    
+
+    this.api.post('https://localhost/api/Evaluaciones/entregable', request).subscribe(
+      (success) => {
+        console.log('File created successfully');
+        this.loadRubros();
+      }, (error) => {
+        console.log(error);
+      }
+    );
+  }
+
+  onCancelUpload() {
+
+  }
+
+  /**
+   * Método para obtener los datos de un archivo
+   * @param file archivo a cargar
+   */
+  readFile(file: File) {
+    let promise = new Promise((resolve) => {
+      var reader = new FileReader();
+      reader.onload = (data) => {
+        resolve(data.target.result);
+      };
+      reader.readAsDataURL(file);
+    });
+    return promise;
   }
 
   /**
@@ -183,5 +221,4 @@ export class EvaluationPageComponent implements OnInit {
     }
     
   }
-
 }
