@@ -644,22 +644,81 @@ ORDER BY CG.Anio_semestre DESC, CG.Periodo_semestre DESC;
 
 --- Procedimientos para asignar evaluaciones
 GO
-CREATE PROCEDURE dbo.sp_assign_evaluation
+CREATE PROCEDURE dbo.sp_create_evaluation
 	@Nombre_evaluacion VARCHAR(100),
-	@Rubro VARCHAR(100),
+	@Fecha_entrega DATETIME,
 	@Peso DECIMAL(5,2),
-	@Fecha DATETIME,
-	@Espec VARCHAR(100),
 	@Individual BIT,
+	@Nombre_espec VARCHAR(100),
+	@Rubro VARCHAR(100),
 	@Numero INT,
     @Curso VARCHAR(10),
     @Anio INT,
     @Periodo CHAR(1)
 AS
-BEGIN
+INSERT INTO dbo.EVALUACION (Nombre, Notas_publicadas, Fecha_entrega, Peso_nota, 
+	Grupal, Especificacion, Carpeta_especificacion, Tipo_carpeta_especificacion, Rubro,
+	Numero, Curso, Anio, Periodo)
+VALUES
+(@Nombre_evaluacion, 0, @Fecha_entrega, @Peso, @Individual, @Nombre_espec, 'Especificaciones', 'ESPECIFICACIONES',
+@Rubro, @Numero, @Curso, @Anio, @Periodo);
+
+GO
+CREATE PROCEDURE dbo.sp_create_evaluation_group 
+	@Nombre_evaluacion VARCHAR(100),
+	@Rubro VARCHAR(100),
+	@Numero INT,
+    @Curso VARCHAR(10),
+    @Anio INT,
+    @Periodo CHAR(1)
+AS
+INSERT INTO dbo.EVALUACION_GRUPO (Evaluacion, Rubro, Numero, Curso, Anio, Periodo)
+VALUES
+(@Nombre_evaluacion, @Rubro, @Numero, @Curso, @Anio, @Periodo);
+
+GO 
+CREATE PROCEDURE dbo.sp_get_evaluation_group 
+	@Nombre_evaluacion VARCHAR(100),
+	@Rubro VARCHAR(100),
+	@Numero INT,
+    @Curso VARCHAR(10),
+    @Anio INT,
+    @Periodo CHAR(1)
+AS
+SELECT * 
+FROM dbo.EVALUACION_GRUPO 
+ 
+ GO
+CREATE PROCEDURE dbo.sp_get_inserted_grupo
+AS
+SELECT 
+  Id, 
+  Nota, 
+  Observaciones, 
+  Entregable, 
+  Carpeta_entregable, 
+  Tipo_carpeta_entregable, 
+  Detalle, 
+  Carpeta_detalle, 
+  Tipo_carpeta_detalle,
+  Evaluacion,
+  Rubro,
+  Numero,
+  Curso,
+  Anio,
+  Periodo
+FROM dbo.EVALUACION_GRUPO
+WHERE Id = IDENT_CURRENT( 'EVALUACION_GRUPO' );
+
+GO 
+CREATE PROCEDURE dbo.sp_create_evaluation_student
+	@Id_evaluacion_grupo INT,
+	@Estudiante VARCHAR(50)
+AS
+INSERT INTO dbo.EVALUACION_INTEGRANTES (Estudiante, Id_grupo)
+VALUES (@Id_evaluacion_grupo, @Estudiante);
 
 
-END;
 
 -- ACTUALIZADOS
 --dbo.sp_create_grupo_estudiante
