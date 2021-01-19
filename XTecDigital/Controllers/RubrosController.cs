@@ -36,7 +36,7 @@ namespace XTecDigital.Controllers
 
         //GET: api/Rubros
         [HttpGet("Rubro")]
-        public async Task<IActionResult> GetRubroAsync([FromBody] RubroRequest rubro)
+        public async Task<IActionResult> GetRubroAsync([FromQuery] RubroRequest rubro)
         {
             var result = (await _context.Rubro.FromSqlInterpolated($@"
                 dbo.sp_get_rubro {rubro.Nombre}, {rubro.Numero}, {rubro.Curso}, {rubro.Anio}, {rubro.Periodo}

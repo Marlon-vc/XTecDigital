@@ -28,7 +28,7 @@ namespace XTecDigital.Controllers
 
         //GET: api/Evaluaciones/Rubro
         [HttpGet("Rubro")]
-        public async Task<IActionResult> GetEvaluacionesRubroAsync(Rubro rubro)
+        public async Task<IActionResult> GetEvaluacionesRubroAsync([FromQuery] RubroDto rubro)
         {
             var result = await _context.Evaluacion.FromSqlInterpolated($@"
                 dbo.sp_get_evaluaciones_rubro {rubro.Nombre}, {rubro.Numero}, {rubro.Curso}, {rubro.Anio}, {rubro.Periodo}
@@ -39,7 +39,7 @@ namespace XTecDigital.Controllers
 
         //GET: api/Evaluaciones/Info
         [HttpGet("Info")]
-        public async Task<IActionResult> GetInfoEvaluacionAsync(EvaluacionInfo info)
+        public async Task<IActionResult> GetInfoEvaluacionAsync([FromQuery] EvaluacionInfo info)
         {
             var result = (await _context.InfoEvaluacion.FromSqlInterpolated($@"
                 dbo.sp_get_info_evaluacion {info.Nombre}, {info.Rubro}, {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}, {info.Estudiante}
