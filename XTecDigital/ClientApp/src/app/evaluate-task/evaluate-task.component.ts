@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { SessionHandler } from '../helpers/sessionHandler';
 import { ApiService } from '../services/api.service';
 
 @Component({
@@ -9,12 +10,54 @@ import { ApiService } from '../services/api.service';
 })
 export class EvaluateTaskComponent implements OnInit {
 
-  groupId = this.route.snapshot.params.id;
-  asiganciones = [];
+  evaluaciones = [];
+  asignaciones = [];
+  userType: string;
+  idUser: string;
+  group: any;
 
   constructor(private route: ActivatedRoute, private api: ApiService) { }
 
   ngOnInit(): void {
+    this.userType = SessionHandler.getUserType();
+    this.idUser = SessionHandler.getUserId();
+
+    let groupInfo = JSON.parse(window.localStorage.getItem('group'));
+
+    this.group = {
+      numero: Number.parseInt(groupInfo.numeroGrupo),
+      curso: groupInfo.codigo,
+      anio: Number.parseInt(groupInfo.anioSemestre),
+      periodo: groupInfo.periodoSemestre
+    }
+
+    this.getInfoEvaluaciones();
+  }
+
+  getInfoEvaluaciones() {
+    var info: any = {
+      Numero: this.group.numero,
+      Curso: this.group.curso,
+      Anio: this.group.anio,
+      Periodo: this.group.periodo,
+      Profesor: this.idUser
+    }
+
+    var query = new URLSearchParams(info).toString();
+    this.api.get(`https://localhost/api/Evaluaciones/eval-prof?${query}`).subscribe(
+      (value: any) => {
+        console.log(value);
+        this.evaluaciones = value;
+      }, (error: any) => {
+        console.log(error);
+      }
+    );
+  }
+
+  loadAsignaciones() {
+    var evaluacion = $('#eval').val().toString();
+    var array = evaluacion.split(',');
+    console.log(array);
   }
 
   /**

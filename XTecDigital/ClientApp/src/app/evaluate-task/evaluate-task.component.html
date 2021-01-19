@@ -1,6 +1,22 @@
 <div class="container">
     <h3>Evaluacion de asignaciones</h3>
 
+    <div class="row">
+        <div class="col-9">
+            <select class="form-control" id="eval">
+                <option selected="" value="Seleccione una evaluacion"> Seleccione una evaluacion (Nombre, Rubro)</option>
+                <option *ngFor="let evaluacion of evaluaciones" value="{{evaluacion.nombre}},{{ evaluacion.rubro}}">{{ evaluacion.nombre }}, {{ evaluacion.rubro}}</option>
+            </select>
+        </div>
+        <div class="col-3">
+            <button type="button" class="btn btn-primary" (click)="loadAsignaciones()">Buscar</button>
+        </div>
+        
+
+
+    </div>
+    
+
     <div class="btn-group mt-lg-4 mb-lg-1" role="group" aria-label="Controles">
         <button type="button" class="btn btn-secondary" (click)="guardarNotas()">
             Guardar notas
