@@ -1,0 +1,51 @@
+use XTecDigitalDb;
+
+db.Estudiantes.insertMany(
+    [{
+        "Carnet": "2017094282",
+        "Nombre": "Paola Villegas",
+        "Correo": "pvillegasch@gmail.com",
+        "Telefono": "83216963",
+        "Pass": "DOSdeJUNIO"
+    },
+    {
+        "Carnet": "2017217080",
+        "Nombre": "Marlon Vega",
+        "Correo": "mvegach2013@gmail.com",
+        "Telefono": "70143773",
+        "Pass": "ONCEdeENERO"
+    },
+    {
+        "Carnet": "2018572565",
+        "Nombre": "Juan Chinchilla",
+        "Correo": "juan@gmail.com",
+        "Telefono": "74826529",
+        "Pass": "123"
+    }
+]);
+
+db.Profesores.insertMany([
+    {
+        "Cedula": "402390083",
+        "Nombre": "Paola Villegas",
+        "Correo": "pvillegasch@gmail.com",
+        "Pass": "DOSdeJUNIO"
+    },
+    {
+        "Cedula": "122200589521",
+        "Nombre": "Marlon Vega",
+        "Correo": "mvegach2013@gmail.com",
+        "Pass": "ONCEdeENERO"
+    }
+]);
+
+db.Administradores.insertMany([
+    {
+        "User": "pvill",
+        "Pass": "DOSdeJUNIO"
+    },
+    {
+        "User": "mvega",
+        "Pass": "ONCEdeENERO"
+    }
+]);
