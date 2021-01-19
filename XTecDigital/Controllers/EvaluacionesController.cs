@@ -48,8 +48,14 @@ namespace XTecDigital.Controllers
             return Ok(result);
         }
 
-        // [HttpGet("Evaluaciones")]
-        // public async Task<IActionResult> GetEvaluacionesProfAsync(EvaluacionProfInfo info) {}
+        [HttpGet("eval-prof")]
+        public async Task<IActionResult> GetEvaluacionesProfAsync([FromQuery] EvaluacionProfInfo info) {
+            var result = await _context.InfoEvaluacion.FromSqlInterpolated($@"
+                dbo.sp_get_info_evaluaciones_prof {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}, {info.Profesor}
+            ").ToListAsync();
+
+            return Ok(result);
+        }
 
         [HttpPost("asignacion")]
         public async Task<IActionResult> AsignarEvaluacion(AsignacionInfo info)
