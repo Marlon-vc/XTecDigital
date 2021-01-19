@@ -68,6 +68,17 @@ namespace XTecDigital.Controllers
             return Ok(result);
         }
 
+        [HttpGet("evaluar")]
+        public async Task<IActionResult> GetInfoEvaluarAsync([FromQuery] InfoEvaluar info) 
+        {
+            var result = await _context.InfoEvaluarEntregables.FromSqlInterpolated($@"
+                dbo.sp_get_info_evaluar {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}, 
+                {info.Profesor}, {info.Evaluacion}, {info.Rubro}
+            ").ToListAsync();
+
+            return Ok(result);
+        }
+
         [HttpPost("entregable/{idGrupo}")]
         public async Task<IActionResult> PostEntregableAsync(int idGrupo, UploadInfo info)
         {
@@ -97,6 +108,71 @@ namespace XTecDigital.Controllers
             ");
 
             return CreatedAtRoute("Default", file);
+        }
+        
+        [HttpPut("guardar")]
+        public async Task<IActionResult> UpdateInfoEvaluacion(List<UpdateEvaluacionGrupoInfo> info)
+        {
+            if (info == null)
+                return BadRequest();
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                foreach (var eval in info)
+                {
+                    //Crear detalle
+                    if (string.IsNullOrWhiteSpace(eval.FileData))
+                        return BadRequest();
+                    
+                    var fileName = eval.Detalle.CoerceValidFileName();
+                    var data = FileHandler.FromBase64String(eval.FileData);
+                    var groupFolder = FileHandler.GetGroupFolder(eval.Numero, eval.Curso, eval.Anio, eval.Periodo);
+                    string folder = "Detalles";
+                    string tipoCarpeta = "DETALLES";
+
+                    var filePath = Path.Combine(groupFolder, folder, fileName);
+                    await System.IO.File.WriteAllBytesAsync(filePath, data);
+
+                    await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                        dbo.sp_create_file {fileName}, {DateTime.Now}, {eval.Size}, {folder}, {tipoCarpeta}, {eval.Numero}, {eval.Curso}, {eval.Anio}, {eval.Periodo}
+                    ");
+
+                    await _context.SaveChangesAsync();
+                    
+                    //Modificar la informacion
+                    await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                        dbo.sp_update_evaluacion_grupo {eval.IdEvaluacionGrupo}, {eval.Nota}, {eval.Observaciones}, {eval.Detalle}
+                    ");
+                    await _context.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, ex);
+            }
+            
+            
+
+            return Ok();
+            
+            
+        }
+
+        [HttpPut("publicar")]
+        public async Task<IActionResult> SetNotasPublicas(EvaluacionNotas info) 
+        {
+            if (info == null)
+                return BadRequest();
+
+            await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                dbo.sp_set_notas_publicas {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}, {info.Nombre}, {info.Rubro}
+            ");
+
+            return Ok();
         }
 
         [HttpPost("asignacion")]
