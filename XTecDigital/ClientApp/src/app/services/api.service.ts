@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { observable, Observable } from 'rxjs';
 
 /* Este servicio se utiliza para solicitar, enviar y recibir datos del servidor
 mediante solicitudes HTTP como GET, POST, PUT y DELETE */
@@ -36,10 +37,6 @@ export class ApiService {
     return this.http.get(url, this.options);
   }
 
-  download(url: string) {
-    return this.http.get(url, { responseType: 'blob' });
-  }
-
   /**
    * Solicitud HTTP PUT
    * @param url url con el request para el api
@@ -57,5 +54,48 @@ export class ApiService {
   delete(url:string) {
     // console.log("Eliminando...")
     return this.http.delete(url, this.options);
+  }
+
+  getWithBody(url: string, body: object) {
+    return this.sendRequest('GET', url, body);
+  }
+
+  deleteWithBody(url: string, body: object) {
+    return this.sendRequest('DELETE', url, body);
+  }
+
+  putWithBody(url: string, body: object) {
+    return this.sendRequest('PUT', url, body);
+  }
+
+  sendRequest(method: string, url: string, body: object) {
+    // return new Promise((resolve, reject) => {
+    //   let req = new XMLHttpRequest();
+    //   req.open(method, url, true);
+    //   req.setRequestHeader('Content-Type', 'application/json');
+    //   req.setRequestHeader('Accept', 'application/json');
+    //   req.send(JSON.stringify(body));
+    //   req.onreadystatechange = () => {
+    //     if (req.status >= 200 && req.status < 300) {
+    //       resolve(req.response);
+    //     } else {
+    //       reject(req.response);
+    //     }
+    //   }
+    // });
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        type: method,
+        url: url,
+        data: JSON.stringify(body),
+        contentType: "application/json; charset=utf-8",
+        success: (data) => {
+          resolve(data);
+        },
+        error: (error) => {
+          reject(error);
+        }
+      })
+    });
   }
 }

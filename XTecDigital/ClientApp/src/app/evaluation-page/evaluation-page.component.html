@@ -6,7 +6,7 @@
         <div class="card" *ngFor="let rubro of rubros">
             <div class="card-header" id="heading-1">
                 <h5 class="mb-0">
-                    <a role="button" (click)="changeIcon()" data-toggle="collapse" href="#collapse-{{rubro.id}}"
+                    <a role="button" (click)="changeIcon()" data-toggle="collapse" href="#collapse-{{rubro.nombre}}"
                         aria-expanded="true" aria-controls="collapse-1">
                         {{rubro.nombre}} ({{rubro.porcentaje}}%)
                         <i class="fa fa-chevron-down float-right"></i>
@@ -15,13 +15,13 @@
 
                 </h5>
             </div>
-            <div id="collapse-{{rubro.id}}" class="collapse" data-parent="#accordion" aria-labelledby="heading-1">
+            <div id="collapse-{{rubro.nombre}}" class="collapse" data-parent="#accordion" aria-labelledby="heading-1">
                 <div class="card-body">
                     <div id="accordion-1">
-                        <div class="card" style="border: none;" *ngFor="let eva of rubro.evaluaciones">
+                        <div class="card" style="border: none;" *ngFor="let eva of rubro.evaluaciones; let i = index">
                             <div class="card-title" id="heading-1-1">
                                 <h5 class="mb-0">
-                                    <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-{{rubro.id}}-{{eva.id}}"
+                                    <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-{{rubro.nombre}}-{{i}}"
                                         aria-expanded="false" aria-controls="collapse-1-1">
                                         {{eva.nombre}}
                                         <i class="fa fa-chevron-down float-right"></i>
@@ -29,7 +29,7 @@
                                     </a>
                                 </h5>
                             </div>
-                            <div id="collapse-{{rubro.id}}-{{eva.id}}" class="collapse" data-parent="#accordion-1"
+                            <div id="collapse-{{rubro.nombre}}-{{i}}" class="collapse" data-parent="#accordion-1"
                                 aria-labelledby="heading-1-1">
                                 <div class="card-body" style="padding: 0.5rem;">
 
@@ -40,11 +40,11 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="row">
-                                                        <label style="margin-right: 2%;">Descripcion de la evaluacion: </label>
+                                                        <label style="margin-right: 2%;">Especificación: </label>
                                                         
                                                         <a class="btn btn-default btn-sm" href="#">
+                                                            {{eva.info.especificacion}}
                                                             <i class="fas fa-download"></i>
-                                                            {{eva.info.archivoEspecificacion}}
                                                         </a>
                                                     </div>
 
@@ -58,56 +58,67 @@
                                                         <label>{{eva.fechaEntrega}}</label>
                                                     </div>
 
-                                                    <div class="row">
+                                                    <!-- <div class="row">
                                                         <label style="margin-right: 2%;">Cantidad de personas por grupo: </label>
                                                         <label>1</label>
+                                                    </div> -->
+
+                                                    <div class="row" id="integrantes-eva">
+                                                        <label style="margin-right: 2%;">Miembros del grupo: </label>
                                                     </div>
 
                                                     <div class="row">
-                                                        <label style="margin-right: 2%;">Miembros del grupo: </label>
-                                                        <label></label>
+                                                        <ul>
+                                                            <li *ngFor="let integrante of eva.info.integrantes">
+                                                                {{ integrante.estudiante }}
+                                                            </li>
+                                                        </ul>
                                                     </div>
                                                   
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <div class="row">
+                                                    <div class="row" *ngIf="eva.info.entregable">
                                                         <label style="margin-right: 2%;">Documento: </label>
                                                         <input type="file" class="form-control-file">
                                                         <a class="btn btn-default btn-sm" href="#" style="display: none;">
                                                             
                                                             <i class="fas fa-download"></i>
-                                                            {{eva.info.archivoEntregable}}
+                                                            {{eva.info.entregable}}
                                                         </a>
                                                         
                                                     </div>
 
-                                                    <div class="row">
+                                                    <!-- <div class="row">
                                                         <label style="margin-right: 2%;">Día de entrega:</label>
                                                         <label>{{eva.info.fechaCreacionEntre}}</label>
+                                                    </div> -->
+
+                                                    <div class="row" *ngIf="eva.info.fechaEntregable">
+                                                        <label style="margin-right: 2%;">Entregado en:</label>
+                                                        <label>{{eva.info.fechaEntregable}}</label>
                                                     </div>
 
-                                                    <div class="row">
-                                                        <label style="margin-right: 2%;">Fecha de entrega:</label>
-                                                        <label>{{eva.info.fechaCreacionEntre}}</label>
-                                                    </div>
-
-                                                    <div class="row">
+                                                    <div class="row" *ngIf="eva.info.nota && eva.notasPublicadas">
                                                         <label style="margin-right: 2%;">Nota sobre 100:</label>
-                                                        <label>{{eva.info.notaFinal}}</label>
+                                                        <label>{{eva.info.nota}}</label>
                                                     </div>
 
-                                                    <div class="row">
+                                                    <div class="row" *ngIf="eva.info.detalle">
                                                         <label style="margin-right: 2%;">Archivo de retroalimentacion:</label>
                                                         <a class="btn btn-default btn-sm" href="#">
                                                             <i class="fas fa-download"></i>
-                                                            {{eva.info.retroalimentacion}}
+                                                            {{eva.info.detalle}}
                                                         </a>
                                                     </div>
 
-                                                    <div class="row">
+                                                    <div class="row" *ngIf="eva.info.observaciones">
                                                         <label style="margin-right: 2%;">Comentarios:</label>
                                                         <label>{{eva.info.observaciones}}</label>
                                                     </div>
+
+                                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#upload-modal" (click)="onButtonClicked(eva.info)">
+                                                        Subir documento
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -129,5 +140,30 @@
             </div>
           </div>
 
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" id="upload-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Subir archivo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="onCancelUpload()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Selecciona el archivo</p>
+                <input type="file" name="upload-file" id="upload-file" class="form-file-control">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="onCancelUpload()">
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" (click)="onSubirArchivo()">
+                    Subir
+                </button>
+            </div>
+        </div>
     </div>
 </div>

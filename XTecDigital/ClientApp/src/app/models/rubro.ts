@@ -1,10 +1,12 @@
 import { Evaluacion } from "./evaluacion";
 
 export class Rubro {
-    id: number;
-    idGrupo: number;
     nombre: string;
     porcentaje: number;
+    numero: number;
+    curso: string;
+    anio: number;
+    periodo: string;
     evaluaciones: Evaluacion[];
 
     constructor() { }

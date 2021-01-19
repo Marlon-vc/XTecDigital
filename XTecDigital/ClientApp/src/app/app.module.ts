@@ -5,14 +5,11 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
-import { NavMenuComponent } from './nav-menu/nav-menu.component';
-import { HomeComponent } from './home/home.component';
 import { InitializeSemesterComponent } from './initialize-semester/initialize-semester.component'
 import { LoginComponent } from './login/login.component';
 import { GestionCursosComponent } from './gestion-cursos/gestion-cursos.component';
 import { GestionDocumentosComponent } from './gestion-documentos/gestion-documentos.component';
 import { GestionRubrosComponent } from './gestion-rubros/gestion-rubros.component';
-import { SidebarComponent } from './sidebar/sidebar.component';
 import { HomeGrupoComponent } from './home-grupo/home-grupo.component';
 import { NewsManagementComponent } from './news-management/news-management.component';
 import { SeeGroupNewsComponent } from './see-group-news/see-group-news.component';
@@ -21,18 +18,17 @@ import { EvaluateTaskComponent } from './evaluate-task/evaluate-task.component';
 import { HomeStudentComponent } from './home-student/home-student.component';
 import { HomeTeacherComponent } from './home-teacher/home-teacher.component';
 import { AsignarEvaluacionComponent } from './asignar-evaluacion/asignar-evaluacion.component';
+import { InitializeExcelComponent } from './initialize-excel/initialize-excel.component';
+import { GroupInfoComponent } from './group-info/group-info.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    NavMenuComponent,
-    HomeComponent,
     InitializeSemesterComponent,
     LoginComponent,
     GestionCursosComponent,
     GestionDocumentosComponent,
     GestionRubrosComponent,
-    SidebarComponent,
     HomeGrupoComponent,
     NewsManagementComponent,
     SeeGroupNewsComponent,
@@ -40,7 +36,9 @@ import { AsignarEvaluacionComponent } from './asignar-evaluacion/asignar-evaluac
     EvaluateTaskComponent,
     HomeStudentComponent,
     HomeTeacherComponent,
-    AsignarEvaluacionComponent
+    AsignarEvaluacionComponent,
+    InitializeExcelComponent,
+    GroupInfoComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -48,21 +46,20 @@ import { AsignarEvaluacionComponent } from './asignar-evaluacion/asignar-evaluac
     FormsModule,
     RouterModule.forRoot([
       { path: '', component: LoginComponent, pathMatch: 'full' },
-      { path: 'home', component: HomeComponent },
       { path: 'initialize-semester', component: InitializeSemesterComponent},
       { path: 'gestion-cursos', component: GestionCursosComponent },
       { path: 'gestion-documentos', component: GestionDocumentosComponent },
-      { path: 'gestion-rubros/:id', component: GestionRubrosComponent},
-      { path: 'sidebar', component: SidebarComponent},
-      { path: 'documentos/:id', component: GestionDocumentosComponent },
-      { path: 'grupo/:id', component: HomeGrupoComponent },
-      { path: 'noticias/:id', component: NewsManagementComponent },
-      { path: 'ver-noticias/:id', component: SeeGroupNewsComponent},
-      { path: 'evaluation/:id', component: EvaluationPageComponent},
-      { path: 'evaluate-task/:id', component: EvaluateTaskComponent},
+      { path: 'gestion-rubros', component: GestionRubrosComponent},
+      { path: 'documentos', component: GestionDocumentosComponent },
+      { path: 'grupo', component: GroupInfoComponent },
+      { path: 'noticias', component: NewsManagementComponent },
+      { path: 'ver-noticias', component: SeeGroupNewsComponent},
+      { path: 'evaluation', component: EvaluationPageComponent},
+      { path: 'evaluate-task', component: EvaluateTaskComponent},
       { path: 'home-student', component: HomeStudentComponent},
       { path: 'home-teacher', component: HomeTeacherComponent},
-      { path: 'asignar-evaluacion/:id', component: AsignarEvaluacionComponent}
+      { path: 'initialize-excel', component: InitializeExcelComponent},
+      { path: 'asignar-evaluacion', component: AsignarEvaluacionComponent}
       
     ])
   ],

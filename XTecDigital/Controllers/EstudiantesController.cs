@@ -2,9 +2,11 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using XTecDigital.Helpers;
 using XTecDigital.Models;
+using XTecDigital.Models.Dtos;
 using XTecDigital.Models.Mongo;
 
 namespace XTecDigital.Controllers
@@ -42,6 +44,16 @@ namespace XTecDigital.Controllers
 
             return Ok(estudiante);
             
+        }
+
+        [HttpGet("grupo")]
+        public async Task<IActionResult> GetEstudiantesGrupo([FromQuery] GrupoDto grupo)
+        {
+            var result = await _context.EstudianteGrupo.FromSqlInterpolated($@"
+                dbo.get_students_group {grupo.Numero}, {grupo.Curso}, {grupo.Anio}, {grupo.Periodo}
+            ").ToListAsync();
+
+            return Ok(result);
         }
         
     }

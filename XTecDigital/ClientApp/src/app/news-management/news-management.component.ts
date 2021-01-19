@@ -13,16 +13,27 @@ import { ApiService } from '../services/api.service';
 })
 export class NewsManagementComponent implements OnInit {
 
+  userType: string;
+  group: any;
   noticias: Noticia[] = [];
-  groupId = this.route.snapshot.params.id;
   userId = SessionHandler.getUserId();
   selectedNew: Noticia;
   updating: boolean = false;
-  actualGroup: Grupo;
 
   constructor(private route: ActivatedRoute, private api: ApiService) { }
 
   ngOnInit(): void {
+
+    this.userType = SessionHandler.getUserType();
+    let groupInfo = JSON.parse(window.localStorage.getItem('group'));
+
+    this.group = {
+      numero: Number.parseInt(groupInfo.numeroGrupo),
+      curso: groupInfo.codigo,
+      anio: Number.parseInt(groupInfo.anioSemestre),
+      periodo: groupInfo.periodoSemestre
+    }
+
     this.loadNews();
     console.log(this.noticias.length);
   }
@@ -32,7 +43,10 @@ export class NewsManagementComponent implements OnInit {
    */
   loadNews() {
 
-    this.api.get(`https://localhost/api/Noticias/Grupo/${this.groupId}`).subscribe(
+    var query = new URLSearchParams(this.group).toString();
+    console.log(query);
+
+    this.api.get(`https://localhost/api/Noticias/Grupo?${query}`).subscribe(
       (value: any) => {
         // console.log(value);
         this.noticias = value;
@@ -98,9 +112,8 @@ export class NewsManagementComponent implements OnInit {
     }
 
     if (this.updating) {
-      this.selectedNew.titulo = titulo.val() as string;
       this.selectedNew.mensaje = mensaje.val() as string;
-      this.modifyNewApi();
+      this.modifyNewApi(titulo.val() as string);
     } else {
       this.createNewApi(titulo.val() as string, mensaje.val() as string);
     }
@@ -110,12 +123,27 @@ export class NewsManagementComponent implements OnInit {
   /**
    * Metodo para modificar una noticia desde el API
    */
-  modifyNewApi() {
-    this.api.put(`https://localhost/api/Noticias/${this.selectedNew.id}`, this.selectedNew).subscribe(
+  modifyNewApi(nuevoTitulo: string) {
+
+    var noticia: any = {
+      titulo: this.selectedNew.titulo,
+      nuevoTitulo: nuevoTitulo,
+      mensaje: this.selectedNew.mensaje,
+      autor: this.selectedNew.autor,
+      fechaPublicacion: this.selectedNew.fechaPublicacion,
+      numero: this.selectedNew.numero,
+      curso: this.selectedNew.curso,
+      anio: this.selectedNew.anio,
+      periodo: this.selectedNew.periodo
+    }
+
+    this.api.put(`https://localhost/api/Noticias`, noticia).subscribe(
       (value: any) => {
         this.loadNews();
         document.getElementById('closeButton').click();
         this.updating = false;
+        $('#titulo').val('');
+        $('#mensaje').val('');
       }, (error: any) => {
         console.log(error);
       }
@@ -128,18 +156,25 @@ export class NewsManagementComponent implements OnInit {
    * @param mensaje Mensaje de la noticia
    */
   createNewApi(titulo: string, mensaje: string) {
-    var noticia = new Noticia();
-    noticia.idGrupo = Number.parseInt(this.groupId as string);
-    noticia.titulo = titulo;
-    noticia.mensaje = mensaje;
-    noticia.autor = this.userId;
-    // noticia.fechaPublicacion = new Date();
+
+    var noticia: any = {
+      titulo: titulo,
+      mensaje: mensaje,
+      autor: this.userId,
+      numero: this.group.numero,
+      curso: this.group.curso,
+      anio: this.group.anio,
+      periodo: this.group.periodo
+    }
 
 
     this.api.post(`https://localhost/api/Noticias`, noticia).subscribe(
       (value: any) => {
         console.log('noticia creada');
         this.loadNews();
+        this.updating = false
+        $('#titulo').val('');
+        $('#mensaje').val('');
         document.getElementById('closeButton').click();
       }, (error: any) => {
         console.log(error);
@@ -152,7 +187,21 @@ export class NewsManagementComponent implements OnInit {
    * @param noticia Objeto tipo noticia
    */
   delete(noticia: Noticia) {
-    this.api.delete(`https://localhost/api/Noticias/${noticia.id}`).subscribe(
+
+    console.log(noticia.anio);
+
+    var not: any = {
+      titulo: noticia.titulo,
+      fechaPublicacion: noticia.fechaPublicacion,
+      numero: noticia.numero,
+      curso: noticia.curso,
+      anio: noticia.anio,
+      periodo: noticia.periodo
+    } 
+
+    var query = new URLSearchParams(not).toString();
+
+    this.api.delete(`https://localhost/api/Noticias?${query}`).subscribe(
       (value: any) => {
         console.log('noticia eliminada');
         this.loadNews();

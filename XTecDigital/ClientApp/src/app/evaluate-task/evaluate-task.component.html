@@ -1,6 +1,22 @@
 <div class="container">
     <h3>Evaluacion de asignaciones</h3>
 
+    <div class="row">
+        <div class="col-9">
+            <select class="form-control" id="eval">
+                <option selected="" value="Seleccione una evaluacion"> Seleccione una evaluacion (Nombre, Rubro)</option>
+                <option *ngFor="let evaluacion of evaluaciones" value="{{evaluacion.nombre}},{{ evaluacion.rubro}}">{{ evaluacion.nombre }}, {{ evaluacion.rubro}}</option>
+            </select>
+        </div>
+        <div class="col-3">
+            <button type="button" class="btn btn-primary" (click)="loadAsignaciones()">Buscar</button>
+        </div>
+        
+
+
+    </div>
+    
+
     <div class="btn-group mt-lg-4 mb-lg-1" role="group" aria-label="Controles">
         <button type="button" class="btn btn-secondary" (click)="guardarNotas()">
             Guardar notas
@@ -24,11 +40,11 @@
         <tbody id="files-body">
             <tr *ngFor="let asignacion of asignaciones">
                 <!-- <td><img src="assets/img/folder.png" alt="folder" /></td> -->
-                <td>Nombre estudiante</td>
-                <td>Nombre entregable</td>
-                <td>Subir archivo</td>
-                <td (dblclick)="feedbackDoubleClicked(asignacion, $event)">Agregar Observaciones</td>
-                <td (dblclick)="gradeDoubleClicked(asignacion, $event)">Nota Final</td>
+                <td>{{ asignacion.estudiante }}</td>
+                <td (dblclick)="entregableDoubleClicked(asignacion, $event)">{{ asignacion.entregable }}</td>
+                <td (dblclick)="detalleDoubleClicked(asignacion, $event)"> {{ asignacion.detalle }}</td>
+                <td (dblclick)="feedbackDoubleClicked(asignacion, $event)">{{ asignacion.observaciones }}</td>
+                <td (dblclick)="gradeDoubleClicked(asignacion, $event)">{{ asignacion.nota }}</td>
             </tr>
         </tbody>
     </table>
@@ -70,7 +86,7 @@
             </div>
             <div class="modal-body">
                 <p>Ingresa las observaciones de la asignacion</p>
-                <input type="text" name="grade" id="grade" class="form-control">
+                <input type="text" name="feedback" id="feedback" class="form-control">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="onCancel('feedback-modal')">
@@ -83,3 +99,31 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" tabindex="-1" id="detalle-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar detalle</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Seleccione el archivo del detalle</p>
+                <!-- <input type="text" name="detalle" id="detalle" class="form-control"> -->
+                <input id="detalleFile" type="file" class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="onCancel('feedback-modal')">
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" (click)="onAgregarDetalle()">
+                    Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <input id="detalleFile" type="file" class="form-control" (change)="loadFile($event, asignacion)"> -->

@@ -1,6 +1,6 @@
 export class Grupo {
     numero: number;
-    idCurso: string;
+    curso: string;
     estudiantes: string[];
     profesores: string[];
 
