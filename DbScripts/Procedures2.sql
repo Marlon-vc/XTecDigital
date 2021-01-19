@@ -646,6 +646,30 @@ WHERE
 	Rubro = @Rubro;
 
 GO
+CREATE PROCEDURE dbo.sp_update_evaluacion_grupo
+	@Id int,
+	@Nota decimal(5,2),
+	@Observaciones text,
+	@Detalle varchar(100)
+AS 
+UPDATE dbo.EVALUACION_GRUPO
+SET Nota = @Nota, Observaciones = @Observaciones, Detalle = @Detalle, Carpeta_detalle = 'Detalles', Tipo_carpeta_detalle = 'DETALLES'
+WHERE Id = @Id
+
+GO
+CREATE PROCEDURE dbo.sp_set_notas_publicas
+	@Numero INT,
+    @Curso VARCHAR(10),
+    @Anio INT,
+    @Periodo CHAR(1),
+	@Nombre VARCHAR(100),
+	@Rubro VARCHAR(100)
+AS
+UPDATE dbo.EVALUACION
+SET Notas_publicadas = 1
+WHERE Nombre = @Nombre AND Rubro = @Rubro AND Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo
+
+GO
 CREATE PROCEDURE dbo.get_students_group
 	@Numero INT,
     @Curso VARCHAR(10),
