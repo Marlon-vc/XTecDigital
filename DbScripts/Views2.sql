@@ -79,3 +79,30 @@ LEFT JOIN dbo.CURSO as curso ON
 	curso.Codigo = grupo.Curso;
 
 --SELECT * FROM dbo.CURSO_GRUPO;
+
+GO
+CREATE VIEW INFO_EVALUAR_ENTREGABLES
+AS
+SELECT
+	Estudiante,
+	Entregable, 
+	Carpeta_entregable, 
+	Tipo_carpeta_entregable, 
+	Detalle, 
+	Carpeta_detalle, 
+	Tipo_carpeta_detalle, 
+	Observaciones, 
+	Nota,
+	IE.Nombre as Nombre_evaluacion,
+	IE.Rubro,
+	IE.Numero,
+	IE.Curso,
+	IE.Anio,
+	IE.Periodo,
+	IE.Id_evaluacion_grupo,
+	PG.Profesor
+from INFO_EVALUACION as IE
+LEFT JOIN dbo.EVALUACION_INTEGRANTES as EI ON EI.Id_grupo = Id_evaluacion_grupo
+JOIN dbo.RUBRO as R ON R.Nombre = IE.Rubro AND  R.Numero = IE.Numero AND R.Curso = IE.Curso AND R.Anio = IE.Anio AND R.Periodo = IE.Periodo
+JOIN dbo.GRUPO as G ON G.Numero = IE.Numero AND G.Curso = IE.Curso AND G.Anio = IE.Anio AND G.Periodo = IE.Periodo
+JOIN dbo.PROFESOR_GRUPO as PG ON PG.Numero = IE.Numero AND PG.Curso = IE.Curso AND PG.Anio = IE.Anio AND PG.Periodo = IE.Periodo

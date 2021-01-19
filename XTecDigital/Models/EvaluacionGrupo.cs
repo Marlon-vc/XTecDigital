@@ -5,6 +5,11 @@ namespace XTecDigital.Models
 {
     public partial class EvaluacionGrupo
     {
+        public EvaluacionGrupo()
+        {
+            EvaluacionIntegrantes = new HashSet<EvaluacionIntegrantes>();
+        }
+
         public int Id { get; set; }
         public decimal? Nota { get; set; }
         public string Observaciones { get; set; }
@@ -24,5 +29,6 @@ namespace XTecDigital.Models
         public virtual Archivo Archivo { get; set; }
         public virtual Archivo ArchivoNavigation { get; set; }
         public virtual Evaluacion EvaluacionNavigation { get; set; }
+        public virtual ICollection<EvaluacionIntegrantes> EvaluacionIntegrantes { get; set; }
     }
 }

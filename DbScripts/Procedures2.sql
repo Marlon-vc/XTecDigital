@@ -609,14 +609,41 @@ CREATE PROCEDURE dbo.sp_get_info_evaluaciones_prof
     @Prof VARCHAR(50)
 AS
 SELECT 
-	Rubro, IE.Nombre, Peso_nota, Fecha_entrega, Especificacion, Carpeta_especificacion, Tipo_carpeta_especificacion, Grupal
-
+	--Rubro, IE.Nombre, Peso_nota, Fecha_entrega, Especificacion, Carpeta_especificacion, Tipo_carpeta_especificacion, Grupal
+	IE.Nombre, Notas_publicadas, Fecha_entrega, Peso_nota, Grupal, Rubro, IE.Numero, IE.Curso, IE.Anio, IE.Periodo,
+    Especificacion, Carpeta_especificacion, Tipo_carpeta_especificacion,
+    Entregable, Carpeta_entregable, Tipo_carpeta_entregable, Fecha_entregable,
+    Detalle, Carpeta_detalle, Tipo_carpeta_detalle,
+    Id_evaluacion_grupo, Nota, Observaciones
 FROM dbo.INFO_EVALUACION as IE
 JOIN dbo.RUBRO as R ON R.Nombre = IE.Rubro AND  R.Numero = IE.Numero AND R.Curso = IE.Curso AND R.Anio = IE.Anio AND R.Periodo = IE.Periodo
 JOIN dbo.GRUPO as G ON G.Numero = IE.Numero AND G.Curso = IE.Curso AND G.Anio = IE.Anio AND G.Periodo = IE.Periodo
 JOIN dbo.PROFESOR_GRUPO as PG ON PG.Numero = IE.Numero AND PG.Curso = IE.Curso AND PG.Anio = IE.Anio AND PG.Periodo = IE.Periodo
 WHERE IE.Numero = @Numero AND IE.Curso = @Curso AND IE.Anio = @Anio AND IE.Periodo = @Periodo AND PG.Profesor = @Prof;
 
+GO
+CREATE PROCEDURE dbo.sp_get_info_evaluar
+	@Numero INT,
+    @Curso VARCHAR(10),
+    @Anio INT,
+    @Periodo CHAR(1),
+    @Prof VARCHAR(50),
+	@Evaluacion VARCHAR(100),
+    @Rubro VARCHAR(100)
+AS
+SELECT
+	Estudiante, Entregable, Carpeta_entregable, Tipo_carpeta_entregable, Detalle, 
+	Carpeta_detalle, Tipo_carpeta_detalle, Observaciones, Nota, Nombre_evaluacion,
+	Rubro, Numero, Curso, Anio, Periodo, Id_evaluacion_grupo, Profesor
+FROM INFO_EVALUAR_ENTREGABLES
+WHERE 
+	Numero = @Numero AND 
+	Curso = @Curso AND 
+	Anio = @Anio AND 
+	Periodo = @Periodo AND 
+	Profesor = @Prof AND
+	Nombre_evaluacion = @Evaluacion AND
+	Rubro = @Rubro;
 
 GO
 CREATE PROCEDURE dbo.get_students_group
@@ -735,6 +762,7 @@ AS
 INSERT INTO dbo.EVALUACION_INTEGRANTES (Estudiante, Id_grupo)
 VALUES (@Estudiante, @Id_evaluacion_grupo);
 
+select * from evaluacion_integrantes
 
 
 -- ACTUALIZADOS
