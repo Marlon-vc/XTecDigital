@@ -600,6 +600,23 @@ LEFT JOIN dbo.EVALUACION_INTEGRANTES as EI ON
 WHERE
     Nombre = @Evaluacion AND Rubro = @Rubro AND Numero = @Numero AND Curso = @Curso AND Anio = @Anio AND Periodo = @Periodo;
 
+GO
+CREATE PROCEDURE dbo.sp_get_info_evaluaciones_prof
+    @Numero INT,
+    @Curso VARCHAR(10),
+    @Anio INT,
+    @Periodo CHAR(1),
+    @Prof VARCHAR(50)
+AS
+SELECT 
+	Rubro, IE.Nombre, Peso_nota, Fecha_entrega, Especificacion, Carpeta_especificacion, Tipo_carpeta_especificacion, Grupal
+
+FROM dbo.INFO_EVALUACION as IE
+JOIN dbo.RUBRO as R ON R.Nombre = IE.Rubro AND  R.Numero = IE.Numero AND R.Curso = IE.Curso AND R.Anio = IE.Anio AND R.Periodo = IE.Periodo
+JOIN dbo.GRUPO as G ON G.Numero = IE.Numero AND G.Curso = IE.Curso AND G.Anio = IE.Anio AND G.Periodo = IE.Periodo
+JOIN dbo.PROFESOR_GRUPO as PG ON PG.Numero = IE.Numero AND PG.Curso = IE.Curso AND PG.Anio = IE.Anio AND PG.Periodo = IE.Periodo
+WHERE IE.Numero = @Numero AND IE.Curso = @Curso AND IE.Anio = @Anio AND IE.Periodo = @Periodo AND PG.Profesor = @Prof;
+
 
 GO
 CREATE PROCEDURE dbo.get_students_group
@@ -644,22 +661,81 @@ ORDER BY CG.Anio_semestre DESC, CG.Periodo_semestre DESC;
 
 --- Procedimientos para asignar evaluaciones
 GO
-CREATE PROCEDURE dbo.sp_assign_evaluation
+CREATE PROCEDURE dbo.sp_create_evaluation
 	@Nombre_evaluacion VARCHAR(100),
-	@Rubro VARCHAR(100),
+	@Fecha_entrega DATETIME,
 	@Peso DECIMAL(5,2),
-	@Fecha DATETIME,
-	@Espec VARCHAR(100),
 	@Individual BIT,
+	@Nombre_espec VARCHAR(100),
+	@Rubro VARCHAR(100),
 	@Numero INT,
     @Curso VARCHAR(10),
     @Anio INT,
     @Periodo CHAR(1)
 AS
-BEGIN
+INSERT INTO dbo.EVALUACION (Nombre, Notas_publicadas, Fecha_entrega, Peso_nota, 
+	Grupal, Especificacion, Carpeta_especificacion, Tipo_carpeta_especificacion, Rubro,
+	Numero, Curso, Anio, Periodo)
+VALUES
+(@Nombre_evaluacion, 0, @Fecha_entrega, @Peso, @Individual, @Nombre_espec, 'Especificaciones', 'ESPECIFICACIONES',
+@Rubro, @Numero, @Curso, @Anio, @Periodo);
+
+GO
+CREATE PROCEDURE dbo.sp_create_evaluation_group 
+	@Nombre_evaluacion VARCHAR(100),
+	@Rubro VARCHAR(100),
+	@Numero INT,
+    @Curso VARCHAR(10),
+    @Anio INT,
+    @Periodo CHAR(1)
+AS
+INSERT INTO dbo.EVALUACION_GRUPO (Evaluacion, Rubro, Numero, Curso, Anio, Periodo)
+VALUES
+(@Nombre_evaluacion, @Rubro, @Numero, @Curso, @Anio, @Periodo);
+
+GO 
+CREATE PROCEDURE dbo.sp_get_evaluation_group 
+	@Nombre_evaluacion VARCHAR(100),
+	@Rubro VARCHAR(100),
+	@Numero INT,
+    @Curso VARCHAR(10),
+    @Anio INT,
+    @Periodo CHAR(1)
+AS
+SELECT * 
+FROM dbo.EVALUACION_GRUPO 
+ 
+ GO
+CREATE PROCEDURE dbo.sp_get_inserted_grupo
+AS
+SELECT 
+  Id, 
+  Nota, 
+  Observaciones, 
+  Entregable, 
+  Carpeta_entregable, 
+  Tipo_carpeta_entregable, 
+  Detalle, 
+  Carpeta_detalle, 
+  Tipo_carpeta_detalle,
+  Evaluacion,
+  Rubro,
+  Numero,
+  Curso,
+  Anio,
+  Periodo
+FROM dbo.EVALUACION_GRUPO
+WHERE Id = IDENT_CURRENT( 'EVALUACION_GRUPO' );
+
+GO 
+CREATE PROCEDURE dbo.sp_create_evaluation_student
+	@Id_evaluacion_grupo INT,
+	@Estudiante VARCHAR(50)
+AS
+INSERT INTO dbo.EVALUACION_INTEGRANTES (Estudiante, Id_grupo)
+VALUES (@Estudiante, @Id_evaluacion_grupo);
 
 
-END;
 
 -- ACTUALIZADOS
 --dbo.sp_create_grupo_estudiante

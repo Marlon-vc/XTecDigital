@@ -17,7 +17,6 @@ namespace XTecDigital.Models.Requests
         public string Periodo { get; set; }
         public string FileData { get; set; }
         public int Size { get; set; }
-
-        public List<String> Estudiantes { get; set; } 
+        public List<List<string>> Estudiantes { get; set; } 
     }
 }
