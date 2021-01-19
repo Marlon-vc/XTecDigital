@@ -109,7 +109,7 @@ export class AsignarEvaluacionComponent implements OnInit {
     var rubro = $('#rubro').toString();
     var peso = Number.parseInt($('#peso').val().toString());
     var fecha = $('#fecha').toString();
-    var file: File = $('espec').prop('files')[0];
+    var file: File = $('#espec').prop('files')[0];
     var individual = Number.parseInt($('#individual').val().toString());
     var estudiantes = $('#groups').val();
 
