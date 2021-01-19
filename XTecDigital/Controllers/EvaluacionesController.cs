@@ -49,7 +49,8 @@ namespace XTecDigital.Controllers
         }
 
         [HttpGet("eval-prof")]
-        public async Task<IActionResult> GetEvaluacionesProfAsync([FromQuery] EvaluacionProfInfo info) {
+        public async Task<IActionResult> GetEvaluacionesProfAsync([FromQuery] EvaluacionProfInfo info)
+        {
             var result = await _context.InfoEvaluacion.FromSqlInterpolated($@"
                 dbo.sp_get_info_evaluaciones_prof {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}, {info.Profesor}
             ").ToListAsync();
@@ -92,22 +93,52 @@ namespace XTecDigital.Controllers
                 await _context.SaveChangesAsync();
 
                 //Crear la evaluacion grupo
-                await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                    dbo.sp_create_evaluation_group {info.NombreEvaluacion}, {info.Rubro}, {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}
-                ");
-                await _context.SaveChangesAsync();
 
-                var evaluacionGrupo = (await _context.EvaluacionGrupo.FromSqlInterpolated($@"
-                    dbo.sp_get_inserted_grupo
-                ").ToListAsync()).FirstOrDefault(); 
-                
-                //Crear la evaluacion integrantes
-                foreach (var estudiante in info.Estudiantes)
+                if (info.Grupal)
                 {
-                    await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                        dbo.sp_create_evaluation_student {evaluacionGrupo.Id}, {estudiante}
-                    ");
-                    await _context.SaveChangesAsync();
+                    foreach (var grupo in info.Estudiantes)
+                    {
+                        await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                            dbo.sp_create_evaluation_group {info.NombreEvaluacion}, {info.Rubro}, {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}
+                        ");
+                        await _context.SaveChangesAsync();
+
+                        var evaluacionGrupo = (await _context.EvaluacionGrupo.FromSqlInterpolated($@"
+                            dbo.sp_get_inserted_grupo
+                        ").ToListAsync()).FirstOrDefault();
+
+                        foreach (var estudiante in grupo)
+                        {
+                            await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                                dbo.sp_create_evaluation_student {evaluacionGrupo.Id}, {estudiante}
+                            ");
+                            await _context.SaveChangesAsync();
+                        }
+
+                    }
+                }
+                else
+                {
+                    var students = await _context.EstudianteGrupo.FromSqlInterpolated($@"
+                        dbo.get_students_group {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}
+                    ").ToListAsync();
+
+                    foreach (var student in students)
+                    {
+                        await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                            dbo.sp_create_evaluation_group {info.NombreEvaluacion}, {info.Rubro}, {info.Numero}, {info.Curso}, {info.Anio}, {info.Periodo}
+                        ");
+                        await _context.SaveChangesAsync();
+
+                        var evaluacion = (await _context.EvaluacionGrupo.FromSqlInterpolated($@"
+                            dbo.sp_get_inserted_grupo
+                        ").ToListAsync()).FirstOrDefault();
+
+                        await _context.Database.ExecuteSqlInterpolatedAsync($@"
+                            dbo.sp_create_evaluation_student {evaluacion.Id}, {student.Estudiante}
+                        ");
+                        await _context.SaveChangesAsync();
+                    }
                 }
 
                 await transaction.CommitAsync();

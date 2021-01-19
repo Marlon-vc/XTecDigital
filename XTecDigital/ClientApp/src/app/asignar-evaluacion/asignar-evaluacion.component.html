@@ -76,24 +76,16 @@
                         <th class="text-center align-middle" scope="col">Fecha y hora maxima</th>
                         <th class="text-center align-middle"scope="col">Especificacion</th>
                         <th class="text-center align-middle" scope="col">Grupal</th>
-                        <th class="text-center align-middle" scope="col">Integrantes del grupo</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr *ngFor="let evaluacion of evaluaciones;" (contextmenu)="onRightClick(evaluacion, $event)">
                         <td class="text-center align-middle">{{ evaluacion.rubro }}</td>
                         <td class="text-center align-middle">{{ evaluacion.nombre }}</td>
-                        <td class="text-center align-middle">{{ evaluacion.peso }}</td>
-                        <td class="text-center align-middle">{{ evaluacion.fechaMaxima }}</td>
+                        <td class="text-center align-middle">{{ evaluacion.pesoNota }}</td>
+                        <td class="text-center align-middle">{{ evaluacion.fechaEntrega }}</td>
                         <td class="text-center align-middle">{{ evaluacion.especificacion }}</td>
                         <td class="text-center align-middle">{{ evaluacion.grupal }}</td>
-                        <td class="text-center align-middle">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item" *ngFor="let integrante of evaluacion.integrantes">
-                                    {{integrante.nombre}}
-                                </li>
-                            </ul>
-                        </td>
                     </tr>
                 </tbody>
             </table>

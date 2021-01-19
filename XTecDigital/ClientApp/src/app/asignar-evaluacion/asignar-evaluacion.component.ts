@@ -134,6 +134,10 @@ async onAction() {
     return;
   }
 
+  if (individual) {
+    this.grupos = [];
+  }
+
   var data = {
     nombreEvaluacion: nombre,
     fechaEntrega: fecha,
@@ -160,6 +164,7 @@ async onAction() {
       $('#rubro').val('');
       $('#peso').val('');
       $('#fecha').val('');
+      this.getInfoAsignaciones();
     }, (error) => {
       console.log("Error...");
       console.log(error);
