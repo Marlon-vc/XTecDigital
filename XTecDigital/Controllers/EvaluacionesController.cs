@@ -91,26 +91,20 @@ namespace XTecDigital.Controllers
                 ");
                 await _context.SaveChangesAsync();
 
-                //Obtener evaluacion grupo recien creada
-
-                var EvaluacionGrupo = (await _context.EvaluacionGrupo.FromSqlInterpolated($@"
+                var evaluacionGrupo = (await _context.EvaluacionGrupo.FromSqlInterpolated($@"
                     dbo.sp_get_inserted_grupo
                 ").ToListAsync()).FirstOrDefault(); 
-
-                Console.WriteLine(EvaluacionGrupo.Id);
-
-                var idEvaluacionGrupo = EvaluacionGrupo.Id; // obtener id de la evaluacion recien creada
+                
                 //Crear la evaluacion integrantes
                 foreach (var estudiante in info.Estudiantes)
                 {
                     await _context.Database.ExecuteSqlInterpolatedAsync($@"
-                        dbo.sp_create_evaluation_student {idEvaluacionGrupo}, {estudiante}
+                        dbo.sp_create_evaluation_student {evaluacionGrupo.Id}, {estudiante}
                     ");
                     await _context.SaveChangesAsync();
-
                 }
 
-
+                await transaction.CommitAsync();
             }
             catch (DbUpdateException ex)
             {
@@ -118,11 +112,7 @@ namespace XTecDigital.Controllers
             }
 
             return Ok();
-
-
         }
-
-
 
     }
 }

@@ -716,7 +716,7 @@ CREATE PROCEDURE dbo.sp_create_evaluation_student
 	@Estudiante VARCHAR(50)
 AS
 INSERT INTO dbo.EVALUACION_INTEGRANTES (Estudiante, Id_grupo)
-VALUES (@Id_evaluacion_grupo, @Estudiante);
+VALUES (@Estudiante, @Id_evaluacion_grupo);
 
 
 
