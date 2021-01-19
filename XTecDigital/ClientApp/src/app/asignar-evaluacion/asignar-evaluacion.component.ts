@@ -15,6 +15,7 @@ export class AsignarEvaluacionComponent implements OnInit {
   rubros = [];
   estudiantes = [];
   evaluaciones = [];
+  grupos = [];
 
   constructor(private api: ApiService) { }
 
@@ -33,6 +34,7 @@ export class AsignarEvaluacionComponent implements OnInit {
 
     this.getRubros();
     this.getEstudiantes();
+    this.getInfoAsignaciones();
 
     $(window).on('click', (event) => {
       $('#context-menu').css('display', 'none');
@@ -86,105 +88,146 @@ export class AsignarEvaluacionComponent implements OnInit {
   }
 
   getInfoAsignaciones() {
-
-  }
-
-  /**
-   * Metodo para crear una nueva asignacion
-   */
-  async onAction() {
-    // var nombre = $('#nombre').val().toString();
-    var nombre = $('#nombre').val().toString();
-    var rubro = $('#rubro').val().toString();
-    var peso = Number.parseInt($('#peso').val().toString());
-    var fecha = $('#fecha').val().toString();
-    var file: File = $('#espec').prop('files')[0];
-    var individual = $('input[name=\"individual\"]:checked').val() === "1"
-    var estudiantes = $('#groups').val();
-
-    
-
-    if (file == undefined) {
-      console.log('no file selected');
-      return;
+    var info: any = {
+      Numero: this.group.numero,
+      Curso: this.group.curso,
+      Anio: this.group.anio,
+      Periodo: this.group.periodo,
+      Profesor: this.idUser
     }
 
-    var fileData = await this.readFile(file);
-
-    // var check = this.validateData(nombre, rubro, peso, fecha, individual, estudiantes);
-
-    var data = {
-      nombreEvaluacion: nombre,
-      fechaEntrega: fecha,
-      pesoNota: peso,
-      grupal: !individual,
-      nombreEspec: file.name,
-      rubro: rubro,
-      numero: this.group.numero,
-      curso: this.group.curso,
-      anio: this.group.anio,
-      periodo: this.group.periodo,
-      fileData: fileData,
-      size: file.size,
-      estudiantes: estudiantes
-    }
-
-    console.log(data);
-
-    this.api.post(`https://localhost/api/Evaluaciones/asignacion`, data)
-      .subscribe((data: any) => {
-        console.log('Asignacion creada correctamente');
-      }, (error) => {
-        console.log("Error...");
+    var query = new URLSearchParams(info).toString();
+    this.api.get(`https://localhost/api/Evaluaciones/eval-prof?${query}`).subscribe(
+      (value: any) => {
+        console.log(value);
+        this.evaluaciones = value;
+      }, (error: any) => {
         console.log(error);
-      });
-
-  }
-  validateData(nombre: string, rubro: string, peso: number, fecha: string, individual: number, estudiantes: string | number | string[]) {
-    throw new Error('Method not implemented.');
+      }
+    );
   }
 
-  /**
-   * Metodo para leer un archivo
-   * @param file 
-   */
-  readFile(file: File) {
-    let promise = new Promise((resolve) => {
-      var reader = new FileReader();
-      reader.onload = (data) => {
-        resolve(data.target.result);
-      };
-      reader.readAsDataURL(file);
+/**
+ * Metodo para crear una nueva asignacion
+ */
+async onAction() {
+  // var nombre = $('#nombre').val().toString();
+  var nombre = $('#nombre').val().toString();
+  var rubro = $('#rubro').val().toString();
+  var peso = Number.parseInt($('#peso').val().toString());
+  var fecha = $('#fecha').val().toString();
+  var file: File = $('#espec').prop('files')[0];
+  var individual = $('input[name=\"individual\"]:checked').val() === "1"
+
+
+  if (file == undefined) {
+    console.log('no file selected');
+    return;
+  }
+
+  var fileData = await this.readFile(file);
+
+  // var check = this.validateData(nombre, rubro, peso, fecha, individual, estudiantes);
+
+  if (!individual && this.grupos.length == 0) {
+    console.log('no hay grupos');
+    return;
+  }
+
+  var data = {
+    nombreEvaluacion: nombre,
+    fechaEntrega: fecha,
+    pesoNota: peso,
+    grupal: !individual,
+    nombreEspec: file.name,
+    rubro: rubro,
+    numero: this.group.numero,
+    curso: this.group.curso,
+    anio: this.group.anio,
+    periodo: this.group.periodo,
+    fileData: fileData,
+    size: file.size,
+    estudiantes: this.grupos
+  }
+
+  console.log(data);
+
+  this.api.post(`https://localhost/api/Evaluaciones/asignacion`, data)
+    .subscribe((data: any) => {
+      console.log('Asignacion creada correctamente');
+      this.grupos = [];
+      $('#nombre').val('');
+      $('#rubro').val('');
+      $('#peso').val('');
+      $('#fecha').val('');
+    }, (error) => {
+      console.log("Error...");
+      console.log(error);
     });
-    return promise;
+
+}
+
+/**
+   * Metodo para ocultar el campo de estudiantes en la interfaz
+   */
+  clearGroups() {
+    document.getElementById('grupalOption').style.display = 'none';
+    this.grupos = []; 
+   }
+
+   /**
+   * Metodo para mostrar el campo de estudiantes en la interfaz
+   */
+  setGroups() { 
+    document.getElementById('grupalOption').style.display = 'flex'; 
   }
 
-  /**
-   * Metodo para cancelar la edicion de una asignacion
-   */
-  onCancelEdit() { }
+/**
+ * Metodo para leer un archivo
+ * @param file 
+ */
+readFile(file: File) {
+  let promise = new Promise((resolve) => {
+    var reader = new FileReader();
+    reader.onload = (data) => {
+      resolve(data.target.result);
+    };
+    reader.readAsDataURL(file);
+  });
+  return promise;
+}
 
-  /**
-   * Metodo para mostrar el menu contextual al dar click
-   * @param evaluacion Objeto de tipo evaluacion
-   * @param $event Evento de interfaz
-   */
-  onRightClick(evaluacion, $event) { }
+guardarGrupo() {
+  var grupo = $('#groups').val();
+  this.grupos.push(grupo);
+}
 
-  /**
-   * Metodo para confirmar la eliminacion de una asignacion
-   */
-  onEliminarConfirm() { }
+/**
+ * Metodo para cancelar la edicion de una asignacion
+ */
+onCancelEdit() { }
 
-  /**
-   * Metodo para modificar una asignacion
-   * @param $event  Evento de la interfaz
-   */
-  onModificar($event) { }
+/**
+ * Metodo para mostrar el menu contextual al dar click
+ * @param evaluacion Objeto de tipo evaluacion
+ * @param $event Evento de interfaz
+ */
+onRightClick(evaluacion, $event) { }
 
-  /**
-   * Metodo para eliminar una asignacion
-   * @param $event Evento de la interfaz
-   */
-  onEliminar($event) { }
+/**
+ * Metodo para confirmar la eliminacion de una asignacion
+ */
+onEliminarConfirm() { }
+
+/**
+ * Metodo para modificar una asignacion
+ * @param $event  Evento de la interfaz
+ */
+onModificar($event) { }
+
+/**
+ * Metodo para eliminar una asignacion
+ * @param $event Evento de la interfaz
+ */
+onEliminar($event) { }
 }
